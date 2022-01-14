@@ -14,6 +14,5 @@ namespace Core
         public int UserRecipient { get; set; }
         public int ProductRecipient { get; set; }
         public bool State { get; set; }
-        public bool[] Complite { get; set; }
     }
 }
