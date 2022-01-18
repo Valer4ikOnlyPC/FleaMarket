@@ -1,4 +1,12 @@
+using Repository.Core;
+using Repository.Data;
+using System.Configuration;
+
 var builder = WebApplication.CreateBuilder(args);
+
+string connectionString = "Host=localhost;Port=5433;Database=testDB;Username=postgres;Password=2077";
+builder.Services.AddTransient<IUserRepository, UserRepository>(provider => new UserRepository(connectionString, new UserPasswordRepository(connectionString)));
+
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
