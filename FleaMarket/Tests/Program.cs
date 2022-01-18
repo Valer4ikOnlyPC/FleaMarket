@@ -15,7 +15,7 @@ var selected = userRepository.GetAll();
 foreach(User u in selected)
     Console.WriteLine(u.Surname+" "+u.Name+" "+u.VkAddress+" "+u.Rating.ToString()+" "+u.PasswordId.ToString());
 
-User user1 = userRepository.Get(id);
+User user1 = userRepository.GetById(id);
 Console.WriteLine(user1.PasswordId.ToString());
 bool result = userRepository.Verification(user1, "1234567sdfsdf");
 Console.WriteLine(result.ToString());
