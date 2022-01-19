@@ -1,7 +1,7 @@
 ﻿using Dapper;
 using Domain.Models;
 using Npgsql;
-using Repository.Core;
+using Domain.Core;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -45,9 +45,15 @@ namespace Repository.Data
                 "VALUES(@Surname, @Name, @VkAddress, @Rating, @CityId, @IsDelete, @PasswordId) " +
                 "RETURNING UserId;", new { item.Surname, item.Name, item.VkAddress, item.Rating, item.CityId, item.IsDelete, item.PasswordId }).FirstOrDefault();
         }
-        public bool Verification(User item, string password)
+        public string Verification(string phoneNumber)
         {
-            return _userPassword.Verification(password, item.PasswordId);
+            Guid passwordId = db.Query<Guid>(
+                "SELECT PasswordId " +
+                "FROM Users " +
+                "WHERE PhoneNumber = @phoneNumber", new { phoneNumber }).FirstOrDefault();
+            if (passwordId == new Guid())
+                return "-1";
+            return _userPassword.GetById(passwordId);
         }
         public User Update(Guid id, User item)
         {

@@ -1,4 +1,4 @@
-using Repository.Core;
+using Domain.Core;
 using Repository.Data;
 using System.Configuration;
 

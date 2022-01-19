@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Repository.Core
+namespace Domain.Core
 {
     public interface ICategoryRepository
     {

@@ -1,5 +1,5 @@
 ﻿// See https://aka.ms/new-console-template for more information
-using Repository.Core;
+using Domain.Core;
 using Repository.Data;
 using Domain.Models;
 
@@ -14,10 +14,5 @@ Guid id = userRepository.Create(user, password);
 var selected = userRepository.GetAll();
 foreach(User u in selected)
     Console.WriteLine(u.Surname+" "+u.Name+" "+u.VkAddress+" "+u.Rating.ToString()+" "+u.PasswordId.ToString());
-
-User user1 = userRepository.GetById(id);
-Console.WriteLine(user1.PasswordId.ToString());
-bool result = userRepository.Verification(user1, "1234567sdfsdf");
-Console.WriteLine(result.ToString());
 
 Console.ReadKey();

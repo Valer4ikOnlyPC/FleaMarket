@@ -1,7 +1,7 @@
 ﻿using Dapper;
 using Domain.Models;
 using Npgsql;
-using Repository.Core;
+using Domain.Core;
 using System;
 using System.Collections.Generic;
 using System.Data;

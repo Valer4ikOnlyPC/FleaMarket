@@ -5,11 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Repository.Core
+namespace Domain.Core
 {
     public interface IUserPasswordRepository
     {
         public Guid Create(string password);
-        public bool Verification(string hashedPassword, Guid passwordId);
+        public string GetById(Guid passwordId);
     }
 }

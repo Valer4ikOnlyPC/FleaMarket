@@ -1,5 +1,5 @@
 ﻿using Domain.Models;
-using Repository.Core;
+using Domain.Core;
 using System;
 using System.Data;
 using System.Data.SqlClient;
