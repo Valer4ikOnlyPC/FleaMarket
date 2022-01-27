@@ -1,0 +1,78 @@
+﻿@{
+    ViewData["Title"] = @Model.Name;
+}
+  <p class="lead">@ViewBag.Category</p>
+  <div id="myCarousel" class="carousel slide mb-3" style="background: gray; height: 500px; " data-bs-ride="carousel">
+    <div class="carousel-indicators">
+        <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="0" aria-label="0" class="active" aria-current="true"></button>
+        @{
+            if (@ViewBag.ImageCount > 0)
+            {
+                for (int i = 1; i <= @ViewBag.ImageCount; i++)
+                {
+                    <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="@i" aria-label="@i" class=""></button>
+                }
+            }
+        }
+    </div>
+
+
+    <div class="carousel-inner">
+        <div class="carousel-item active">
+            <img class="mx-auto d-block" style="max-width:100%; height:500px" src="@ViewBag.Firstphoto" />
+        </div>
+        @{
+            foreach (string link in @Model.Image)
+            {
+                 <div class="carousel-item">
+                    <img class="mx-auto d-block" style="max-width:100%; height:500px" src="@link" />
+                 </div>
+            }
+        }
+      
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#myCarousel" data-bs-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#myCarousel" data-bs-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Next</span>
+    </button>
+  </div>
+
+  <form asp-action="EditProduct" asp-controller="Product" asp-anti-forgery="true" enctype="multipart/form-data">
+  <div class="row featurette border-top pt-3">
+      <div class="col-md-9">
+        <div class="alert alert-success" style="background: rgb(250,250,250); color: black;" role="alert">
+            <input type="text" name="ProductId" style="opacity:0" placeholder="ProductId" value="@Model.ProductId">
+            <div class="form-floating mb-3">
+                <input type="text" name="Name" class="form-control" id="validationDefault01" placeholder="Name" value="@Model.Name">
+                <label for="validationDefault01">Название</label>
+              </div>
+            <hr>
+            <div class="form-floating mb-3">
+                <div class="wp-textarea-wrap">
+                  <textarea type="text" id="validationDefault02" name="Description" class="wp-textarea" placeholder="Описание..." style="overflow-x: hidden !important; overflow-y: hidden; overflow-wrap: break-word !important; height: 200px; width: 100%; overflow-y: scroll; resize: none;">@Model.Description</textarea>
+                </div>
+            </div>
+        </div>
+        <input class="btn btn-sm btn-outline-secondary" style="font-size:14pt; width: 100%" type="submit" value="Изменить"/>
+        
+      </div>
+      
+
+      <div class="col-md-3">
+        <div class="alert alert-success" style="background: rgb(250,250,250); color: black;" role="alert">
+          <h4 class="featurette-heading pb-2">@ViewBag.User.Name</h4>
+          <hr>
+          <p>Рейтинг: @ViewBag.User.Rating</p>
+          <p>Город: @ViewBag.City</p>
+          <p>Кол-во обменов: </p>
+        </div>
+      </div>
+    </div>
+    </form>
+
+
+  

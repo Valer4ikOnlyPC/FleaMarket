@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Security.Cryptography;
+using Domain.DTO;
 
 namespace Services.Service
 {
@@ -19,10 +20,21 @@ namespace Services.Service
             _userRepository = repository;
         }
 
-        public Guid Create(User item, string password)
+        public Task<Guid> Create(UserDTO item)
         {
-            string hashPassword = HashPassword(password);
-            return _userRepository.Create(item, hashPassword);
+            string hashPassword = HashPassword(item.Password);
+            User user = new User
+            {
+                Surname = item.Surname,
+                Name = item.Name,
+                PhoneNumber = item.PhoneNumber,
+                VkAddress = item.VkAddress,
+                Rating = 0,
+                CityId = item.CityId,
+                IsDelete = false,
+                PasswordId = new Guid()
+            };
+            return _userRepository.Create(user, hashPassword);
         }
 
         public void Delete(Guid id)
@@ -35,19 +47,24 @@ namespace Services.Service
             return _userRepository.GetAll();
         }
 
-        public User GetById(Guid id)
+        public Task<User> GetById(Guid id)
         {
             return _userRepository.GetById(id);
         }
+        public Task<User> GetByPhone(string phone)
+        {
+            return _userRepository.GetByPhone(phone);
+        }
 
-        public User Update(Guid id, User item)
+        public Task<User> Update(Guid id, User item)
         {
             return _userRepository.Update(id, item);
         }
 
         public bool Verification(string phoneNumber, string password)
         {
-            string hashPassword =  _userRepository.Verification(phoneNumber);
+
+            string hashPassword =  _userRepository.Verification(phoneNumber).Result;
             if(hashPassword=="-1")
                 return false;
             return VerifyHashedPassword(hashPassword, password);

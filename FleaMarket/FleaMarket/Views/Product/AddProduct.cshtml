@@ -1,0 +1,52 @@
+﻿@{
+    ViewData["Title"] = "Новый лот";
+}
+
+<div class="row align-items-center g-lg-5 py-5">
+      <div class="col-md-10 mx-auto col-lg-5">
+        <form asp-action="AddProduct" asp-controller="Product" asp-anti-forgery="true" enctype="multipart/form-data" class="p-4 p-md-5 border rounded-3 bg-light">
+          <div class="form-floating mb-3">
+            <input type="text" name="Name" class="form-control" id="validationDefault01" placeholder="Name">
+            <label for="validationDefault01">Название</label>
+          </div>
+          
+          <div class="form-floating mb-3">
+            <div class="wp-textarea-wrap">
+              <textarea type="text" id="validationDefault02" name="Description" class="wp-textarea" placeholder="Описание..." style="overflow-x: hidden !important; overflow-y: hidden; overflow-wrap: break-word !important; height: 200px; width: 100%; overflow-y: scroll; resize: none;"></textarea>
+            </div>
+          </div>
+
+          <div class="form-floating mb-3">
+            <select name = "CityId" class="form-control" id="validationDefault05" placeholder="CityId" required>
+                    <option selected disabled value=""></option>
+                    @foreach (City c in @ViewBag.City)
+                    {
+                        <option value=@c.CityId>@c.Name</option>
+                    }
+                </select>
+            <label for="validationDefault05">Город</label>
+          </div>
+
+          <div class="form-floating mb-3">
+            <select name = "CategoryId" class="form-control" id="validationDefault06" placeholder="CategoryId" required>
+                    <option selected disabled value="">...</option>
+                    @foreach (Category c in @ViewBag.Category)
+                    {
+                        <option id="CategoreValue" value=@c.CategoryId>@c.Name</option>
+                    }
+                </select>
+            <label for="validationDefault06">Категория</label>
+          </div>
+
+          <div class="mb-3">
+            <input type="file" name="Image" class="form-control" id="validationDefault07" accept="image/jpeg,image/png" placeholder="Image" multiple>
+          </div>
+
+          <input class="w-100 btn btn-lg btn-primary" type="submit" value="Добавить"/>
+        </form>
+      </div>
+      <div class="col-lg-7 text-center text-lg-start">
+        <h1 class="display-4 fw-bold lh-1 mb-3">Vertically centered hero sign-up form</h1>
+        <p class="col-lg-10 fs-4">Below is an example form built entirely with Bootstrap’s form controls. Each required form group has a validation state that can be triggered by attempting to submit the form without completing it.</p>
+      </div>
+    </div>

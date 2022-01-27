@@ -1,0 +1,56 @@
+﻿@{
+    ViewData["Title"] = "Страница регистрации";
+}
+
+
+
+<div class="row align-items-center g-lg-5 py-5">
+      <div class="col-md-10 mx-auto col-lg-5">
+        <form asp-action="Register" asp-controller="Account" asp-anti-forgery="true" class="p-4 p-md-5 border rounded-3 bg-light">
+          <div class="form-floating mb-3">
+            <input type="text" name="Surname" class="form-control" id="validationDefault01" placeholder="Surname">
+            <label for="validationDefault01">Фамилия</label>
+          </div>
+          <div class="form-floating mb-3">
+            <input type="text" name="Name" class="form-control" id="validationDefault02" placeholder="Name">
+            <label for="validationDefault02">Имя</label>
+          </div>
+
+          <div class="input-group mb-3">
+            <span class="input-group-text" style="width: 10%">+7</span>
+            <div class="form-floating" style="width: 90%">
+              <input type="text" name="PhoneNumber" class="form-control" id="floatingInput" placeholder="Number">
+              <label for="floatingInput">Номер телефона</label>
+            </div>
+          </div>
+
+          <div class="form-floating mb-3">
+            <input type="text" name="VkAddress" class="form-control" id="VkAddressid" placeholder="VkAddress">
+            <label for="VkAddressid">Страница ВК (не обязательно)</label>
+          </div>
+
+          <div class="form-floating mb-3">
+            <select name = "CityId" class="form-control" id="validationDefault05" placeholder="CityId" required>
+                    <option selected disabled value="">...</option>
+                    @foreach (City c in Model)
+                    {
+                        <option value=@c.CityId>@c.Name</option>
+                    }
+                </select>
+            <label for="validationDefault05">Город</label>
+          </div>
+
+          <div class="form-floating mb-3">
+            <input type="password" name="Password" class="form-control" id="validationDefault06" placeholder="Password">
+            <label for="validationDefault06">Пароль</label>
+          </div>
+          <input class="w-100 btn btn-lg btn-primary" type="submit" value="Зарегистрироваться"/>
+          <hr class="my-4">
+          <small class="text-muted">Нажимая Зарегистрироваться, вы соглашаетесь с условиями использования.</small>
+        </form>
+      </div>
+      <div class="col-lg-7 text-center text-lg-start">
+        <h1 class="display-4 fw-bold lh-1 mb-3">Vertically centered hero sign-up form</h1>
+        <p class="col-lg-10 fs-4">Below is an example form built entirely with Bootstrap’s form controls. Each required form group has a validation state that can be triggered by attempting to submit the form without completing it.</p>
+      </div>
+    </div>

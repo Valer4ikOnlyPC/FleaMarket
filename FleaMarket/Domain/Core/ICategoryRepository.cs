@@ -10,9 +10,9 @@ namespace Domain.Core
     public interface ICategoryRepository
     {
         IEnumerable<Category> GetAll();
-        IEnumerable<Category> GetByParent(Category categoryParent);
-        Category GetById(int id);
-        Category GetParent(Category category);
+        Task<IEnumerable<Category>> GetByParent(int id);
+        Task<Category> GetById(int id);
+        Task<Category> GetParent(Category category);
         void Create(Category item);
         void Delete(int id);
     }

@@ -10,9 +10,9 @@ namespace Domain.Core
     public interface IProductPhotoRepository
     {
         IEnumerable<ProductPhoto> GetByProduct(Product product);
-        ProductPhoto GetById(Guid id);
-        Guid Create(ProductPhoto item);
-        ProductPhoto Update(Guid id, ProductPhoto item);
+        Task<ProductPhoto> GetById(Guid id);
+        Task<Guid> Create(ProductPhoto item);
+        Task<ProductPhoto> Update(Guid id, ProductPhoto item);
         void Delete(Guid id);
     }
 }

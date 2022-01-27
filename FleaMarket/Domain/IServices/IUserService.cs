@@ -1,4 +1,5 @@
-﻿using Domain.Models;
+﻿using Domain.DTO;
+using Domain.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,10 +11,11 @@ namespace Domain.IServices
     public interface IUserService
     {
         IEnumerable<User> GetAll();
-        User GetById(Guid id);
-        Guid Create(User item, string password);
+        Task<User> GetById(Guid id);
+        Task<User> GetByPhone(string phone);
+        Task<Guid> Create(UserDTO item);
         bool Verification(string phoneNumber, string password);
-        User Update(Guid id, User item);
+        Task<User> Update(Guid id, User item);
         void Delete(Guid id);
     }
 }

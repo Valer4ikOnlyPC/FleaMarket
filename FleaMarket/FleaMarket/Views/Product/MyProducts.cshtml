@@ -1,0 +1,44 @@
+﻿@{
+    ViewData["Title"] = "Мои лоты";
+}
+    <div class="row mt-5 mb-2">
+        @{
+            if (@ViewBag.ProductCount>0)
+            {
+                foreach (Product product in @Model)
+                {
+                    <div class="col-lg-4">
+                      <div class="card shadow-sm mt-4">
+                        <div class="text-center" style="height: 250px; background: gray; ">
+                            <img class="mx-auto d-block" style="max-width:100%; height:250px" src="@product.FirstPhoto" />
+                        </div>
+                          <div class="card-body">
+                            <div class="order-md-2">
+                              <h2 class="">@product.Name</h2>
+                                <p class="lead" style="min-height:90px">@if (@product.Description.Length > 100)
+                                    {
+                                        @product.Description.Substring(0, 97).Insert(97, "...");;
+                                    }
+                                    else
+                                    {
+                                        @product.Description;
+                                    }
+                                </p>
+                            </div>
+                          <div class="d-flex justify-content-between align-items-center">
+                            <div class="btn-group">
+                              <a class="btn btn-sm btn-outline-secondary" asp-area="" asp-controller="Product" asp-action="ViewProduct" asp-route-productId="@product.ProductId">Перейти</a>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <h2 class="lead">У вас нет выложенных лотов :)</h2>
+            }
+        }
+    </div>
+

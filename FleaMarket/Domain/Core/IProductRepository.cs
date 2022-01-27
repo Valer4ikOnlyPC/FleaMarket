@@ -10,10 +10,12 @@ namespace Domain.Core
     public interface IProductRepository
     {
         IEnumerable<Product> GetAll();
-        IEnumerable<Product> GetByUser(User user);
-        Product GetById(Guid id);
-        Guid Create(Product item);
-        Product Update(Guid id, Product item);
+        Task<IEnumerable<Product>> GetByUser(User user);
+        Task<Product> GetById(Guid id);
+        Task<Guid> Create(Product item);
+        void UpdatePhoto(Guid id, string Photo);
+        Task<Product> Update(Guid id, Product item);
+        void DealCompleted(Guid id);
         void Delete(Guid id);
     }
 }

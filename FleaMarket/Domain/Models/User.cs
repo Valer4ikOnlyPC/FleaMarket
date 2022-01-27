@@ -12,7 +12,7 @@ namespace Domain.Models
         public string Surname { get; set; }
         public string Name { get; set; }
         public string PhoneNumber { get; set; }
-        public string VkAddress { get; set; }
+        public string? VkAddress { get; set; }
         public float Rating { get; set; } = 0;
         public int CityId { get; set; }
         public bool IsDelete { get; set; }

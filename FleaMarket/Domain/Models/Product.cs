@@ -21,7 +21,8 @@ namespace Domain.Models
         {
             Closed,
             InDeal,
-            Active
+            Active,
+            OkDeal
         }
     }
 }
