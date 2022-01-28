@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests", "Tests\Tests.csproj
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Services", "Services\Services.csproj", "{1FC85F7F-3BC0-4802-A08B-926777FD99E1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Migrator", "Migrator\Migrator.csproj", "{58895DDA-D02D-4993-9654-3958DAEAC51E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{1FC85F7F-3BC0-4802-A08B-926777FD99E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1FC85F7F-3BC0-4802-A08B-926777FD99E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1FC85F7F-3BC0-4802-A08B-926777FD99E1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{58895DDA-D02D-4993-9654-3958DAEAC51E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{58895DDA-D02D-4993-9654-3958DAEAC51E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{58895DDA-D02D-4993-9654-3958DAEAC51E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{58895DDA-D02D-4993-9654-3958DAEAC51E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
