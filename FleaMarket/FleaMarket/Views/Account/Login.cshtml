@@ -11,17 +11,14 @@
       </div>
       <div class="col-md-10 mx-auto col-lg-5">
         <form asp-action="Login" asp-controller="Account" asp-anti-forgery="true" class="p-4 p-md-5 border rounded-3 bg-light">
-          <div class="input-group mb-3">
-            <span class="input-group-text" style="width: 10%">+7</span>
-            <div class="form-floating" style="width: 90%">
-              <input type="text" name="PhoneNumber" class="form-control" id="floatingInput" placeholder="Number">
+            <div class="form-floating mb-3">
+              <input type="tel" name="PhoneNumber" class="form-control tel" id="floatingInput" placeholder="Number" required minlength="18" maxlength="18">
               <label for="floatingInput">Номер телефона</label>
             </div>
-          </div>
           
 
           <div class="form-floating mb-3">
-            <input type="password" name="Password" class="form-control" id="floatingPassword" placeholder="Password">
+            <input type="password" name="Password" class="form-control" id="floatingPassword" placeholder="Password" required minlength="8" maxlength="50">
             <label for="floatingPassword">Пароль</label>
           </div>
           <input class="w-100 btn btn-lg btn-primary" type="submit" value="Войти"/>
@@ -30,3 +27,4 @@
         </form>
       </div>
     </div>
+    <script src="~/js/tel_valid.js" asp-append-version="true"></script>

@@ -9,47 +9,49 @@ using System.Text;
 using System.Threading.Tasks;
 using Npgsql;
 using Dapper;
+using Microsoft.Extensions.Configuration;
 
 namespace Repository.Data
 {
     public class RatingRepository: IRatingRepository
     {
-        private string connectionString = null;
-        private IDbConnection db;
-        public RatingRepository(string conn)
+        private readonly IConfiguration _configuration;
+        public RatingRepository(IConfiguration configuration)
         {
-            connectionString = conn;
-            db = new NpgsqlConnection(connectionString);
+            _configuration = configuration;
         }
-        public IEnumerable<Rating> GetByUser(User user)
+        public async Task<IEnumerable<Rating>> GetByUser(User user)
         {
-            return db.Query<Rating>(
+            IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
+            return await db.QueryAsync<Rating>(
                 "SELECT * " +
                 "FROM Ratings " +
-                "WHERE RatingId = @UserId", new { user.UserId }).ToArray();
+                "WHERE RatingId = @UserId", new { user.UserId });
         }
         //менять оценку в пользователе
-        public Guid Create(Rating item)
+        public async Task<Guid> Create(Rating item)
         {
-            Guid ratingId = db.Query<Guid>(
+            IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
+            var ratingId = await db.QueryAsync<Guid>(
                 "INSERT INTO Ratings (Grade, UserId) " +
                 "VALUES(@Grade, @UserId) " +
-                "RETURNING RatingId;", new { item.Grade, item.UserId }).FirstOrDefault();
+                "RETURNING RatingId;", new { item.Grade, item.UserId });
 
             var sqlQuery =
                 "UPDATE Users " +
                 "SET Rating = (SELECT AVG(Grade) FROM Ratings WHERE UserId = @UserId) " +
                 "WHERE UserId = @UserId";
-            db.Execute(sqlQuery, item);
+            db.ExecuteAsync(sqlQuery, item.UserId);
 
-            return ratingId;
+            return ratingId.FirstOrDefault();
         }
-        public void Delete(Guid id)
+        public async void Delete(Guid id)
         {
+            IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
             var sqlQuery =
                 "DELETE FROM Ratings " +
                 "WHERE RatingId = @id";
-            db.Execute(sqlQuery, new { id });
+            await db.ExecuteAsync(sqlQuery, new { id });
         }
     }
 }

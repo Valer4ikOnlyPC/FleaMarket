@@ -20,18 +20,16 @@ namespace Repository.Data
         {
             _configuration = configuration;
         }
-        public IEnumerable<City> GetAll()
+        public async Task<IEnumerable<City>> GetAll()
         {
-            string constr = _configuration.GetConnectionString("myconn");
-            IDbConnection db = new NpgsqlConnection(constr);
-            return db.Query<City>(
+            IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
+            return await db.QueryAsync<City>(
                 "SELECT * " +
-                "FROM Citys").ToArray();
+                "FROM Citys");
         }
         public async Task<City> GetById(int id)
         {
-            string constr = _configuration.GetConnectionString("myconn");
-            IDbConnection db = new NpgsqlConnection(constr);
+            IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
             var citys = await db.QueryAsync<City>(
                 "SELECT * " +
                 "FROM Citys " +

@@ -15,26 +15,22 @@ namespace Repository.Data
 {
     public class UserRepository: IUserRepository
     {
-        private IUserPasswordRepository _userPassword;
-
         private readonly IConfiguration _configuration;
-        public UserRepository(IConfiguration configuration, IUserPasswordRepository userPasswordRepository)
+        public UserRepository(IConfiguration configuration)
         {
             _configuration = configuration;
-            _userPassword = userPasswordRepository;
         }
-        public IEnumerable<User> GetAll()
+        public async Task<IEnumerable<User>> GetAll()
         {
-            string constr = _configuration.GetConnectionString("myconn");
-            IDbConnection db = new NpgsqlConnection(constr);
-            return db.Query<User>(
+            IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
+            var users = await db.QueryAsync<User>(
                 "SELECT * " +
-                "FROM Users").ToArray();
+                "FROM Users");
+            return users;
         }
         public async Task<User> GetById(Guid id)
         {
-            string constr = _configuration.GetConnectionString("myconn");
-            IDbConnection db = new NpgsqlConnection(constr);
+            IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
             var users = await db.QueryAsync<User>(
                 "SELECT * " +
                 "FROM Users " +
@@ -43,41 +39,27 @@ namespace Repository.Data
         }
         public async Task<User> GetByPhone(string phone)
         {
-            string constr = _configuration.GetConnectionString("myconn");
-            IDbConnection db = new NpgsqlConnection(constr);
+            IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
             var users = await db.QueryAsync<User>(
                 "SELECT * " +
                 "FROM Users " +
                 "WHERE PhoneNumber = @phone", new { phone });
             return users.FirstOrDefault();
         }
-        public async Task<Guid> Create(User item, string password)
-        {
-            string constr = _configuration.GetConnectionString("myconn");
-            IDbConnection db = new NpgsqlConnection(constr);
-            item.PasswordId = _userPassword.Create(password);
-
-            var result = await db.QueryAsync<Guid>(
-                "INSERT INTO Users (Surname, \"Name\", PhoneNumber, VkAddress, Rating, CityId, IsDeleted, PasswordId) " +
-                "VALUES(@Surname, @Name, @PhoneNumber, @VkAddress, @Rating, @CityId, @IsDelete, @PasswordId) " +
-                "RETURNING UserId;", new { item.Surname, item.Name, item.PhoneNumber, item.VkAddress, item.Rating, item.CityId, item.IsDelete, item.PasswordId });
-            return result.FirstOrDefault();
-        }
-        public async Task<string> Verification(string phoneNumber)
+        public async Task<Guid> Create(User item)
         {
             IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
-            var passwordId = await db.QueryAsync<Guid>(
-                "SELECT PasswordId " +
-                "FROM Users " +
-                "WHERE PhoneNumber = @phoneNumber", new { phoneNumber });
-            if (passwordId.FirstOrDefault() == new Guid())
-                return "-1";
-            return _userPassword.GetById(passwordId.FirstOrDefault());
+
+            item.UserId = Guid.NewGuid();
+            var result = await db.QueryAsync<Guid>(
+                "INSERT INTO Users (UserId, Surname, \"Name\", PhoneNumber, VkAddress, Rating, CityId, IsDeleted) " +
+                "VALUES(@userId, @Surname, @Name, @PhoneNumber, @VkAddress, @Rating, @CityId, @IsDelete) " +
+                "RETURNING UserId;", new { item.UserId, item.Surname, item.Name, item.PhoneNumber, item.VkAddress, item.Rating, item.CityId, item.IsDelete });
+            return result.FirstOrDefault();
         }
         public async Task<User> Update(Guid id, User item)
         {
-            string constr = _configuration.GetConnectionString("myconn");
-            IDbConnection db = new NpgsqlConnection(constr);
+            IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
 
             item.UserId = id;
             var sqlQuery =

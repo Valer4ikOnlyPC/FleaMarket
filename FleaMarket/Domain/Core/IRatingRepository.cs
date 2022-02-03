@@ -9,8 +9,8 @@ namespace Domain.Core
 {
     public interface IRatingRepository
     {
-        IEnumerable<Rating> GetByUser(User user);
-        Guid Create(Rating item);
+        Task<IEnumerable<Rating>> GetByUser(User user);
+        Task<Guid> Create(Rating item);
         void Delete(Guid id);
     }
 }

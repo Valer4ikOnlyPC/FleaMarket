@@ -1,5 +1,4 @@
-﻿using Domain.Core;
-using Domain.DTO;
+﻿using Domain.DTO;
 using Domain.IServices;
 using Domain.Models;
 using FleaMarket.Models;
@@ -18,28 +17,28 @@ namespace FleaMarket.Controllers
     {
         private readonly ILogger<ProductController> _logger;
         private IProductService _productService;
-        private ICityRepository _cityRepository;
-        private ICategoryRepository _categoryRepository;
+        private ICategoryService _categoryService;
+        private ICityService _cityService;
         private IUserService _userService;
         public ProductController(ILogger<ProductController> logger, IProductService productService,
-            ICityRepository cityRepository, ICategoryRepository categoryRepository, IUserService userService)
+            ICityService cityService, ICategoryService categoryService, IUserService userService)
         {
             _logger = logger;
             _productService = productService;
-            _cityRepository = cityRepository;
-            _categoryRepository = categoryRepository;
+            _cityService = cityService;
+            _categoryService = categoryService;
             _userService = userService;
         }
         [Authorize]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             return View();
         }
         [Authorize]
-        public IActionResult AddProduct()
+        public async Task<IActionResult> AddProduct()
         {
-            ViewBag.City = _cityRepository.GetAll();
-            ViewBag.Category = _categoryRepository.GetByParent(-1).Result;
+            ViewBag.City = await _cityService.GetAll();
+            ViewBag.Category = await _categoryService.GetByParent(-1);
             return View();
         }
         [HttpPost]
@@ -51,7 +50,9 @@ namespace FleaMarket.Controllers
                 {
                     var user = await _userService.GetByPhone(User.Identity.Name);
                     product.UserId = user.UserId;
-                    Guid productId = await _productService.Create(product, System.IO.Directory.GetCurrentDirectory());
+                    Guid productId = await _productService.Create(product);
+                    if(productId==Guid.Empty)
+                        return BadRequest();
                     return RedirectToAction("MyProducts", "Product", new { number = user.PhoneNumber });
                 }
                 catch (Exception)
@@ -77,10 +78,10 @@ namespace FleaMarket.Controllers
         public async Task<IActionResult> ViewProduct(Guid productId)
         {
             var productPhotoDTO = await _productService.GetById(productId);
-            var categoty = await _categoryRepository.GetById(productPhotoDTO.CategoryId);
+            var categoty = await _categoryService.GetById(productPhotoDTO.CategoryId);
             var user = await _userService.GetById(productPhotoDTO.UserId);
             int imgCount = productPhotoDTO.Image.Count();
-            var city = await _cityRepository.GetById(productPhotoDTO.CityId);
+            var city = await _cityService.GetById(productPhotoDTO.CityId);
 
             ViewBag.Master = false;
             ViewBag.ImageCount = imgCount;
@@ -97,10 +98,10 @@ namespace FleaMarket.Controllers
         public async Task<IActionResult> EditProduct(Guid productId)
         {
             var productPhotoDTO = await _productService.GetById(productId);
-            var categoty = await _categoryRepository.GetById(productPhotoDTO.CategoryId);
+            var categoty = await _categoryService.GetById(productPhotoDTO.CategoryId);
             var user = await _userService.GetById(productPhotoDTO.UserId);
             int imgCount = productPhotoDTO.Image.Count();
-            var city = await _cityRepository.GetById(productPhotoDTO.CityId);
+            var city = await _cityService.GetById(productPhotoDTO.CityId);
 
             ViewBag.ImageCount = imgCount;
             ViewBag.Firstphoto = productPhotoDTO.FirstPhoto;

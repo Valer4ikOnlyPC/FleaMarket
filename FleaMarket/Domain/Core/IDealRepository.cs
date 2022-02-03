@@ -9,11 +9,11 @@ namespace Domain.Core
 {
     public interface IDealRepository
     {
-        IEnumerable<Deal> GetAll();
-        IEnumerable<Deal> GetByMaster(User userMaster);
-        IEnumerable<Deal> GetByRecipient(User userRecipient);
-        Deal GetById(Guid id);
-        Guid Create(Deal item);
+        Task<IEnumerable<Deal>> GetAll();
+        Task<IEnumerable<Deal>> GetByMaster(User userMaster);
+        Task<IEnumerable<Deal>> GetByRecipient(User userRecipient);
+        Task<Deal> GetById(Guid id);
+        Task<Guid> Create(Deal item);
         void Delete(Guid id);
     }
 }

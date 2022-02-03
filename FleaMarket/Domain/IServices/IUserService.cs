@@ -10,11 +10,11 @@ namespace Domain.IServices
 {
     public interface IUserService
     {
-        IEnumerable<User> GetAll();
+        Task<IEnumerable<User>> GetAll();
         Task<User> GetById(Guid id);
         Task<User> GetByPhone(string phone);
         Task<Guid> Create(UserDTO item);
-        bool Verification(string phoneNumber, string password);
+        Task<bool> Verification(string phoneNumber, string password);
         Task<User> Update(Guid id, User item);
         void Delete(Guid id);
     }

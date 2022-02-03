@@ -4,15 +4,15 @@
 
 <div class="row align-items-center g-lg-5 py-5">
       <div class="col-md-10 mx-auto col-lg-5">
-        <form asp-action="AddProduct" asp-controller="Product" asp-anti-forgery="true" enctype="multipart/form-data" class="p-4 p-md-5 border rounded-3 bg-light">
+        <form asp-action="AddProduct" asp-controller="Product" asp-anti-forgery="true" enctype="multipart/form-data" class="p-4 p-md-5 border rounded-3 bg-light needs-validation" novalidate>
           <div class="form-floating mb-3">
-            <input type="text" name="Name" class="form-control" id="validationDefault01" placeholder="Name">
+            <input type="text" name="Name" class="form-control" id="validationDefault01" placeholder="Name" required>
             <label for="validationDefault01">Название</label>
           </div>
           
           <div class="form-floating mb-3">
             <div class="wp-textarea-wrap">
-              <textarea type="text" id="validationDefault02" name="Description" class="wp-textarea" placeholder="Описание..." style="overflow-x: hidden !important; overflow-y: hidden; overflow-wrap: break-word !important; height: 200px; width: 100%; overflow-y: scroll; resize: none;"></textarea>
+              <textarea type="text"  id="validationDefault02" name="Description" class="wp-textarea" placeholder="Описание..." style="overflow-x: hidden !important; overflow-y: hidden; overflow-wrap: break-word !important; height: 200px; width: 100%; overflow-y: scroll; resize: none;" required></textarea>
             </div>
           </div>
 
@@ -39,10 +39,13 @@
           </div>
 
           <div class="mb-3">
-            <input type="file" name="Image" class="form-control" id="validationDefault07" accept="image/jpeg,image/png" placeholder="Image" multiple>
+            <input type="file" name="Image" class="form-control" id="selectedfile" accept="image/jpeg,image/png" placeholder="Image" multiple required>
           </div>
 
-          <input class="w-100 btn btn-lg btn-primary" type="submit" value="Добавить"/>
+          <input class="w-100 btn btn-lg btn-primary" id="submit123" type="submit" value="Добавить"/>
+          <div style="margin-top:15px">
+        <output name="result"></output>
+    </div>
         </form>
       </div>
       <div class="col-lg-7 text-center text-lg-start">
@@ -50,3 +53,4 @@
         <p class="col-lg-10 fs-4">Below is an example form built entirely with Bootstrap’s form controls. Each required form group has a validation state that can be triggered by attempting to submit the form without completing it.</p>
       </div>
     </div>
+    <script src="~/js/valid.js" asp-append-version="true"></script>

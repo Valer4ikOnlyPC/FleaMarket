@@ -10,11 +10,10 @@ namespace Domain.Core
 {
     public interface IUserRepository
     {
-        IEnumerable<User> GetAll();
+        Task<IEnumerable<User>> GetAll();
         Task<User> GetById(Guid id);
         Task<User> GetByPhone(string phone);
-        Task<Guid> Create(User item, string password);
-        Task<string> Verification(string phoneNumber);
+        Task<Guid> Create(User item);
         Task<User> Update(Guid id, User item);
         void Delete(Guid id);
     }

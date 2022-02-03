@@ -3,6 +3,7 @@ using Domain.DTO;
 using Domain.IServices;
 using Domain.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,53 +17,41 @@ namespace Services.Service
     {
         IProductPhotoRepository _productPhotoRepository;
         IProductRepository _productRepository;
-        public ProductService(IProductPhotoRepository productPhotoRepository, IProductRepository productRepository)
+        IFileService _fileService;
+        public ProductService(IProductPhotoRepository productPhotoRepository, IProductRepository productRepository, IFileService fileService)
         {
             _productPhotoRepository = productPhotoRepository;
             _productRepository = productRepository;
+            _fileService = fileService;
         }
-        public Task<Guid> Create(ProductDTO item, string directory)
+        public async Task<Guid> Create(ProductDTO item)
         {
+            var productId = Guid.NewGuid();
+
+            var files = await _fileService.UploadMany(item.Image, productId);
+            if(files.Count()==0)
+                return Guid.Empty;
             Product product = new Product
             {
+                ProductId = productId,
                 Name = item.Name,
                 Description = item.Description,
                 CityId = item.CityId,
                 IsActive = enumIsActive.Active,
                 CategoryId = item.CategoryId,
                 UserId = item.UserId,
+                FirstPhoto = files.FirstOrDefault().Link
             };
-            var productId = _productRepository.Create(product);
-
-            bool flag = true;
-
-            foreach (IFormFile img in item.Image)
+            _productRepository.Create(product);
+            foreach (ProductPhoto photo in files)
             {
-                if (img.Length > 0)
-                {
-                    string filePath = Path.Combine(directory+"\\wwwroot\\images\\" + productId.Result.ToString() + img.FileName);
-                    using (var fileStream = new FileStream(filePath, FileMode.Create))
-                    {
-                        img.CopyTo(fileStream);
-                        ProductPhoto productPhoto = new ProductPhoto
-                        {
-                            Link = "\\images\\"+ productId.Result.ToString() + img.FileName,
-                            ProductId = productId.Result,
-                        };
-                        _productPhotoRepository.Create(productPhoto);
-                    }
-                    if (flag)
-                    {
-                        product.FirstPhoto = "\\images\\" + productId.Result.ToString() + img.FileName;
-                        flag= false;
-                    }
-                }
+                _productPhotoRepository.Create(photo);
             }
-            _productRepository.UpdatePhoto(productId.Result, product.FirstPhoto);
             return productId;
+
         }
 
-        public void Delete(Guid id)
+        public async void Delete(Guid id)
         {
             _productRepository.Delete(id);
         }
@@ -72,11 +61,11 @@ namespace Services.Service
             throw new NotImplementedException();
         }
 
-        public async Task<ProductPhotoDTO> GetById(Guid id)
+        public async Task<ProductPhotoDto> GetById(Guid id)
         {
             Product product = await _productRepository.GetById(id);
-            var productPhoto = _productPhotoRepository.GetByProduct(product);
-            ProductPhotoDTO productPhotoDTO = new ProductPhotoDTO
+            var productPhoto = await _productPhotoRepository.GetByProduct(product);
+            ProductPhotoDto productPhotoDTO = new ProductPhotoDto
             {
                 ProductId = product.ProductId,
                 Name = product.Name,
@@ -91,14 +80,14 @@ namespace Services.Service
             return productPhotoDTO;
         }
 
-        public Task<IEnumerable<Product>> GetByUser(User user)
+        public async Task<IEnumerable<Product>> GetByUser(User user)
         {
-            return _productRepository.GetByUser(user);
+            return await _productRepository.GetByUser(user);
         }
 
-        public Task<Product> Update(Guid id, Product item)
+        public async Task<Product> Update(Guid id, Product item)
         {
-            return _productRepository.Update(id, item);
+            return await _productRepository.Update(id, item);
         }
     }
 }

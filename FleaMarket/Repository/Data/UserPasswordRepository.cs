@@ -21,23 +21,36 @@ namespace Repository.Data
         {
             _configuration = configuration;
         }
-        public Guid Create(string password)
+        public async Task<Guid> Create(UserPassword userPassword)
         {
             IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
 
-            return db.Query<Guid>(
-                "INSERT INTO UserPasswords (\"Password\") " +
-                "VALUES(@password) " +
-                "RETURNING UserPasswordId;", new { password }).FirstOrDefault();
+            userPassword.UserPasswordId = Guid.NewGuid();
+            var passwordId = await db.QueryAsync<Guid>(
+                "INSERT INTO UserPasswords (UserPasswordId, \"Password\", UserId) " +
+                "VALUES(@userPasswordId, @password, @userId) " +
+                "RETURNING UserPasswordId;", new { userPassword.UserPasswordId, userPassword.Password, userPassword.UserId });
+            return passwordId.FirstOrDefault();
         }
-        public string GetById(Guid passwordID)
+        public async Task<UserPassword> GetById(Guid passwordID)
         {
             IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
 
-            return db.Query<string>(
-                "SELECT \"Password\" " +
+            var userPassword = await db.QueryAsync<UserPassword>(
+                "SELECT * " +
                 "FROM UserPasswords " +
-                "WHERE UserPasswordId = @passwordID;", new { passwordID }).FirstOrDefault();
+                "WHERE UserPasswordId = @passwordID;", new { passwordID });
+            return userPassword.FirstOrDefault();
+        }
+        public async Task<UserPassword> GetByUserId(Guid userID)
+        {
+            IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
+
+            var userPassword = await db.QueryAsync<UserPassword>(
+                "SELECT * " +
+                "FROM UserPasswords " +
+                "WHERE UserId = @userID;", new { userID });
+            return userPassword.FirstOrDefault();
         }
     }
 }

@@ -46,14 +46,15 @@
         <div class="alert alert-success" style="background: rgb(250,250,250); color: black;" role="alert">
             <h2 class="featurette-heading">@Model.Name</h2>
             <hr>
-            <p class="lead">@{
+            
+            <div >@{
                     string[] words = @Model.Description.Split(new char[] { '\n' });
                     foreach (string s in words)
                     {
                         @s<br>
                     }
                 }
-            </p>
+            </div>
         </div>
         @{
             if (@ViewBag.Master)

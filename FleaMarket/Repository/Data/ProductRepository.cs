@@ -20,12 +20,13 @@ namespace Repository.Data
         {
             _configuration = configuration;
         }
-        public IEnumerable<Product> GetAll()
+        public async Task<IEnumerable<Product>> GetAll()
         {
             IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
-            return db.Query<Product>(
+            var product = await db.QueryAsync<Product>(
                 "SELECT * " +
-                "FROM Products").Where(p => p.IsActive == Product.enumIsActive.Active).ToArray();
+                "FROM Products");
+            return product.Where(p => p.IsActive == Product.enumIsActive.Active);
         }
         public async Task<IEnumerable<Product>> GetByUser(User user)
         {
@@ -49,9 +50,9 @@ namespace Repository.Data
         {
             IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
             var result = await db.QueryAsync<Guid>(
-                "INSERT INTO Products (\"Name\", FirstPhoto, Description, CityId, IsActive, CategoryId, UserId) " +
-                "VALUES(@Name, \' \', @Description, @CityId, 2, @CategoryId, @UserId) " +
-                "RETURNING ProductId;", new { item.Name, item.FirstPhoto, item.Description, item.CityId, item.CategoryId, item.UserId });
+                "INSERT INTO Products (ProductId, \"Name\", FirstPhoto, Description, CityId, IsActive, CategoryId, UserId) " +
+                "VALUES(@ProductId, @Name, @FirstPhoto, @Description, @CityId, 2, @CategoryId, @UserId) " +
+                "RETURNING ProductId;", new { item.ProductId, item.Name, item.FirstPhoto, item.Description, item.CityId, item.CategoryId, item.UserId });
             return result.FirstOrDefault();
         }
         public async void UpdatePhoto(Guid id, string Photo)
@@ -73,13 +74,6 @@ namespace Repository.Data
                 "WHERE ProductId = @id " +
                 "RETURNING ProductId;", new { item.Name, item.Description, item.CityId, id });
             return await GetById(result.FirstOrDefault());
-            /*var sqlQuery =
-                "UPDATE Products " +
-                "SET \"Name\" = @Name, FirstPhoto = @FirstPhoto, Description = @Description, " +
-                    "City = @City, CategoryId = @CategoryId, UserId = @UserId " +
-                "WHERE ProductId = @ProductId";
-            await db.ExecuteAsync(sqlQuery, item);
-            return await GetById(item.ProductId);*/
         }
         public async void DealCompleted(Guid id)
         {

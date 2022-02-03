@@ -16,6 +16,5 @@ namespace Domain.Models
         public float Rating { get; set; } = 0;
         public int CityId { get; set; }
         public bool IsDelete { get; set; }
-        public Guid PasswordId { get; set; }
     }
 }

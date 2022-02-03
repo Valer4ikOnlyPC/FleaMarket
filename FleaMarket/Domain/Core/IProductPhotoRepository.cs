@@ -9,7 +9,7 @@ namespace Domain.Core
 {
     public interface IProductPhotoRepository
     {
-        IEnumerable<ProductPhoto> GetByProduct(Product product);
+        Task<IEnumerable<ProductPhoto>> GetByProduct(Product product);
         Task<ProductPhoto> GetById(Guid id);
         Task<Guid> Create(ProductPhoto item);
         Task<ProductPhoto> Update(Guid id, ProductPhoto item);

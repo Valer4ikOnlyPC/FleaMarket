@@ -14,16 +14,17 @@ namespace Services.Service
     public class UserService : IUserService
     {
         private IUserRepository _userRepository;
+        private IUserPasswordRepository _userPasswordRepository;
 
-        public UserService(IUserRepository repository)
+        public UserService(IUserRepository userRepository, IUserPasswordRepository userPasswordRepository)
         {
-            _userRepository = repository;
+            _userRepository = userRepository;
+            _userPasswordRepository = userPasswordRepository;
         }
 
-        public Task<Guid> Create(UserDTO item)
+        public async Task<Guid> Create(UserDTO item)
         {
-            string hashPassword = HashPassword(item.Password);
-            User user = new User
+            var user = new User
             {
                 Surname = item.Surname,
                 Name = item.Name,
@@ -31,43 +32,51 @@ namespace Services.Service
                 VkAddress = item.VkAddress,
                 Rating = 0,
                 CityId = item.CityId,
-                IsDelete = false,
-                PasswordId = new Guid()
+                IsDelete = false
             };
-            return _userRepository.Create(user, hashPassword);
+            var userId = await _userRepository.Create(user);
+            var userPassword = new UserPassword
+            {
+                Password = await Task.Run(() => HashPassword(item.Password)),
+                UserId = userId
+            };
+            await _userPasswordRepository.Create(userPassword);
+            return userId;
         }
 
-        public void Delete(Guid id)
+        public async void Delete(Guid id)
         {
             _userRepository.Delete(id);
         }
 
-        public IEnumerable<User> GetAll()
+        public async Task<IEnumerable<User>> GetAll()
         {
-            return _userRepository.GetAll();
+            return await _userRepository.GetAll();
         }
 
-        public Task<User> GetById(Guid id)
+        public async Task<User> GetById(Guid id)
         {
-            return _userRepository.GetById(id);
+            return await _userRepository.GetById(id);
         }
-        public Task<User> GetByPhone(string phone)
+        public async Task<User> GetByPhone(string phone)
         {
-            return _userRepository.GetByPhone(phone);
-        }
-
-        public Task<User> Update(Guid id, User item)
-        {
-            return _userRepository.Update(id, item);
+            return await _userRepository.GetByPhone(phone);
         }
 
-        public bool Verification(string phoneNumber, string password)
+        public async Task<User> Update(Guid id, User item)
         {
+            return await _userRepository.Update(id, item);
+        }
 
-            string hashPassword =  _userRepository.Verification(phoneNumber).Result;
-            if(hashPassword=="-1")
+        public async Task<bool> Verification(string phoneNumber, string password)
+        {
+            var user = await _userRepository.GetByPhone(phoneNumber);
+            if(user == null)
                 return false;
-            return VerifyHashedPassword(hashPassword, password);
+            var userPassword = await _userPasswordRepository.GetByUserId(user.UserId);
+            if(userPassword == null)
+                return false;
+            return await Task.Run(() => VerifyHashedPassword(userPassword.Password, password));
         }
 
         private string HashPassword(string password)

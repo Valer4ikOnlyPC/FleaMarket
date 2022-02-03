@@ -5,17 +5,24 @@ using Microsoft.Extensions.Configuration;
 using Domain.IServices;
 using Services.Service;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.Extensions.FileProviders;
+using Mg;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddTransient<IUserPasswordRepository, UserPasswordRepository>();
 builder.Services.AddTransient<IUserRepository, UserRepository>();
 builder.Services.AddTransient<ICityRepository, CityRepository>();
+builder.Services.AddTransient<ICityService, CityService>();
 builder.Services.AddTransient<IUserService, UserService>();
+builder.Services.AddTransient<IFileService, FileService>();
 builder.Services.AddTransient<IProductPhotoRepository, ProductPhotoRepository>();
 builder.Services.AddTransient<ICategoryRepository, CategoryRepository>();
+builder.Services.AddTransient<ICategoryService, CategoryService>();
 builder.Services.AddTransient<IProductRepository, ProductRepository>();
 builder.Services.AddTransient<IProductService, ProductService>();
+builder.Services.AddTransient<Migration>();
+
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(options =>
@@ -39,6 +46,13 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+app.UseDefaultFiles();
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider("C:/FleaMarket/img"),
+    RequestPath = "/img"
+});
 
 app.UseRouting();
 
@@ -50,5 +64,7 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+var migration = new Migration(app.Configuration);
 
 app.Run();

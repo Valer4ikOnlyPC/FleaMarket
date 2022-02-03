@@ -9,60 +9,67 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 
 namespace Repository.Data
 {
     public class DealRepository: IDealRepository
     {
-        private string connectionString = null;
-        private IDbConnection db;
-        public DealRepository(string conn)
+        private readonly IConfiguration _configuration;
+        public DealRepository(IConfiguration configuration)
         {
-            connectionString = conn;
-            db = new NpgsqlConnection(connectionString);
+            _configuration = configuration;
         }
-        public IEnumerable<Deal> GetAll()
+        public async Task<IEnumerable<Deal>> GetAll()
         {
-            return db.Query<Deal>(
+            IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
+            return await db.QueryAsync<Deal>(
                 "SELECT * " +
-                "FROM Deals").ToArray();
+                "FROM Deals");
         }
-        public IEnumerable<Deal> GetByMaster(User userMaster)
+        public async Task<IEnumerable<Deal>> GetByMaster(User userMaster)
         {
-            return db.Query<Deal>(
-                "SELECT * " +
-                "FROM Deals " +
-                "WHERE UserMaster = @UserId", new { userMaster.UserId }).ToArray();
-        }
-        public IEnumerable<Deal> GetByRecipient(User userRecipient)
-        {
-            return db.Query<Deal>(
+            IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
+            return await db.QueryAsync<Deal>(
                 "SELECT * " +
                 "FROM Deals " +
-                "WHERE UserRecipient = @UserId", new { userRecipient.UserId }).ToArray();
+                "WHERE UserMaster = @UserId", new { userMaster.UserId });
         }
-        public Deal GetById(Guid id)
+        public async Task<IEnumerable<Deal>> GetByRecipient(User userRecipient)
         {
-            return db.Query<Deal>(
+            IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
+            return await db.QueryAsync<Deal>(
                 "SELECT * " +
                 "FROM Deals " +
-                "WHERE DealId = @id", new { id }).FirstOrDefault();
+                "WHERE UserRecipient = @UserId", new { userRecipient.UserId });
+        }
+        public async Task<Deal> GetById(Guid id)
+        {
+            IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
+            var deal = await db.QueryAsync<Deal>(
+                "SELECT * " +
+                "FROM Deals " +
+                "WHERE DealId = @id", new { id });
+            return deal.FirstOrDefault();
         }
         // продукт isactive = InDeal
-        public Guid Create(Deal item)
+        public async Task<Guid> Create(Deal item)
         {
-            return db.Query<Guid>(
+            IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
+            var deal = await db.QueryAsync<Guid>(
                "INSERT INTO Deals (UserMaster, ProductMaster, UserRecipient, ProductRecipient, IsActive) " +
                "VALUES(@UserMaster, @ProductMaster, @UserRecipient, @ProductRecipient, @IsActive) " +
-               "RETURNING DealId;", new { item.UserMaster, item.ProductMaster, item.UserRecipient, item.ProductRecipient, item.IsActive }).FirstOrDefault();
+               "RETURNING DealId;", new { item.UserMaster, item.ProductMaster, item.UserRecipient, item.ProductRecipient, item.IsActive });
+            return deal.FirstOrDefault();
         }
         //добавлять в историю + закрывать продукт 
-        public void Delete(Guid id)
+        public async void Delete(Guid id)
         {
+            IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
             var sqlQuery =
                 "DELETE FROM Deals " +
                 "WHERE DealId = @id";
-            db.Execute(sqlQuery, new { id });
+            await db.ExecuteAsync(sqlQuery, new { id });
             // +добавлять в историю
         }
     }

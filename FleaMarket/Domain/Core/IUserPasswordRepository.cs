@@ -9,7 +9,8 @@ namespace Domain.Core
 {
     public interface IUserPasswordRepository
     {
-        public Guid Create(string password);
-        public string GetById(Guid passwordId);
+        public Task<Guid> Create(UserPassword userPassword);
+        public Task<UserPassword> GetById(Guid passwordId);
+        public Task<UserPassword> GetByUserId(Guid userID);
     }
 }

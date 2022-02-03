@@ -20,12 +20,12 @@ namespace Repository.Data
         {
             _configuration = configuration;
         }
-        public IEnumerable<Category> GetAll()
+        public async Task<IEnumerable<Category>> GetAll()
         {
             IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
-            return db.Query<Category>(
+            return await db.QueryAsync<Category>(
                 "SELECT * " +
-                "FROM Categorys").ToArray();
+                "FROM Categorys");
         }
         public async Task<IEnumerable<Category>> GetByParent(int id)
         {

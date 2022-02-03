@@ -9,51 +9,57 @@ using System.Text;
 using System.Threading.Tasks;
 using Npgsql;
 using Dapper;
+using Microsoft.Extensions.Configuration;
 
 namespace Repository.Data
 {
     public class FavoritesRepository: IFavoritesRepository
     {
-        private string connectionString = null;
-        private IDbConnection db;
-        public FavoritesRepository(string conn)
+        private readonly IConfiguration _configuration;
+        public FavoritesRepository(IConfiguration configuration)
         {
-            connectionString = conn;
-            db = new NpgsqlConnection(connectionString);
+            _configuration = configuration;
         }
-        public IEnumerable<Favorite> GetAll()
+        public async Task<IEnumerable<Favorite>> GetAll()
         {
-            return db.Query<Favorite>(
+            IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
+            return await db.QueryAsync<Favorite>(
                 "SELECT * " +
-                "FROM Favorites").ToArray();
+                "FROM Favorites");
         }
-        public IEnumerable<Favorite> GetByUser(User user)
+        public async Task<IEnumerable<Favorite>> GetByUser(User user)
         {
-            return db.Query<Favorite>(
-                "SELECT * " +
-                "FROM Favorites " +
-                "WHERE UserId = @UserId", new { user.UserId  }).ToArray();
-        }
-        public Favorite GetById(Guid id)
-        {
-            return db.Query<Favorite>(
+            IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
+            return await db.QueryAsync<Favorite>(
                 "SELECT * " +
                 "FROM Favorites " +
-                "WHERE FavoriteId = @id", new { id }).FirstOrDefault();
+                "WHERE UserId = @UserId", new { user.UserId  });
         }
-        public Guid Create(Favorite item)
+        public async Task<Favorite> GetById(Guid id)
         {
-            return db.Query<Guid>(
+            IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
+            var favorite = await db.QueryAsync<Favorite>(
+                "SELECT * " +
+                "FROM Favorites " +
+                "WHERE FavoriteId = @id", new { id });
+            return favorite.FirstOrDefault();
+        }
+        public async Task<Guid> Create(Favorite item)
+        {
+            IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
+            var favorite = await db.QueryAsync<Guid>(
                 "INSERT INTO Favorites (ProductId, UserId) " +
                 "VALUES(@ProductId, @UserId) " +
-                "RETURNING FavoriteId;", new { item.ProductId, item.UserId }).FirstOrDefault();
+                "RETURNING FavoriteId;", new { item.ProductId, item.UserId });
+            return favorite.FirstOrDefault();
         }
-        public void Delete(Guid id)
+        public async void Delete(Guid id)
         {
+            IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
             var sqlQuery =
                 "DELETE FROM Favorites " +
                 "WHERE FavoriteId = @id";
-            db.Execute(sqlQuery, new { id });
+            await db.ExecuteAsync(sqlQuery, new { id });
         }
     }
 }

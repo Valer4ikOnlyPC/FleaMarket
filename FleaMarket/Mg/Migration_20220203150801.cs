@@ -1,17 +1,14 @@
-﻿using Dapper;
-using FluentMigrator;
-using Npgsql;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FluentMigrator;
 
-namespace Migrations
+namespace Mg
 {
-    [Migration(20220128200001)]
-    public class Migration_20220128200001 : Migration
+    [Migration(20220203150801)]
+    public class Migration_20220203150801 : FluentMigrator.Migration
     {
         public override void Down()
         {
@@ -20,30 +17,28 @@ namespace Migrations
 
         public override void Up()
         {
-
-
             Create.Table("citys")
                 .WithColumn("cityid").AsInt32().NotNullable().Identity().PrimaryKey()
-                .WithColumn("\"Name\"").AsString().NotNullable();
-
-            Create.Table("userpasswords")
-                .WithColumn("userpasswordid").AsGuid().PrimaryKey().WithDefault(SystemMethods.NewGuid)
-                .WithColumn("\"Password\"").AsString().NotNullable();
+                .WithColumn("\"Name\"").AsString(50).NotNullable();
 
             Create.Table("users")
-                .WithColumn("userid").AsGuid().NotNullable().PrimaryKey().WithDefault(SystemMethods.NewGuid)
-                .WithColumn("surname").AsString().NotNullable()
-                .WithColumn("\"Name\"").AsString().NotNullable()
-                .WithColumn("phonenumber").AsString().NotNullable()
-                .WithColumn("vkaddress").AsString().Nullable()
-                .WithColumn("rating").AsInt32()
+                .WithColumn("userid").AsGuid().PrimaryKey()
+                .WithColumn("surname").AsString(100).NotNullable()
+                .WithColumn("\"Name\"").AsString(50).NotNullable()
+                .WithColumn("phonenumber").AsString(18).NotNullable()
+                .WithColumn("vkaddress").AsString(150).Nullable()
+                .WithColumn("rating").AsInt32().WithDefaultValue("0")
                 .WithColumn("cityid").AsInt32().NotNullable()
-                .WithColumn("isdeleted").AsBoolean().NotNullable()
-                .WithColumn("passwordid").AsGuid().NotNullable();
+                .WithColumn("isdeleted").AsBoolean().NotNullable();
+
+            Create.Table("userpasswords")
+                .WithColumn("userpasswordid").AsGuid().PrimaryKey()
+                .WithColumn("\"Password\"").AsString(250).NotNullable()
+                .WithColumn("userid").AsGuid().NotNullable().Unique();
 
             Create.ForeignKey()
-                .FromTable("users").ForeignColumn("passwordid")
-                .ToTable("userpasswords").PrimaryColumn("userpasswordid");
+                .FromTable("userpasswords").ForeignColumn("userid")
+                .ToTable("users").PrimaryColumn("userid");
 
             Create.ForeignKey()
                 .FromTable("users").ForeignColumn("cityid")
@@ -51,13 +46,13 @@ namespace Migrations
 
             Create.Table("categorys")
                 .WithColumn("categoryid").AsInt32().NotNullable().Identity().PrimaryKey()
-                .WithColumn("\"Name\"").AsString().NotNullable()
+                .WithColumn("\"Name\"").AsString(250).NotNullable()
                 .WithColumn("categoryparent").AsInt32().NotNullable();
 
             Create.Table("products")
-                .WithColumn("productid").AsGuid().PrimaryKey().WithDefault(SystemMethods.NewGuid)
-                .WithColumn("\"Name\"").AsString().NotNullable()
-                .WithColumn("firstphoto").AsString().NotNullable()
+                .WithColumn("productid").AsGuid().PrimaryKey()
+                .WithColumn("\"Name\"").AsString(50).NotNullable()
+                .WithColumn("firstphoto").AsString(250).NotNullable()
                 .WithColumn("description").AsString().NotNullable()
                 .WithColumn("cityid").AsInt32().NotNullable()
                 .WithColumn("isactive").AsInt32().NotNullable()
@@ -77,8 +72,8 @@ namespace Migrations
                 .ToTable("users").PrimaryColumn("userid");
 
             Create.Table("productphotos")
-                .WithColumn("photoid").AsGuid().PrimaryKey().WithDefault(SystemMethods.NewGuid)
-                .WithColumn("\"Link\"").AsString().NotNullable()
+                .WithColumn("photoid").AsGuid().PrimaryKey()
+                .WithColumn("\"Link\"").AsString(250).NotNullable()
                 .WithColumn("productid").AsGuid().NotNullable();
 
             Create.ForeignKey()
@@ -90,7 +85,6 @@ namespace Migrations
 
             Insert.IntoTable("citys")
                 .Row(new { Name = "Кострома" });
-
         }
     }
 }

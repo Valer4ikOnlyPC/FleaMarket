@@ -7,7 +7,7 @@ using static Domain.Models.Product;
 
 namespace Domain.DTO
 {
-    public class ProductPhotoDTO
+    public class ProductPhotoDto
     {
         public Guid ProductId { get; set; }
         public string Name { get; set; }

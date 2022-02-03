@@ -25,7 +25,7 @@ namespace FleaMarket.Controllers
         }
 
         [HttpGet]
-        public IActionResult Login()
+        public async Task<IActionResult> Login()
         {
             return View();
         }
@@ -35,8 +35,7 @@ namespace FleaMarket.Controllers
         {
             if (ModelState.IsValid)
             {
-                model.PhoneNumber = "+7" + model.PhoneNumber;
-                bool result = _userService.Verification(model.PhoneNumber, model.Password);
+                bool result = await _userService.Verification(model.PhoneNumber, model.Password);
                 if (result)
                 {
                     await Authenticate(model.PhoneNumber);
@@ -48,9 +47,9 @@ namespace FleaMarket.Controllers
             return View(model);
         }
         [HttpGet]
-        public IActionResult Register()
+        public async Task<IActionResult> Register()
         {
-            return View(_cityRepository.GetAll());
+            return View(await _cityRepository.GetAll());
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -58,11 +57,10 @@ namespace FleaMarket.Controllers
         {
             if (ModelState.IsValid)
             {
-                model.PhoneNumber = "+7" + model.PhoneNumber;
                 var result = _userService.GetByPhone(model.PhoneNumber).Result;
                 if (result == null)
                 {
-                    Guid userId = _userService.Create(model).Result;
+                    var userId = await _userService.Create(model);
                     await Authenticate(model.PhoneNumber);
 
                     return RedirectToAction("Index", "Home");

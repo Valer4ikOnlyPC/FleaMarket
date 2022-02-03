@@ -20,13 +20,13 @@ namespace Repository.Data
         {
             _configuration = configuration;
         }
-        public IEnumerable<ProductPhoto> GetByProduct(Product product)
+        public async Task<IEnumerable<ProductPhoto>> GetByProduct(Product product)
         {
             IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
-            return db.Query<ProductPhoto>(
+            return await db.QueryAsync<ProductPhoto>(
                 "SELECT * " +
                 "FROM ProductPhotos " +
-                "WHERE ProductId = @ProductId ", new { product.ProductId}).ToArray();
+                "WHERE ProductId = @ProductId ", new { product.ProductId});
         }
         public async Task<ProductPhoto> GetById(Guid id)
         {
@@ -41,9 +41,9 @@ namespace Repository.Data
         {
             IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
             var result = await db.QueryAsync<Guid>(
-                "INSERT INTO ProductPhotos (\"Link\", ProductId) " +
-                "VALUES(@Link, @ProductId) " +
-                "RETURNING ProductId;", new { item.Link, item.ProductId });
+                "INSERT INTO ProductPhotos (PhotoId, \"Link\", ProductId) " +
+                "VALUES(@photoId, @Link, @ProductId) " +
+                "RETURNING ProductId;", new { item.PhotoId, item.Link, item.ProductId });
             return result.FirstOrDefault();
         }
         public async Task<ProductPhoto> Update(Guid id, ProductPhoto item)

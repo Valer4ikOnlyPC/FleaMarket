@@ -12,8 +12,8 @@ namespace Domain.IServices
     {
         IEnumerable<Product> GetAll();
         Task<IEnumerable<Product>> GetByUser(User user);
-        Task<ProductPhotoDTO> GetById(Guid id);
-        Task<Guid> Create(ProductDTO item, string directory);
+        Task<ProductPhotoDto> GetById(Guid id);
+        Task<Guid> Create(ProductDTO item);
         Task<Product> Update(Guid id, Product item);
         void Delete(Guid id);
     }

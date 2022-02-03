@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Domain.Core
+namespace Domain.IServices
 {
-    public interface ICategoryRepository
+    public interface ICategoryService
     {
         Task<IEnumerable<Category>> GetAll();
         Task<IEnumerable<Category>> GetByParent(int id);

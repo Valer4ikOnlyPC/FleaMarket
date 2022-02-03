@@ -2,27 +2,22 @@
     ViewData["Title"] = "Страница регистрации";
 }
 
-
-
 <div class="row align-items-center g-lg-5 py-5">
       <div class="col-md-10 mx-auto col-lg-5">
-        <form asp-action="Register" asp-controller="Account" asp-anti-forgery="true" class="p-4 p-md-5 border rounded-3 bg-light">
+        <form asp-action="Register" asp-controller="Account" asp-anti-forgery="true" class="p-4 p-md-5 border rounded-3 bg-light needs-validation" novalidate>
           <div class="form-floating mb-3">
-            <input type="text" name="Surname" class="form-control" id="validationDefault01" placeholder="Surname">
-            <label for="validationDefault01">Фамилия</label>
+            <input type="text" name="Surname" class="form-control" id="validationCustom01" placeholder="Surname" minlength="3" maxlength="18" required>
+            <label for="validationCustom01">Фамилия</label>
           </div>
           <div class="form-floating mb-3">
-            <input type="text" name="Name" class="form-control" id="validationDefault02" placeholder="Name">
+            <input type="text" name="Name" class="form-control" id="validationDefault02" placeholder="Name" minlength="2" maxlength="15" required>
             <label for="validationDefault02">Имя</label>
           </div>
 
-          <div class="input-group mb-3">
-            <span class="input-group-text" style="width: 10%">+7</span>
-            <div class="form-floating" style="width: 90%">
-              <input type="text" name="PhoneNumber" class="form-control" id="floatingInput" placeholder="Number">
+            <div class="form-floating mb-3">
+              <input type="tel" name="PhoneNumber" class="form-control tel" id="floatingInput" placeholder="Number" required minlength="18" maxlength="18">
               <label for="floatingInput">Номер телефона</label>
             </div>
-          </div>
 
           <div class="form-floating mb-3">
             <input type="text" name="VkAddress" class="form-control" id="VkAddressid" placeholder="VkAddress">
@@ -41,7 +36,7 @@
           </div>
 
           <div class="form-floating mb-3">
-            <input type="password" name="Password" class="form-control" id="validationDefault06" placeholder="Password">
+            <input type="password" name="Password" class="form-control" id="validationDefault06" placeholder="Password" required minlength="8" maxlength="50">
             <label for="validationDefault06">Пароль</label>
           </div>
           <input class="w-100 btn btn-lg btn-primary" type="submit" value="Зарегистрироваться"/>
@@ -54,3 +49,5 @@
         <p class="col-lg-10 fs-4">Below is an example form built entirely with Bootstrap’s form controls. Each required form group has a validation state that can be triggered by attempting to submit the form without completing it.</p>
       </div>
     </div>
+    <script src="~/js/valid.js" asp-append-version="true"></script>
+    <script src="~/js/tel_valid.js" asp-append-version="true"></script>
