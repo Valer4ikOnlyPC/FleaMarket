@@ -27,9 +27,9 @@ namespace Repository.Data
 
             userPassword.UserPasswordId = Guid.NewGuid();
             var passwordId = await db.QueryAsync<Guid>(
-                "INSERT INTO UserPasswords (UserPasswordId, \"Password\", UserId) " +
+                "INSERT INTO \"UserPasswords\" (\"UserPasswordId\", \"Password\", \"UserId\") " +
                 "VALUES(@userPasswordId, @password, @userId) " +
-                "RETURNING UserPasswordId;", new { userPassword.UserPasswordId, userPassword.Password, userPassword.UserId });
+                "RETURNING \"UserPasswordId\";", new { userPassword.UserPasswordId, userPassword.Password, userPassword.UserId });
             return passwordId.FirstOrDefault();
         }
         public async Task<UserPassword> GetById(Guid passwordID)
@@ -38,8 +38,8 @@ namespace Repository.Data
 
             var userPassword = await db.QueryAsync<UserPassword>(
                 "SELECT * " +
-                "FROM UserPasswords " +
-                "WHERE UserPasswordId = @passwordID;", new { passwordID });
+                "FROM \"UserPasswords\" " +
+                "WHERE \"UserPasswordId\" = @passwordID;", new { passwordID });
             return userPassword.FirstOrDefault();
         }
         public async Task<UserPassword> GetByUserId(Guid userID)
@@ -48,8 +48,8 @@ namespace Repository.Data
 
             var userPassword = await db.QueryAsync<UserPassword>(
                 "SELECT * " +
-                "FROM UserPasswords " +
-                "WHERE UserId = @userID;", new { userID });
+                "FROM \"UserPasswords\" " +
+                "WHERE \"UserId\" = @userID;", new { userID });
             return userPassword.FirstOrDefault();
         }
     }

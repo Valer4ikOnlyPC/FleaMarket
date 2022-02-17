@@ -18,6 +18,7 @@ namespace Services.Service
         IProductPhotoRepository _productPhotoRepository;
         IProductRepository _productRepository;
         IFileService _fileService;
+        private int Minimum(int a, int b, int c) => (a = a < b ? a : b) < c ? a : c;
         public ProductService(IProductPhotoRepository productPhotoRepository, IProductRepository productRepository, IFileService fileService)
         {
             _productPhotoRepository = productPhotoRepository;
@@ -29,7 +30,7 @@ namespace Services.Service
             var productId = Guid.NewGuid();
 
             var files = await _fileService.UploadMany(item.Image, productId);
-            if(files.Count()==0)
+            if(files.Count() == 0)
                 return Guid.Empty;
             Product product = new Product
             {
@@ -42,13 +43,12 @@ namespace Services.Service
                 UserId = item.UserId,
                 FirstPhoto = files.FirstOrDefault().Link
             };
-            _productRepository.Create(product);
+            await _productRepository.Create(product);
             foreach (ProductPhoto photo in files)
             {
-                _productPhotoRepository.Create(photo);
+                await _productPhotoRepository.Create(photo);
             }
             return productId;
-
         }
 
         public async void Delete(Guid id)
@@ -56,14 +56,14 @@ namespace Services.Service
             _productRepository.Delete(id);
         }
 
-        public IEnumerable<Product> GetAll()
+        public async Task<IEnumerable<Product>> GetAll()
         {
-            throw new NotImplementedException();
+            return await _productRepository.GetAll();
         }
 
         public async Task<ProductPhotoDto> GetById(Guid id)
         {
-            Product product = await _productRepository.GetById(id);
+            var product = await _productRepository.GetById(id);
             var productPhoto = await _productPhotoRepository.GetByProduct(product);
             ProductPhotoDto productPhotoDTO = new ProductPhotoDto
             {
@@ -79,6 +79,10 @@ namespace Services.Service
             };
             return productPhotoDTO;
         }
+        public async Task<IEnumerable<Product>> GetByCategory(int categoryId)
+        {
+            return await _productRepository.GetByCategory(categoryId);
+        }
 
         public async Task<IEnumerable<Product>> GetByUser(User user)
         {
@@ -88,6 +92,47 @@ namespace Services.Service
         public async Task<Product> Update(Guid id, Product item)
         {
             return await _productRepository.Update(id, item);
+        }
+        public async Task<IEnumerable<Product>> GetBySearch(string search)
+        {
+            var allProduct = await _productRepository.GetAll();
+            return allProduct.Where(p => LevenshteinDistance(p.Name, search).GetAwaiter().GetResult()<6);
+        }
+
+        private async Task<int> LevenshteinDistance(string firstWord, string secondWord)
+        {
+            firstWord = firstWord.ToLower();
+            secondWord = secondWord.ToLower();
+            var n = firstWord.Length + 1;
+            var m = secondWord.Length + 1;
+            var matrixD = new int[n, m];
+
+            const int deletionCost = 1;
+            const int insertionCost = 1;
+
+            for (var i = 0; i < n; i++)
+            {
+                matrixD[i, 0] = i;
+            }
+
+            for (var j = 0; j < m; j++)
+            {
+                matrixD[0, j] = j;
+            }
+
+            for (var i = 1; i < n; i++)
+            {
+                for (var j = 1; j < m; j++)
+                {
+                    var substitutionCost = firstWord[i - 1] == secondWord[j - 1] ? 0 : 1;
+
+                    matrixD[i, j] = Minimum(matrixD[i - 1, j] + deletionCost,
+                                            matrixD[i, j - 1] + insertionCost,
+                                            matrixD[i - 1, j - 1] + substitutionCost);
+                }
+            }
+
+            return matrixD[n - 1, m - 1];
         }
     }
 }

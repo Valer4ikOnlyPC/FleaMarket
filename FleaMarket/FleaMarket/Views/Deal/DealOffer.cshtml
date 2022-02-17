@@ -1,0 +1,21 @@
+﻿  <div class="modal-dialog" role="document">
+    <div class="modal-content rounded-6 shadow">
+      <div class="modal-header border-bottom-0">
+        <h5 class="modal-title">Выберите товар для обмена</h5>
+        <button type="button" onclick="Close_deal()" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="container p-2">
+          @foreach(Product product in ViewBag.MyProduct)
+            {
+                <a onclick="create_deal('@product.ProductId','@ViewBag.Product.ProductId','@ViewBag.Product.UserId')" style="text-decoration: none; color: rgb(30,30,30);">
+                    @Html.Partial("ProductToList", product)
+                </a>
+            }
+      </div>
+      <hr>
+      <div class="modal-footer flex-column border-top-0">
+        <a class="btn btn-lg btn-light w-100 mx-0" 
+            onclick="create_deal('@ViewBag.Product.ProductId','@ViewBag.Product.ProductId','@ViewBag.Product.UserId')">Предложить непрямой обмен</a>
+      </div>
+    </div>
+  </div>

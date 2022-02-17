@@ -27,7 +27,7 @@
           <div class="form-floating mb-3">
             <select name = "CityId" class="form-control" id="validationDefault05" placeholder="CityId" required>
                     <option selected disabled value="">...</option>
-                    @foreach (City c in Model)
+                    @foreach (City c in ViewBag.City)
                     {
                         <option value=@c.CityId>@c.Name</option>
                     }

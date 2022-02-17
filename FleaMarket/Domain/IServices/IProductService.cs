@@ -10,9 +10,11 @@ namespace Domain.IServices
 {
     public interface IProductService
     {
-        IEnumerable<Product> GetAll();
+        Task<IEnumerable<Product>> GetAll();
         Task<IEnumerable<Product>> GetByUser(User user);
         Task<ProductPhotoDto> GetById(Guid id);
+        Task<IEnumerable<Product>> GetByCategory(int categoryId);
+        Task<IEnumerable<Product>> GetBySearch(string search);
         Task<Guid> Create(ProductDTO item);
         Task<Product> Update(Guid id, Product item);
         void Delete(Guid id);

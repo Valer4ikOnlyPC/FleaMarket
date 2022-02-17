@@ -13,9 +13,13 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddTransient<IUserPasswordRepository, UserPasswordRepository>();
 builder.Services.AddTransient<IUserRepository, UserRepository>();
 builder.Services.AddTransient<ICityRepository, CityRepository>();
+builder.Services.AddTransient<IDealRepository, DealRepository>();
+builder.Services.AddTransient<IRatingRepository, RatingRepository>();
+builder.Services.AddTransient<IRatingService, RatingService>();
 builder.Services.AddTransient<ICityService, CityService>();
 builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddTransient<IFileService, FileService>();
+builder.Services.AddTransient<IDealService, DealService>();
 builder.Services.AddTransient<IProductPhotoRepository, ProductPhotoRepository>();
 builder.Services.AddTransient<ICategoryRepository, CategoryRepository>();
 builder.Services.AddTransient<ICategoryService, CategoryService>();
@@ -48,9 +52,11 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseDefaultFiles();
 
+if (!Directory.Exists(app.Configuration["FileDirectory"]))
+    Directory.CreateDirectory(app.Configuration["FileDirectory"]);
 app.UseStaticFiles(new StaticFileOptions
 {
-    FileProvider = new PhysicalFileProvider("C:/FleaMarket/img"),
+    FileProvider = new PhysicalFileProvider(app.Configuration["FileDirectory"]),
     RequestPath = "/img"
 });
 
@@ -65,6 +71,6 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-var migration = new Migration(app.Configuration);
+//var migration = new Migration(app.Configuration);
 
 app.Run();

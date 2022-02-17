@@ -25,7 +25,7 @@ namespace Repository.Data
             IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
             var product = await db.QueryAsync<Product>(
                 "SELECT * " +
-                "FROM Products");
+                "FROM \"Products\" ");
             return product.Where(p => p.IsActive == Product.enumIsActive.Active);
         }
         public async Task<IEnumerable<Product>> GetByUser(User user)
@@ -33,8 +33,8 @@ namespace Repository.Data
             IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
             var result = await db.QueryAsync<Product>(
                 "SELECT * " +
-                "FROM Products " +
-                "WHERE UserId = @UserId", new { user.UserId });
+                "FROM \"Products\" " +
+                "WHERE \"UserId\" = @UserId", new { user.UserId });
             return result;
         }
         public async Task<Product> GetById(Guid id)
@@ -42,26 +42,26 @@ namespace Repository.Data
             IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
             var result = await db.QueryAsync<Product>(
                 "SELECT * " +
-                "FROM Products " +
-                "WHERE ProductId = @id", new { id });
+                "FROM \"Products\" " +
+                "WHERE \"ProductId\" = @id", new { id });
             return result.FirstOrDefault();
         }
         public async Task<Guid> Create(Product item)
         {
             IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
             var result = await db.QueryAsync<Guid>(
-                "INSERT INTO Products (ProductId, \"Name\", FirstPhoto, Description, CityId, IsActive, CategoryId, UserId) " +
+                "INSERT INTO \"Products\" (\"ProductId\", \"Name\", \"FirstPhoto\", \"Description\", \"CityId\", \"IsActive\", \"CategoryId\", \"UserId\") " +
                 "VALUES(@ProductId, @Name, @FirstPhoto, @Description, @CityId, 2, @CategoryId, @UserId) " +
-                "RETURNING ProductId;", new { item.ProductId, item.Name, item.FirstPhoto, item.Description, item.CityId, item.CategoryId, item.UserId });
+                "RETURNING \"ProductId\";", new { item.ProductId, item.Name, item.FirstPhoto, item.Description, item.CityId, item.CategoryId, item.UserId });
             return result.FirstOrDefault();
         }
         public async void UpdatePhoto(Guid id, string Photo)
         {
             IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
             var sqlQuery =
-                "UPDATE Products " +
-                "SET FirstPhoto = @Photo " +
-                "WHERE ProductId = @id";
+                "UPDATE \"Products\" " +
+                "SET \"FirstPhoto\" = @Photo " +
+                "WHERE \"ProductId\" = @id";
             await db.ExecuteAsync(sqlQuery, new { Photo, id});
         }
         public async Task<Product> Update(Guid id, Product item)
@@ -69,19 +69,28 @@ namespace Repository.Data
             IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
             item.ProductId = id;
             var result = await db.QueryAsync<Guid>(
-                "UPDATE Products " +
-                "SET \"Name\" = @Name, Description = @Description " +
-                "WHERE ProductId = @id " +
-                "RETURNING ProductId;", new { item.Name, item.Description, item.CityId, id });
+                "UPDATE \"Products\" " +
+                "SET \"Name\" = @Name, \"Description\" = @Description " +
+                "WHERE \"ProductId\" = @id " +
+                "RETURNING \"ProductId\";", new { item.Name, item.Description, item.CityId, id });
             return await GetById(result.FirstOrDefault());
+        }
+        public async void UpdateState(Guid id, int number)
+        {
+            IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
+            var sqlQuery =
+                "UPDATE \"Products\" " +
+                "SET \"IsActive\" = @number " +
+                "WHERE \"ProductId\" = @id";
+            await db.ExecuteAsync(sqlQuery, new { number, id });
         }
         public async void DealCompleted(Guid id)
         {
             IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
             var sqlQuery =
-                "UPDATE Products " +
-                "SET IsActive = 3 " +
-                "WHERE ProductId = @id";
+                "UPDATE \"Products\" " +
+                "SET \"IsActive\" = 3 " +
+                "WHERE \"ProductId\" = @id";
             await db.ExecuteAsync(sqlQuery, id);
         }
         public async void Delete(Guid id)
@@ -89,10 +98,19 @@ namespace Repository.Data
             Console.WriteLine(id);
             IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
             var sqlQuery =
-                "UPDATE Products " +
-                "SET IsActive = 0 " +
-                "WHERE ProductId = @id";
+                "UPDATE \"Products\" " +
+                "SET \"IsActive\" = 0 " +
+                "WHERE \"ProductId\" = @id";
             await db.ExecuteAsync(sqlQuery, new { id });
+        }
+        public async Task<IEnumerable<Product>> GetByCategory(int categoryId)
+        {
+            IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
+            var result = await db.QueryAsync<Product>(
+                "SELECT * " +
+                "FROM \"Products\" " +
+                "WHERE \"CategoryId\" = @CategoryId", new { categoryId });
+            return result.Where(p => p.IsActive == Product.enumIsActive.Active);
         }
     }
 }

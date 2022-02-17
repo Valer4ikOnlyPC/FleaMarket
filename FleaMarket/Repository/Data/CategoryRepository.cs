@@ -25,15 +25,15 @@ namespace Repository.Data
             IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
             return await db.QueryAsync<Category>(
                 "SELECT * " +
-                "FROM Categorys");
+                "FROM \"Categories\"");
         }
         public async Task<IEnumerable<Category>> GetByParent(int id)
         {
             IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
             var result = await db.QueryAsync<Category>(
                 "SELECT * " +
-                "FROM Categorys " +
-                "WHERE CategoryParent = @id", new { id });
+                "FROM \"Categories\" " +
+                "WHERE \"CategoryParent\" = @id", new { id });
             return result;
         }
         public async Task<Category> GetById(int id)
@@ -41,8 +41,8 @@ namespace Repository.Data
             IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
             var result = await db.QueryAsync<Category>(
                 "SELECT * " +
-                "FROM Categorys " +
-                "WHERE CategoryId = @id", new { id });
+                "FROM \"Categories\" " +
+                "WHERE \"CategoryId\" = @id", new { id });
             return result.FirstOrDefault();
         }
         public async Task<Category> GetParent(Category category)
@@ -50,15 +50,15 @@ namespace Repository.Data
             IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
             var result = await db.QueryAsync<Category>(
                 "SELECT * " +
-                "FROM Categorys " +
-                "WHERE CategoryId = @id", new { category.CategoryParent });
+                "FROM \"Categories\" " +
+                "WHERE \"CategoryId\" = @id", new { category.CategoryParent });
             return result.FirstOrDefault();
         }
         public async void Create(Category item)
         {
             IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
             var sqlQuery =
-                "INSERT INTO Categorys (\"Name\", CategoryParent) " +
+                "INSERT INTO \"Categories\" (\"Name\", \"CategoryParent\") " +
                 "VALUES(@Name, @CategoryParent)";
             await db.ExecuteAsync(sqlQuery, item);
         }
@@ -66,8 +66,8 @@ namespace Repository.Data
         {
             IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
             var sqlQuery =
-                "DELETE FROM Categorys " +
-                "WHERE CategoryId = @id";
+                "DELETE FROM \"Categories\" " +
+                "WHERE \"CategoryId\" = @id";
             await db.ExecuteAsync(sqlQuery, new { id });
         }
     }

@@ -76,7 +76,7 @@ namespace Services.Service
             var userPassword = await _userPasswordRepository.GetByUserId(user.UserId);
             if(userPassword == null)
                 return false;
-            return await Task.Run(() => VerifyHashedPassword(userPassword.Password, password));
+            return VerifyHashedPassword(userPassword.Password, password);
         }
 
         private string HashPassword(string password)

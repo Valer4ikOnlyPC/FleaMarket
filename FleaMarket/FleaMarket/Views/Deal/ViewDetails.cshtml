@@ -1,0 +1,35 @@
+﻿<div class="modal-dialog" role="document">
+    <div class="modal-content rounded-6 shadow">
+        <div class="modal-header border-bottom-0">
+            <h5 class="modal-title">Подробности обмена</h5>
+            <button type="button" onclick="Close_deal()" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="container p-2">
+            <h3 class="mb-0">@ViewBag.UserRecipient.Name</h3>
+            <div class="mb-1 text-muted">@ViewBag.City.Name</div>
+            <div class="mb-1 text-muted">Оценка: @ViewBag.UserRecipient.Rating</div>
+            <p class="mb-auto">@ViewBag.UserRecipient.PhoneNumber</p>
+        </div>
+        @if (ViewBag.Rating)
+        {
+            <form  asp-action="ViewDetails" asp-controller="Deal" asp-anti-forgery="true" enctype="multipart/form-data" id="form1" novalidate>
+                <div class="container p-2">
+                    <h5>Поставить оценку</h5>
+                    <div class="rating-area" oninput="rating_extension()">
+	                    <input type="radio" id="star-5" name="grade" value="5">
+	                    <label for="star-5" title="Оценка «5»"></label>	
+	                    <input type="radio" id="star-4" name="grade" value="4">
+	                    <label for="star-4" title="Оценка «4»"></label>    
+	                    <input type="radio" id="star-3" name="grade" value="3">
+	                    <label for="star-3" title="Оценка «3»"></label>  
+	                    <input type="radio" id="star-2" name="grade" value="2">
+	                    <label for="star-2" title="Оценка «2»"></label>    
+	                    <input type="radio" id="star-1" name="grade" value="1">
+	                    <label for="star-1" title="Оценка «1»"></label>
+                    </div>
+                    <input type="text" name="dealId" value="@ViewBag.DealId" style="visibility: hidden;">
+                </div>
+            </form>
+        }
+    </div>
+</div>

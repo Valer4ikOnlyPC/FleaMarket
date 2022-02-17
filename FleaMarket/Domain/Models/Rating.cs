@@ -10,6 +10,8 @@ namespace Domain.Models
     {
         public Guid RatingId { get; set; }
         public int Grade { get; set; }
-        public Guid UserId { get; set; }
+        public Guid UserMasterId { get; set; }
+        public Guid UserRecipientId { get; set; }
+        public Guid DealId { get; set; }
     }
 }

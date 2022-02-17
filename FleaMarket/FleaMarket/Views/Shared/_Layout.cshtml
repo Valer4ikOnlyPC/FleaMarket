@@ -19,26 +19,37 @@
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        @{
-                            if (User.Identity.Name != null)
-                            {
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between text-end">
+                @{
+                    if (User.Identity.Name != null)
+                    {
+                    <ul class="navbar-nav flex-grow-1 ">
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark position-relative" asp-area="" asp-controller="Deal" asp-action="MyDeal">Предложения и сделки<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">@ViewData["deals"]<span class="visually-hidden">unread messages</span></span></a>
+                                </li>
                                 <li class="nav-item">
                                     <a class="nav-link text-dark" asp-area="" asp-controller="Product" asp-action="MyProducts" asp-route-number="@User.Identity.Name">Мои лоты</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="Product" asp-action="AddProduct">Добавить товар</a>
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Product" asp-action="AddProduct">Добавить лот</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="GetUser">Моя страница</a>
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="GetUserByName">Моя страница</a>
                                 </li>
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Logout">Выйти</a>
-                                </li>
-                            }
-                            else
-                            {
+                    </ul>
+                    <div class="flex-shrink-0 dropdown">
+                        <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle nav-link text-dark" id="dropdownUser2" data-bs-toggle="dropdown" aria-expanded="false">@User.Identity.Name</a>
+                        <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser2" style="">
+                            <li><a class="nav-link text-dark" asp-area="" asp-controller="Product" asp-action="AddProduct">Добавить лот</a></li>
+                            <li><a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="GetUserByName">Моя страница</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Logout">Выйти</a></li>
+                        </ul>
+                    </div>
+                    }
+                    else
+                    {
+                    <ul class="navbar-nav flex-grow-1 ">
                                 <li class="nav-item">
                                     <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Login">Вход</a>
                                 </li>
@@ -48,9 +59,9 @@
                                 <li class="nav-item">
                                     <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="GetUser">Поддержка</a>
                                 </li>
-                            }
-                        }
                     </ul>
+                    }
+                }
                 </div>
             </div>
         </nav>

@@ -49,7 +49,8 @@ namespace FleaMarket.Controllers
         [HttpGet]
         public async Task<IActionResult> Register()
         {
-            return View(await _cityRepository.GetAll());
+            ViewBag.City = await _cityRepository.GetAll();
+            return View();
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -68,7 +69,8 @@ namespace FleaMarket.Controllers
                 else
                     ModelState.AddModelError("", "Некорректные логин и(или) пароль");
             }
-            return View(_cityRepository.GetAll());
+            ViewBag.City = await _cityRepository.GetAll();
+            return View();
         }
 
         private async Task Authenticate(string userName)

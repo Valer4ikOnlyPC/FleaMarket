@@ -25,23 +25,36 @@ namespace Repository.Data
             IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
             return await db.QueryAsync<Rating>(
                 "SELECT * " +
-                "FROM Ratings " +
-                "WHERE RatingId = @UserId", new { user.UserId });
+                "FROM \"Ratings\" " +
+                "WHERE \"UserRecipientId\" = @UserId", new { user.UserId });
         }
-        //менять оценку в пользователе
-        public async Task<Guid> Create(Rating item)
+        public async Task<IEnumerable<Rating>> GetByDeal(Deal deal)
         {
             IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
+            return await db.QueryAsync<Rating>(
+                "SELECT * " +
+                "FROM \"Ratings\" " +
+                "WHERE (\"UserMasterId\" = @UserMaster or \"UserMasterId\" = @UserRecipient) and \"DealId\" = @DealId", new { deal.UserMaster, deal.UserRecipient, deal.DealId });
+        }
+        public async Task<Guid> Create(Rating item)
+        {
+            item.RatingId = Guid.NewGuid();
+            IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
             var ratingId = await db.QueryAsync<Guid>(
-                "INSERT INTO Ratings (Grade, UserId) " +
-                "VALUES(@Grade, @UserId) " +
-                "RETURNING RatingId;", new { item.Grade, item.UserId });
+                "INSERT INTO \"Ratings\" (\"RatingId\", \"Grade\", \"UserMasterId\", \"UserRecipientId\", \"DealId\") " +
+                "VALUES(@RatingId, @Grade, @UserMasterId, @UserRecipientId, @DealId) " +
+                "RETURNING \"RatingId\";", new { item.RatingId, item.Grade, item.UserMasterId, item.UserRecipientId, item.DealId });
+
+            var rating = await db.QueryAsync<float>(
+                "SELECT AVG(\"Grade\") " +
+                "FROM \"Ratings\" " +
+                "WHERE \"UserRecipientId\" = @UserRecipientId; ", new { item.UserRecipientId });
 
             var sqlQuery =
-                "UPDATE Users " +
-                "SET Rating = (SELECT AVG(Grade) FROM Ratings WHERE UserId = @UserId) " +
-                "WHERE UserId = @UserId";
-            db.ExecuteAsync(sqlQuery, item.UserId);
+                "UPDATE \"Users\" " +
+                "SET \"Rating\" = @ratings " +
+                "WHERE \"UserId\" = @UserRecipientId";
+            await db.ExecuteAsync(sqlQuery,new { ratings = rating.FirstOrDefault(), item.UserRecipientId });
 
             return ratingId.FirstOrDefault();
         }
@@ -49,8 +62,8 @@ namespace Repository.Data
         {
             IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
             var sqlQuery =
-                "DELETE FROM Ratings " +
-                "WHERE RatingId = @id";
+                "DELETE FROM \"Ratings\" " +
+                "WHERE \"RatingId\" = @id";
             await db.ExecuteAsync(sqlQuery, new { id });
         }
     }

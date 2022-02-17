@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Domain.Core
+namespace Domain.IServices
 {
-    public interface IRatingRepository
+    public interface IRatingService
     {
         Task<IEnumerable<Rating>> GetByUser(User user);
         Task<IEnumerable<Rating>> GetByDeal(Deal deal);

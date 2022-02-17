@@ -25,7 +25,7 @@ namespace Repository.Data
             IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
             var users = await db.QueryAsync<User>(
                 "SELECT * " +
-                "FROM Users");
+                "FROM \"Users\"");
             return users;
         }
         public async Task<User> GetById(Guid id)
@@ -33,8 +33,8 @@ namespace Repository.Data
             IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
             var users = await db.QueryAsync<User>(
                 "SELECT * " +
-                "FROM Users " +
-                "WHERE UserId = @id", new { id });
+                "FROM \"Users\" " +
+                "WHERE \"UserId\" = @id", new { id });
             return users.FirstOrDefault();
         }
         public async Task<User> GetByPhone(string phone)
@@ -42,8 +42,8 @@ namespace Repository.Data
             IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
             var users = await db.QueryAsync<User>(
                 "SELECT * " +
-                "FROM Users " +
-                "WHERE PhoneNumber = @phone", new { phone });
+                "FROM \"Users\" " +
+                "WHERE \"PhoneNumber\" = @phone", new { phone });
             return users.FirstOrDefault();
         }
         public async Task<Guid> Create(User item)
@@ -52,9 +52,9 @@ namespace Repository.Data
 
             item.UserId = Guid.NewGuid();
             var result = await db.QueryAsync<Guid>(
-                "INSERT INTO Users (UserId, Surname, \"Name\", PhoneNumber, VkAddress, Rating, CityId, IsDeleted) " +
+                "INSERT INTO \"Users\" (\"UserId\", \"Surname\", \"Name\", \"PhoneNumber\", \"VkAddress\", \"Rating\", \"CityId\", \"IsDeleted\") " +
                 "VALUES(@userId, @Surname, @Name, @PhoneNumber, @VkAddress, @Rating, @CityId, @IsDelete) " +
-                "RETURNING UserId;", new { item.UserId, item.Surname, item.Name, item.PhoneNumber, item.VkAddress, item.Rating, item.CityId, item.IsDelete });
+                "RETURNING \"UserId\";", new { item.UserId, item.Surname, item.Name, item.PhoneNumber, item.VkAddress, item.Rating, item.CityId, item.IsDelete });
             return result.FirstOrDefault();
         }
         public async Task<User> Update(Guid id, User item)
@@ -63,10 +63,10 @@ namespace Repository.Data
 
             item.UserId = id;
             var sqlQuery =
-                "UPDATE Users " +
-                "SET Surname = @Surname, Name = @Name, VkAddress = @VkAddress, " +
-                    "Rating = @Rating, CityId = @CityId, IsDelete = @IsDelete " +
-                "WHERE UserId = @UserId";
+                "UPDATE \"Users\" " +
+                "SET \"Surname\" = @Surname, \"Name\" = @Name, \"VkAddress\" = @VkAddress, " +
+                    "\"Rating\" = @Rating, \"CityId\" = @CityId, \"IsDelete\" = @IsDelete " +
+                "WHERE \"UserId\" = @UserId";
             await db.ExecuteAsync(sqlQuery, item);
             return await GetById(item.UserId);
         }
@@ -75,9 +75,9 @@ namespace Repository.Data
             IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
 
             var sqlQuery =
-                "UPDATE Users " +
-                "SET IsDelete = True " +
-                "WHERE UserId = @id";
+                "UPDATE \"Users\" " +
+                "SET \"IsDelete\" = True " +
+                "WHERE \"UserId\" = @id";
             await db.ExecuteAsync(sqlQuery, id);
         }
     }

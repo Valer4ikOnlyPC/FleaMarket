@@ -1,9 +1,12 @@
 ﻿@{
     ViewData["Title"] = @Model.Name;
 }
+    <div id="deal" class="modal modal-sheet position-fixed d-block pt-5 " style="z-index:9999; visibility: hidden; background: rgba(0,0,0,0); backdrop-filter: blur(50px);">
+    </div>
+
   <p class="lead">@ViewBag.Category</p>
   <div id="myCarousel" class="carousel slide mb-3" style="background: gray; height: 500px; " data-bs-ride="carousel">
-    <div class="carousel-indicators">
+    <div class="carousel-indicators" style="z-index:3">
         <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="0" aria-label="0" class="active" aria-current="true"></button>
         @{
             if (@ViewBag.ImageCount > 0)
@@ -16,26 +19,31 @@
         }
     </div>
 
-
     <div class="carousel-inner">
         <div class="carousel-item active">
-            <img class="mx-auto d-block" style="max-width:100%; height:500px" src="@ViewBag.Firstphoto" />
+            <div class="verticalhorizontal" style="background: rgba(0,0,0,0.5); width:100%; height: 500px;  display:flex; align-items: center; justify-content: center;">
+                <div class="verticalhorizontal" style="background: transparent url(@ViewBag.FirstPhoto) no-repeat center center;background-size: 100%; filter: blur(10px); width: 100%; height: 100%; opacity: .7; z-index:1; position: absolute;"></div>
+                <img style=" max-width:100%; height:500px;z-index:2; position: relative;" src="@ViewBag.FirstPhoto" />
+            </div>
         </div>
         @{
             foreach (string link in @Model.Image)
             {
                  <div class="carousel-item">
-                    <img class="mx-auto d-block" style="max-width:100%; height:500px" src="@link" />
+                    <div class="verticalhorizontal" style="background: rgba(0,0,0,0.5); width:100%; height: 500px;  display:flex; align-items: center; justify-content: center;">
+                        <div class="verticalhorizontal" style="background: transparent url(@link) no-repeat center center;background-size: 100%; filter: blur(10px); width: 100%; height: 100%; opacity: .7; z-index:1; position: absolute;"></div>
+                        <img style=" max-width:100%; height:500px;z-index:2; position: relative;" src="@link" />
+                    </div>
                  </div>
             }
         }
       
     </div>
-    <button class="carousel-control-prev" type="button" data-bs-target="#myCarousel" data-bs-slide="prev">
+    <button class="carousel-control-prev" type="button" data-bs-target="#myCarousel" style="z-index:3" data-bs-slide="prev">
       <span class="carousel-control-prev-icon" aria-hidden="true"></span>
       <span class="visually-hidden">Previous</span>
     </button>
-    <button class="carousel-control-next" type="button" data-bs-target="#myCarousel" data-bs-slide="next">
+    <button class="carousel-control-next" type="button" data-bs-target="#myCarousel" style="z-index:3" data-bs-slide="next">
       <span class="carousel-control-next-icon" aria-hidden="true"></span>
       <span class="visually-hidden">Next</span>
     </button>
@@ -59,34 +67,59 @@
         @{
             if (@ViewBag.Master)
             {
-                <div class="d-flex justify-content-between align-items-center mb-5">
-                  <div class="btn-group">
-                    <a class="btn btn-sm btn-outline-secondary" asp-area="" asp-controller="Product" asp-action="EditProduct" asp-route-productId="@Model.ProductId">Редактировать</a>
-                    <a class="btn btn-sm btn-outline-secondary" asp-area="" asp-controller="Product" asp-action="DeleteProduct" asp-route-productId="@Model.ProductId">Удалить</a>
-                  </div>
-                </div>
+                if (@ViewBag.Active)
+                {
+                    <div class="d-flex justify-content-between align-items-center mb-5">
+                      <div class="btn-group">
+                        <a class="btn btn-sm btn-outline-secondary" asp-area="" asp-controller="Product" asp-action="EditProduct" asp-route-productId="@Model.ProductId">Редактировать</a>
+                        <a class="btn btn-sm btn-outline-secondary" asp-area="" asp-controller="Product" asp-action="DeleteProduct" asp-route-productId="@Model.ProductId">Удалить</a>
+                      </div>
+                    </div>
+                }
             }
         }
-        <h4>Похожие товары</h4>
-        
       </div>
 
       <div class="col-md-3">
         <div class="alert alert-success" style="background: rgb(250,250,250); color: black;" role="alert">
-          <h4 class="featurette-heading pb-2">@ViewBag.User.Name</h4>
+          <a asp-area="" asp-controller="Home" asp-action="GetUser" asp-route-userId="@ViewBag.User.UserId" style="text-decoration: none; color: rgb(30,30,30);"><h4 class="featurette-heading pb-2">@ViewBag.User.Name</h4></a>
           <hr>
           <p>Рейтинг: @ViewBag.User.Rating</p>
           <p>Город: @ViewBag.City</p>
-          <p>Кол-во обменов: </p>
+          <p>Кол-во обменов: @ViewBag.DealCount</p>
             @{
                 if (!@ViewBag.Master)
                 {
-                    <p><a class="btn btn-sm btn-outline-secondary" style="font-size:14pt" href="#">Предложить обмен</a></p>
+                    if (@ViewBag.Active)
+                    {
+                        <a class="btn btn-sm btn-outline-secondary" style="font-size:14pt" onclick="deal_extension('@Model.ProductId')" href="#" role="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">Предложить обмен</a>
+                    }
                 }
             }
         </div>
       </div>
-    </div>
 
+      <h4>Похожие товары</h4>
+        <div class="row mt-5 mb-2">
+            @{
+                if (@ViewBag.SimilarCount>0)
+                {
+                    foreach (Product product in @ViewBag.SimilarProduct)
+                    {
+                        <div class="col-lg-4 ">
+                            <a asp-area="" asp-controller="Product" asp-action="ViewProduct" asp-route-productId="@product.ProductId" style="text-decoration: none; color: rgb(30,30,30);">
+                                @Html.Partial("ListProduct", product)
+                            </a>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <h2 class="lead">В данной категории нет товаров</h2>
+                }
+            }
+        </div>
+    </div>
+    <script src="~/js/addDeal.js" asp-append-version="true"></script>
 
   

@@ -1,0 +1,93 @@
+﻿@{
+    ViewData["Title"] = "Предложения и сделки";
+}
+<div id="alert" class="modal modal-sheet position-fixed d-block pt-5 " style="z-index:9999; visibility: hidden; background: rgba(0,0,0,0); backdrop-filter: blur(5px);">
+</div>
+
+<nav>
+  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+    <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home" type="button" role="tab" aria-controls="nav-home" aria-selected="true">Мои</button>
+    <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">Мне</button>
+    <button class="nav-link" id="nav-contact-tab" data-bs-toggle="tab" data-bs-target="#nav-contact" type="button" role="tab" aria-controls="nav-contact" aria-selected="false">Сделки</button>
+  </div>
+</nav>
+<div class="tab-content" id="nav-tabContent">
+  <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+      <div class="container p-2">
+        @foreach(DealDto deal in ViewBag.DealMaster)
+        {
+            <hr>
+            <div class="row row-cols-5">
+                <div class="col">
+                    <a asp-area="" asp-controller="Product" asp-action="ViewProduct" asp-route-productId="@deal.ProductRecipient" style="text-decoration: none; color: rgb(30,30,30);">@deal.ProductRecipientName</a>
+                </div>
+                <div class="col">
+                    <a asp-area="" asp-controller="Product" asp-action="ViewProduct" asp-route-productId="@deal.ProductMaster" style="text-decoration: none; color: rgb(30,30,30);">@deal.ProductMasterName</a>
+                </div>
+                <div class="col">
+                    <a asp-area="" asp-controller="Home" asp-action="GetUser" asp-route-userId="@deal.UserRecipient" style="text-decoration: none; color: rgb(30,30,30);">@deal.UserRecipientName</a>
+                </div>
+                <div class="col">
+                    <p>@deal.IsActive.ToString()</p>
+                </div>
+                <div class="col">
+                    <a asp-area="" asp-controller="Deal" asp-action="Delete" asp-route-dealId="@deal.DealId" style="text-decoration: none; color: rgb(30,30,30);">Удалить</a>
+                </div>
+            </div>
+        }
+       </div>
+  </div>
+  <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+      <div class="container p-2">
+        @foreach(DealDto deal in ViewBag.DealRecipient)
+        {
+            <hr>
+            <div class="row row-cols-5">
+                <div class="col">
+                    <a asp-area="" asp-controller="Product" asp-action="ViewProduct" asp-route-productId="@deal.ProductMaster" style="text-decoration: none; color: rgb(30,30,30);">@deal.ProductMasterName</a>
+                </div>
+                <div class="col">
+                    <a asp-area="" asp-controller="Product" asp-action="ViewProduct" asp-route-productId="@deal.ProductRecipient" style="text-decoration: none; color: rgb(30,30,30);">@deal.ProductRecipientName</a>
+                </div>
+                <div class="col">
+                    <a asp-area="" asp-controller="Home" asp-action="GetUser" asp-route-userId="@deal.UserMaster" style="text-decoration: none; color: rgb(30,30,30);">@deal.UserMasterName</a>
+                </div>
+                <div class="col">
+                    <a asp-area="" asp-controller="Deal" asp-action="Accepted" asp-route-dealId="@deal.DealId" style="text-decoration: none; color: rgb(30,30,30);">Принять</a>
+                </div>
+                <div class="col">
+                    <a asp-area="" asp-controller="Deal" asp-action="Cancel" asp-route-dealId="@deal.DealId" style="text-decoration: none; color: rgb(30,30,30);">Отклонить</a>
+                </div>
+            </div>
+        }
+       </div>
+  </div>
+  <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">
+      <div class="container p-2">
+        @foreach(DealDto deal in ViewBag.Deal)
+        {
+            <hr>
+            <div class="row row-cols-3">
+                <div class="col">
+                    <a asp-area="" asp-controller="Product" asp-action="ViewProduct" asp-route-productId="@deal.ProductMaster" style="text-decoration: none; color: rgb(30,30,30);">@deal.ProductMasterName</a>
+                </div>
+                <div class="col">
+                    <a asp-area="" asp-controller="Product" asp-action="ViewProduct" asp-route-productId="@deal.ProductRecipient" style="text-decoration: none; color: rgb(30,30,30);">@deal.ProductRecipientName</a>
+                </div>
+                <div class="col">
+                    <a onclick="deal_extension('@deal.DealId')" style="text-decoration: none; color: rgb(30,30,30);">Показать подробности</a>
+                </div>
+            </div>
+        }
+       </div>
+  </div>
+</div>
+<script src="~/js/deal.js" asp-append-version="true"></script>
+
+
+
+
+
+
+
+

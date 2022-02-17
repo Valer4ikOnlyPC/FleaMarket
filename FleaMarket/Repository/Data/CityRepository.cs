@@ -25,15 +25,15 @@ namespace Repository.Data
             IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
             return await db.QueryAsync<City>(
                 "SELECT * " +
-                "FROM Citys");
+                "FROM \"Cities\"");
         }
         public async Task<City> GetById(int id)
         {
             IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
             var citys = await db.QueryAsync<City>(
                 "SELECT * " +
-                "FROM Citys " +
-                "WHERE CityId = @id", new { id });
+                "FROM \"Cities\" " +
+                "WHERE \"CityId\" = @id", new { id });
             return citys.FirstOrDefault();
         }
     }

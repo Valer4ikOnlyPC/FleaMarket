@@ -1,11 +1,40 @@
 ﻿@{
-    ViewData["Title"] = "Регистрация";
+    ViewData["Title"] = "Главная";
 }
 
-<form method="post" action="">
-    <table>
-        <tr>
-            просто какая-то информация
-        </tr>
-    </table>
-</form>
+    <div class="row justify-content-center pt-xxl-2">
+          <div class="col-xl-6 col-lg-7 col-md-9 col-sm-11">
+            <h2 class="h1 pb-3 mb-3 align-content-center">Текст</h2>
+            <form  asp-action="Index" asp-controller="Home" asp-anti-forgery="true" enctype="multipart/form-data" novalidate>
+              <div class="d-flex flex-column flex-sm-row">
+                <input class="form-control form-control-lg" value="@ViewBag.SearchValue" type="text" name="Search" placeholder="" required="">
+                <button class="btn btn-primary shadow-primary btn-lg" type="submit" name="subscribe">Найти</button>
+              </div>
+              <div style="position: absolute; left: -5000px;" aria-hidden="true">
+                <input class="subscription-form-antispam" type="text" name="b_c7103e2c981361a6639545bd5_29ca296126" tabindex="-1">
+              </div>
+              <p class="mt-4 mb-0">Ещё текст</p>
+              <div class="subscription-status position-absolute top-100 start-50 translate-middle-x"></div>
+            </form>
+          </div>
+        </div>
+
+        <div class="row mt-5 mb-2">
+        @{
+            if (@ViewBag.ProductCount>0)
+            {
+                foreach (Product product in @Model)
+                {
+                    <div class="col-lg-4 ">
+                        <a asp-area="" asp-controller="Product" asp-action="ViewProduct" asp-route-productId="@product.ProductId" style="text-decoration: none; color: rgb(30,30,30);">
+                            @Html.Partial("ListProduct", product)
+                        </a>
+                    </div>
+                }
+            }
+            else
+            {
+                <h2 class="lead">Нет лотов</h2>
+            }
+        }
+        </div>

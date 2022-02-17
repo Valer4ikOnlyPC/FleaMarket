@@ -25,25 +25,25 @@ namespace Repository.Data
             IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
             return await db.QueryAsync<ProductPhoto>(
                 "SELECT * " +
-                "FROM ProductPhotos " +
-                "WHERE ProductId = @ProductId ", new { product.ProductId});
+                "FROM \"ProductPhotos\" " +
+                "WHERE \"ProductId\" = @ProductId ", new { product.ProductId});
         }
         public async Task<ProductPhoto> GetById(Guid id)
         {
             IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
             var result = await db.QueryAsync<ProductPhoto>(
                 "SELECT * " +
-                "FROM ProductPhotos " +
-                "WHERE PhotoId = @id", new { id });
+                "FROM \"ProductPhotos\" " +
+                "WHERE \"PhotoId\" = @id", new { id });
             return result.FirstOrDefault();
         }
         public async Task<Guid> Create(ProductPhoto item)
         {
             IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
             var result = await db.QueryAsync<Guid>(
-                "INSERT INTO ProductPhotos (PhotoId, \"Link\", ProductId) " +
+                "INSERT INTO \"ProductPhotos\" (\"PhotoId\", \"Link\", \"ProductId\") " +
                 "VALUES(@photoId, @Link, @ProductId) " +
-                "RETURNING ProductId;", new { item.PhotoId, item.Link, item.ProductId });
+                "RETURNING \"ProductId\";", new { item.PhotoId, item.Link, item.ProductId });
             return result.FirstOrDefault();
         }
         public async Task<ProductPhoto> Update(Guid id, ProductPhoto item)
@@ -51,9 +51,9 @@ namespace Repository.Data
             IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
             item.PhotoId = id;
             var sqlQuery =
-                "UPDATE ProductPhotos " +
-                "SET \"Link\" = @Link, ProductId = @ProductId " +
-                "WHERE PhotoId = @PhotoId";
+                "UPDATE \"ProductPhotos\" " +
+                "SET \"Link\" = @Link, \"ProductId\" = @ProductId " +
+                "WHERE \"PhotoId\" = @PhotoId";
             await db.ExecuteAsync(sqlQuery, item);
             return await GetById(item.PhotoId);
         }
@@ -61,8 +61,8 @@ namespace Repository.Data
         {
             IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
             var sqlQuery =
-                "DELETE FROM ProductPhotos " +
-                "WHERE PhotoId = @id";
+                "DELETE FROM \"ProductPhotos\" " +
+                "WHERE \"PhotoId\" = @id";
             await db.ExecuteAsync(sqlQuery, new { id });
         }
     }
