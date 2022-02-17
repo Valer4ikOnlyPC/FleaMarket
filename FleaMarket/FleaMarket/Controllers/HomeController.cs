@@ -30,8 +30,8 @@ namespace FleaMarket.Controllers
         [Authorize]
         public async Task<IActionResult> Index() //добавить поиск по категории и учитывать город
         {
-            var result = await _dealService.GetByRecipientCount(await _userService.GetByPhone(User.Identity.Name));
-            ViewData["deals"] = result; 
+            //var result = await _dealService.GetByRecipientCount(await _userService.GetByPhone(User.Identity.Name));
+            //ViewData["deals"] = result; 
 
             var allProduct = await _productService.GetAll();
             ViewBag.ProductCount = allProduct.Count();
