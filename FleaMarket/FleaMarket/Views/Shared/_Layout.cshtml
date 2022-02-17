@@ -25,7 +25,7 @@
                     {
                     <ul class="navbar-nav flex-grow-1 ">
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark position-relative" asp-area="" asp-controller="Deal" asp-action="MyDeal">Предложения и сделки<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">@ViewData["deals"]<span class="visually-hidden">unread messages</span></span></a>
+                                    <a class="nav-link text-dark position-relative" asp-area="" asp-controller="Deal" asp-action="MyDeal">Предложения и сделки<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="CountNewDeals" style="visibility:hidden;"><span class="visually-hidden">unread messages</span></span></a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link text-dark" asp-area="" asp-controller="Product" asp-action="MyProducts" asp-route-number="@User.Identity.Name">Мои лоты</a>
@@ -78,6 +78,7 @@
         </div>
     </footer>
     
+    <script src="~/js/count_new_deals.js" asp-append-version="true"></script>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

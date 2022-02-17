@@ -17,7 +17,7 @@ namespace FleaMarket.Controllers
         private IProductService _productService;
         private IDealService _dealService;
 
-        public HomeController(ILogger<HomeController> logger, ICityRepository cityRepository, 
+        public HomeController(ILogger<HomeController> logger, ICityRepository cityRepository,
             IUserService userService, IProductService productService, IDealService dealService)
         {
             _logger = logger;
@@ -26,13 +26,16 @@ namespace FleaMarket.Controllers
             _productService = productService;
             _dealService = dealService;
         }
+        [Authorize]
+        public async Task<int> GetCountNewDeals()
+        {
+            var result = await _dealService.GetByRecipientCount(await _userService.GetByPhone(User.Identity.Name));
+            return result;
+        }
 
         [Authorize]
         public async Task<IActionResult> Index() //добавить поиск по категории и учитывать город
         {
-            //var result = await _dealService.GetByRecipientCount(await _userService.GetByPhone(User.Identity.Name));
-            //ViewData["deals"] = result; 
-
             var allProduct = await _productService.GetAll();
             ViewBag.ProductCount = allProduct.Count();
             return View(allProduct);
