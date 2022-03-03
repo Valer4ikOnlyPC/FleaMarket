@@ -11,9 +11,8 @@ namespace Services.Service
 {
     public class CityService : ICityService
     {
-        ICityRepository _cityRepository;
-        IProductRepository _productRepository;
-        IFileService _fileService;
+        private readonly ICityRepository _cityRepository;
+
         public CityService(ICityRepository cityRepository)
         {
             _cityRepository = cityRepository;

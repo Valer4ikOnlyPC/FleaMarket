@@ -1,22 +1,116 @@
-﻿@*
-*@
-<table>
-        <tr>
-            <td>Surname:</td>
-            <td><b>@ViewBag.User.Surname</b></td>
-        </tr>
-        <tr>
-            <td>Name:</td>
-            <td><b>@ViewBag.User.Name</b></td>
-        </tr>
-        <tr>
-            <td>PhoneNumber:</td>
-            <td><b>@ViewBag.User.PhoneNumber</b></td>
-        </tr>
-        
-        <tr>
-            <td colspan="2">
-                <a  asp-controller="Home" asp-action="Index" class="btn btn-warning">Back</a>
-            </td>
-        </tr>
-</table>
+﻿@{
+    ViewData["Title"] = @ViewBag.User.Name;
+}
+<div class="">
+      <article class="blog-post">
+        @{
+            if (@ViewBag.User.Rating == 0)
+            {
+                <h2 id="rating" class="blog-post-title">@ViewBag.User.Surname @ViewBag.User.Name <span class="badge bg-secondary" data-bs-toggle="tooltip" data-bs-placement="right" title="@ViewBag.RatingCount отзывов">@Math.Round(ViewBag.User.Rating, 2)</span></h2>
+            }
+            else if (@ViewBag.User.Rating < 3)
+            {
+                <h2 id="rating" class="blog-post-title">@ViewBag.User.Surname @ViewBag.User.Name <span class="badge bg-danger" data-bs-toggle="tooltip" data-bs-placement="right" title="@ViewBag.RatingCount отзывов">@Math.Round(ViewBag.User.Rating, 2)</span></h2>
+            }
+            else if (@ViewBag.User.Rating < 4)
+            {
+                <h2 id="rating" class="blog-post-title">@ViewBag.User.Surname @ViewBag.User.Name <span class="badge bg-warning" data-bs-toggle="tooltip" data-bs-placement="right" title="@ViewBag.RatingCount отзывов">@Math.Round(ViewBag.User.Rating, 2)</span></h2>
+            }
+            else
+            {
+                <h2 id="rating" class="blog-post-title">@ViewBag.User.Surname @ViewBag.User.Name <span class="badge bg-success" data-bs-toggle="tooltip" data-bs-placement="right" title="@ViewBag.RatingCount отзывов">@Math.Round(ViewBag.User.Rating, 2)</span></h2>
+            }
+        }
+        <p class="blog-post-meta">@ViewBag.City.Name</p>
+        <hr/>
+      </article>
+      <nav>
+        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+            <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home" type="button" role="tab" aria-controls="nav-home" aria-selected="true">Активные лоты</button>
+            <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">Завершённые сделки</button>
+        </div>
+      </nav>
+      <div class="tab-content" id="nav-tabContent">
+          <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+            <div class="row">
+                @{
+                    bool favorite = !ViewBag.MyProfile;
+                    foreach(Product product in ViewBag.Product)
+                    {
+                        <div class="col-lg-4">
+                            <a asp-area="" asp-controller="Product" asp-action="ViewProduct" asp-route-productId="@product.ProductId" target="_blank" style="text-decoration: none; color: rgb(30,30,30);">
+                                @Html.Partial("ListProduct", new { product, favorite })
+                            </a>
+                        </div>
+                    }
+                }
+            </div>
+          </div>
+          <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+              <div class="container p-3">
+                  <div class="row row-cols-3">
+                        <div class="col"><p>Отданный</p></div>
+                        <div class="col"></div>
+                        <div class="col"><p>Полученный</p></div>
+                    </div>
+                    <hr>
+                @foreach(DealProductDto deal in ViewBag.Deal)
+                {
+                    if (deal.UserMaster == ViewBag.User.UserId)
+                    {
+                        <div class="row row-cols-3">
+                            <div class="col container">
+                                @if (deal.ProductMaster != null)
+                                {
+                                    <a asp-area="" asp-controller="Product" asp-action="ViewProduct" asp-route-productId="@deal.ProductMaster.ProductId" class="p-0" style="text-decoration: none; color: rgb(30,30,30);">
+                                        @Html.Partial("ProductToList", deal.ProductMaster)
+                                    </a>
+                                }
+                            </div>
+                            <div class="col center-top text-center p-5">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-arrow-left-right" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M1 11.5a.5.5 0 0 0 .5.5h11.793l-3.147 3.146a.5.5 0 0 0 .708.708l4-4a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 11H1.5a.5.5 0 0 0-.5.5zm14-7a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H14.5a.5.5 0 0 1 .5.5z"></path>
+                                </svg>
+                            </div>
+                            <div class="col container">
+                                @if (deal.ProductRecipient != null)
+                                {
+                                    <a asp-area="" asp-controller="Product" asp-action="ViewProduct" asp-route-productId="@deal.ProductRecipient.ProductId" class="p-0" style="text-decoration: none; color: rgb(30,30,30);">
+                                        @Html.Partial("ProductToList", deal.ProductRecipient)
+                                    </a>
+                                }
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="row row-cols-3">
+                            <div class="col">
+                                @if (deal.ProductRecipient != null)
+                                {
+                                    <a asp-area="" asp-controller="Product" asp-action="ViewProduct" asp-route-productId="@deal.ProductRecipient.ProductId" class="p-0" style="text-decoration: none; color: rgb(30,30,30);">
+                                        @Html.Partial("ProductToList", deal.ProductRecipient)
+                                    </a>
+                                }
+                            </div>
+                            <div class="col center-top text-center p-5">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-arrow-left-right" viewBox="0 0 16 16">
+                                  <path fill-rule="evenodd" d="M1 11.5a.5.5 0 0 0 .5.5h11.793l-3.147 3.146a.5.5 0 0 0 .708.708l4-4a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 11H1.5a.5.5 0 0 0-.5.5zm14-7a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H14.5a.5.5 0 0 1 .5.5z"></path>
+                                </svg>
+                            </div>
+                            <div class="col">
+                                @if (deal.ProductMaster != null)
+                                {
+                                    <a asp-area="" asp-controller="Product" asp-action="ViewProduct" asp-route-productId="@deal.ProductMaster.ProductId" class="p-0" style="text-decoration: none; color: rgb(30,30,30);">
+                                        @Html.Partial("ProductToList", deal.ProductMaster)
+                                    </a>
+                                }
+                            </div>
+                        </div>
+                    }
+                    <hr>
+                }
+               </div>
+          </div>
+       </div>
+</div>

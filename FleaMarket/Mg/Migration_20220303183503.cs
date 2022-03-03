@@ -7,8 +7,8 @@ using FluentMigrator;
 
 namespace Mg
 {
-    [Migration(20220217115202)]
-    public class Migration_20220217115202: FluentMigrator.Migration
+    [Migration(20220303183503)]
+    public class Migration_20220303183503: FluentMigrator.Migration
     {
         public override void Down()
         {
@@ -57,7 +57,8 @@ namespace Mg
                 .WithColumn("\"CityId\"").AsInt32().NotNullable()
                 .WithColumn("\"IsActive\"").AsInt32().NotNullable()
                 .WithColumn("\"CategoryId\"").AsInt32().NotNullable()
-                .WithColumn("\"UserId\"").AsGuid().NotNullable();
+                .WithColumn("\"UserId\"").AsGuid().NotNullable()
+                .WithColumn("\"Date\"").AsDateTime().NotNullable();
 
             Create.ForeignKey()
                 .FromTable("\"Products\"").ForeignColumn("\"CityId\"")
@@ -86,7 +87,8 @@ namespace Mg
                 .WithColumn("\"ProductMaster\"").AsGuid().NotNullable()
                 .WithColumn("\"UserRecipient\"").AsGuid().NotNullable()
                 .WithColumn("\"ProductRecipient\"").AsGuid().NotNullable()
-                .WithColumn("\"IsActive\"").AsInt32().NotNullable();
+                .WithColumn("\"IsActive\"").AsInt32().NotNullable()
+                .WithColumn("\"Date\"").AsDateTime().NotNullable();
 
             Create.ForeignKey()
                 .FromTable("\"Deals\"").ForeignColumn("\"UserMaster\"")

@@ -69,6 +69,48 @@
     scroll-behavior: smooth;
   }
 }
+.scrollbar {
+    margin-left: 30px;
+    float: left;
+    max-height: 450px;
+    width: 65px;
+    background: #fff;
+    overflow-y: scroll;
+    margin-bottom: 25px;
+}
+.scrollbar-danger::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+    background-color: #F5F5F5;
+    border-radius: 10px;
+}
+
+.scrollbar-danger::-webkit-scrollbar {
+    width: 12px;
+    background-color: #F5F5F5;
+}
+
+.scrollbar-danger::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+    background-color: #dc3545;
+}
+
+.scrollbar-danger {
+    scrollbar-color: #dc3545 #F5F5F5;
+}
+
+.bordered-danger::-webkit-scrollbar-track {
+    -webkit-box-shadow: none;
+    border: 1px solid #fff;
+}
+
+.bordered-danger::-webkit-scrollbar-thumb {
+    -webkit-box-shadow: none;
+}
+.thin::-webkit-scrollbar {
+    width: 6px;
+}
+
 
 .non_visibility {
     visibility: hidden;

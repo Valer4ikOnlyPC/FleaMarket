@@ -13,7 +13,7 @@ namespace Domain.Core
         Task<IEnumerable<Category>> GetByParent(int id);
         Task<Category> GetById(int id);
         Task<Category> GetParent(Category category);
-        void Create(Category item);
-        void Delete(int id);
+        Task Create(Category item);
+        Task Delete(int id);
     }
 }

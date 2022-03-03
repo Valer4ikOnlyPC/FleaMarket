@@ -3,31 +3,70 @@
 }
 
     <div class="row justify-content-center pt-xxl-2">
-          <div class="col-xl-6 col-lg-7 col-md-9 col-sm-11">
-            <h2 class="h1 pb-3 mb-3 align-content-center">Текст</h2>
-            <form  asp-action="Index" asp-controller="Home" asp-anti-forgery="true" enctype="multipart/form-data" novalidate>
-              <div class="d-flex flex-column flex-sm-row">
-                <input class="form-control form-control-lg" value="@ViewBag.SearchValue" type="text" name="Search" placeholder="" required="">
+          
+          <form  asp-action="Index" asp-controller="Home" asp-anti-forgery="true" enctype="multipart/form-data" novalidate>
+              <div class="d-flex flex-column flex-sm-row rounded pt-1 pb-1" style="background: #0d6efd">
+                  <a class="btn btn-primary shadow-primary btn-lg  dropdown"  href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">Категории</a>
+                  <ul id="test1" class="dropdown-menu" aria-labelledby="dropdownMenuButton1" style="list-style-type: none; border-radius:10px;">
+                      <li class="dropend" style="list-style-type:none">
+                        <a class="btn btn-sm dropdown btn-lg" onclick="category_extension(-1)" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">Без категории</a>
+                      </li>
+                      @foreach(Category cat in @ViewBag.Category)
+                            {
+                                if(cat.CategoryParent==-1)
+                                {
+                                    <li class="dropend" style="list-style-type:none">
+                                        <a class="btn btn-sm dropdown btn-lg" onclick="category_extension(@cat.CategoryId)" ondblclick="category_select(@cat.CategoryId)" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">@cat.Name</a>
+                                        <ul id="@cat.CategoryId" class="dropdown-menu" aria-labelledby="dropdownMenuButton1" style="border-radius:10px;"></ul>
+                                    </li>
+                                }
+                            }
+                  </ul>
+                  <select name = "CategoryId" class="form-control form-control-lg" id="CategoryId" placeholder="CategoryId"  required style="pointer-events: none; width:30%; border-top-right-radius:0px; border-bottom-right-radius:0px" >
+                    <option selected value="-1">Без категории</option>
+                    @foreach (Category category in @ViewBag.Category)
+                    {
+                        if(category.CategoryId==ViewBag.CategorySelected)
+                        {
+                            <option selected value=@category.CategoryId>@category.Name</option>
+                        }
+                        else
+                        {
+                            <option value=@category.CategoryId>@category.Name</option>
+                        }
+                    }
+                 </select>
+                <input id="Search" class="form-control form-control-lg rounded-0" value="@ViewBag.SearchValue" type="text" name="Search" placeholder="Поиск" style="z-index:10;" required="">
+                <select name = "CityId" class="form-control form-control-lg" id="validationDefault05" style="border-top-left-radius:0px; border-bottom-left-radius:0px; width:30%;" placeholder="CityId" required>
+                    <option selected value="-1">Все города</option>
+                    @foreach (City c in @ViewBag.City)
+                    {
+                        if(c.CityId==ViewBag.CitySelected)
+                        {
+                            <option selected value=@c.CityId>@c.Name</option>
+                        }
+                        else
+                        {
+                            <option value=@c.CityId>@c.Name</option>
+                        }
+                    }
+                </select>
                 <button class="btn btn-primary shadow-primary btn-lg" type="submit" name="subscribe">Найти</button>
               </div>
-              <div style="position: absolute; left: -5000px;" aria-hidden="true">
-                <input class="subscription-form-antispam" type="text" name="b_c7103e2c981361a6639545bd5_29ca296126" tabindex="-1">
-              </div>
-              <p class="mt-4 mb-0">Ещё текст</p>
-              <div class="subscription-status position-absolute top-100 start-50 translate-middle-x"></div>
+              
             </form>
-          </div>
         </div>
 
-        <div class="row mt-5 mb-2">
+        <div class="row mt-4 mb-2">
         @{
             if (@ViewBag.ProductCount>0)
             {
+                bool favorite = true;
                 foreach (Product product in @Model)
                 {
-                    <div class="col-lg-4 ">
-                        <a asp-area="" asp-controller="Product" asp-action="ViewProduct" asp-route-productId="@product.ProductId" style="text-decoration: none; color: rgb(30,30,30);">
-                            @Html.Partial("ListProduct", product)
+                    <div class="col-lg-4">
+                        <a class="product-link" asp-area="" asp-controller="Product" asp-action="ViewProduct" asp-route-productId="@product.ProductId" target="_blank" style="text-decoration: none; color: rgb(30,30,30);">
+                            @Html.Partial("ListProduct", new { product, favorite })
                         </a>
                     </div>
                 }
@@ -38,3 +77,5 @@
             }
         }
         </div>
+        <script src="~/js/valid.js" asp-append-version="true"></script>
+        <script src="~/js/check_photo.js" asp-append-version="true"></script>

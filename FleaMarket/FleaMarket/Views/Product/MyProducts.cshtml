@@ -1,15 +1,25 @@
 ﻿@{
     ViewData["Title"] = "Мои лоты";
 }
+
+<nav>
+  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+    <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home" type="button" role="tab" aria-controls="nav-home" aria-selected="true">Активные</button>
+    <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">Завершённые</button>
+  </div>
+</nav>
+<div class="tab-content" id="nav-tabContent">
+  <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
     <div class="row mt-5 mb-2">
         @{
-            if (@ViewBag.ProductCount>0)
+            if (@ViewBag.ProductCount > 0)
             {
-                foreach (Product product in @Model)
+                bool favorite = false;
+                foreach (Product product in @Model.productsActive)
                 {
                     <div class="col-lg-4 ">
                         <a asp-area="" asp-controller="Product" asp-action="ViewProduct" asp-route-productId="@product.ProductId" style="text-decoration: none; color: rgb(30,30,30);">
-                            @Html.Partial("ListProduct", product)
+                            @Html.Partial("ListProduct", new { product, favorite })
                         </a>
                     </div>
                 }
@@ -20,4 +30,28 @@
             }
         }
     </div>
+  </div>
+  <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+    <div class="row mt-5 mb-2">
+        @{
+            if (@ViewBag.ProductClosedCount > 0)
+            {
+                bool favorite = false;
+                foreach (Product product in @Model.productsClosed)
+                {
+                    <div class="col-lg-4 ">
+                        <a asp-area="" asp-controller="Product" asp-action="ViewProduct" asp-route-productId="@product.ProductId" style="text-decoration: none; color: rgb(30,30,30);">
+                            @Html.Partial("ListProduct", new { product, favorite })
+                        </a>
+                    </div>
+                }
+            }
+            else
+            {
+                <h2 class="lead">У вас нет завершённых лотов :)</h2>
+            }
+        }
+    </div>
+  </div>
+</div>
 

@@ -54,7 +54,7 @@ namespace Repository.Data
                 "RETURNING \"FavoriteId\";", new { item.FavoriteId, item.ProductId, item.UserId });
             return favorite.FirstOrDefault();
         }
-        public async void Delete(Guid id)
+        public async Task Delete(Guid id)
         {
             IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
             var sqlQuery =

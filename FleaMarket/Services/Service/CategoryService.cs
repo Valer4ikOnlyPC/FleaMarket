@@ -11,19 +11,19 @@ namespace Services.Service
 {
     public class CategoryService : ICategoryService
     {
-        ICategoryRepository _categoryRepository;
+        private readonly ICategoryRepository _categoryRepository;
         public CategoryService(ICategoryRepository categoryRepository)
         {
             _categoryRepository = categoryRepository;
         }
-        public async void Create(Category item)
+        public async Task Create(Category item)
         {
-            _categoryRepository.Create(item);
+            await _categoryRepository.Create(item);
         }
 
-        public void Delete(int id)
+        public async Task Delete(int id)
         {
-            _categoryRepository.Delete(id);
+            await _categoryRepository.Delete(id);
         }
 
         public async Task<IEnumerable<Category>> GetAll()

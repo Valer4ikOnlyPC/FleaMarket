@@ -1,4 +1,5 @@
 ﻿using Domain.Core;
+using Domain.Dto;
 using Domain.DTO;
 using Domain.IServices;
 using Domain.Models;
@@ -14,8 +15,8 @@ namespace FleaMarket.Controllers
     public class AccountController : Controller
     {
         private readonly ILogger<AccountController> _logger;
-        private ICityRepository _cityRepository;
-        private IUserService _userService;
+        private readonly ICityRepository _cityRepository;
+        private readonly IUserService _userService;
 
         public AccountController(ILogger<AccountController> logger, ICityRepository cityRepository, IUserService userService)
         {
@@ -31,7 +32,7 @@ namespace FleaMarket.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(UserDTO model)
+        public async Task<IActionResult> Login(UserLoginDto model)
         {
             if (ModelState.IsValid)
             {

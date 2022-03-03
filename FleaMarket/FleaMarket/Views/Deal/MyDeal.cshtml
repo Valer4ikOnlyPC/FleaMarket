@@ -13,73 +13,186 @@
 </nav>
 <div class="tab-content" id="nav-tabContent">
   <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
-      <div class="container p-2">
-        @foreach(DealDto deal in ViewBag.DealMaster)
-        {
-            <hr>
-            <div class="row row-cols-5">
-                <div class="col">
-                    <a asp-area="" asp-controller="Product" asp-action="ViewProduct" asp-route-productId="@deal.ProductRecipient" style="text-decoration: none; color: rgb(30,30,30);">@deal.ProductRecipientName</a>
+    <div class="container p-2">
+        <div class="row row-cols-4">
+            <div class="col"><p>Предлагаемый</p></div>
+            <div class="col"></div>
+            <div class="col"><p>Запрашиваемый</p></div>
+            <div class="col"></div>
+        </div>
+        <hr>
+    @foreach(DealProductDto deal in ViewBag.DealMaster)
+    {
+        <div class="row row-cols-6">
+            <div class="col-4 container">
+                @if (deal.ProductMaster != null)
+                {
+                    <a asp-area="" asp-controller="Product" asp-action="ViewProduct" asp-route-productId="@deal.ProductMaster.ProductId" class="p-0" style="text-decoration: none; color: rgb(30,30,30);">
+                        @Html.Partial("ProductToList", deal.ProductMaster)
+                    </a>
+                }
+            </div>
+            <div class="col-2 center-top text-center p-5">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-arrow-left-right" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M1 11.5a.5.5 0 0 0 .5.5h11.793l-3.147 3.146a.5.5 0 0 0 .708.708l4-4a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 11H1.5a.5.5 0 0 0-.5.5zm14-7a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H14.5a.5.5 0 0 1 .5.5z"></path>
+                </svg>
+            </div>
+            <div class="col-4 container">
+                @if (deal.ProductRecipient != null)
+                {
+                    <a asp-area="" asp-controller="Product" asp-action="ViewProduct" asp-route-productId="@deal.ProductRecipient.ProductId" class="p-0" style="text-decoration: none; color: rgb(30,30,30);">
+                        @Html.Partial("ProductToList", deal.ProductRecipient)
+                    </a>
+                }
+            </div>
+            <div class="col-2 center-top text-center p-5">
+                <div>
+                    @{
+                        if (deal.IsActive.ToString() == "Сonsideration")
+                        {
+                            <p class="m-0 p-2">На рассмотрении</p>
+                        }
+                        else
+                        {
+                            <p class="m-0 p-2">Отказано</p>
+                        }
+                    }
                 </div>
-                <div class="col">
-                    <a asp-area="" asp-controller="Product" asp-action="ViewProduct" asp-route-productId="@deal.ProductMaster" style="text-decoration: none; color: rgb(30,30,30);">@deal.ProductMasterName</a>
-                </div>
-                <div class="col">
-                    <a asp-area="" asp-controller="Home" asp-action="GetUser" asp-route-userId="@deal.UserRecipient" style="text-decoration: none; color: rgb(30,30,30);">@deal.UserRecipientName</a>
-                </div>
-                <div class="col">
-                    <p>@deal.IsActive.ToString()</p>
-                </div>
-                <div class="col">
-                    <a asp-area="" asp-controller="Deal" asp-action="Delete" asp-route-dealId="@deal.DealId" style="text-decoration: none; color: rgb(30,30,30);">Удалить</a>
+                <div>
+                    <a class="btn btn-sm btn-outline-danger w-100" asp-area="" asp-controller="Deal" asp-action="Delete" asp-route-dealId="@deal.DealId">Удалить</a>
                 </div>
             </div>
-        }
-       </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-10 text-center">
+                <a class="link-secondary" asp-area="" asp-controller="Home" asp-action="GetUser" asp-route-userId="@deal.UserRecipient">@deal.UserRecipientName</a>
+            </div>
+        </div>
+        <hr>
+    }
+    </div>
   </div>
   <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
-      <div class="container p-2">
-        @foreach(DealDto deal in ViewBag.DealRecipient)
-        {
-            <hr>
-            <div class="row row-cols-5">
-                <div class="col">
-                    <a asp-area="" asp-controller="Product" asp-action="ViewProduct" asp-route-productId="@deal.ProductMaster" style="text-decoration: none; color: rgb(30,30,30);">@deal.ProductMasterName</a>
+    <div class="container p-2">
+        <div class="row row-cols-4">
+            <div class="col"><p>Предлагаемый</p></div>
+            <div class="col"></div>
+            <div class="col"><p>Запрашиваемый</p></div>
+            <div class="col"></div>
+        </div>
+        <hr>
+    @foreach(DealProductDto deal in ViewBag.DealRecipient)
+    {
+        <div class="row row-cols-6">
+            <div class="col-4 container">
+                @if (deal.ProductMaster != null)
+                {
+                    <a asp-area="" asp-controller="Product" asp-action="ViewProduct" asp-route-productId="@deal.ProductMaster.ProductId" class="p-0" style="text-decoration: none; color: rgb(30,30,30);">
+                        @Html.Partial("ProductToList", deal.ProductMaster)
+                    </a>
+                }
+            </div>
+            <div class="col-2 center-top text-center p-5">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-arrow-left-right" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M1 11.5a.5.5 0 0 0 .5.5h11.793l-3.147 3.146a.5.5 0 0 0 .708.708l4-4a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 11H1.5a.5.5 0 0 0-.5.5zm14-7a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H14.5a.5.5 0 0 1 .5.5z"></path>
+                </svg>
+            </div>
+            <div class="col-4 container">
+                @if (deal.ProductRecipient != null)
+                {
+                    <a asp-area="" asp-controller="Product" asp-action="ViewProduct" asp-route-productId="@deal.ProductRecipient.ProductId" class="p-0" style="text-decoration: none; color: rgb(30,30,30);">
+                        @Html.Partial("ProductToList", deal.ProductRecipient)
+                    </a>
+                }
+            </div>
+            <div class="col-2 center-top text-center p-5">
+                <div>
+                    <a class="btn btn-sm btn-outline-success w-100" asp-area="" asp-controller="Deal" asp-action="Accepted" asp-route-dealId="@deal.DealId">Принять</a>
                 </div>
-                <div class="col">
-                    <a asp-area="" asp-controller="Product" asp-action="ViewProduct" asp-route-productId="@deal.ProductRecipient" style="text-decoration: none; color: rgb(30,30,30);">@deal.ProductRecipientName</a>
-                </div>
-                <div class="col">
-                    <a asp-area="" asp-controller="Home" asp-action="GetUser" asp-route-userId="@deal.UserMaster" style="text-decoration: none; color: rgb(30,30,30);">@deal.UserMasterName</a>
-                </div>
-                <div class="col">
-                    <a asp-area="" asp-controller="Deal" asp-action="Accepted" asp-route-dealId="@deal.DealId" style="text-decoration: none; color: rgb(30,30,30);">Принять</a>
-                </div>
-                <div class="col">
-                    <a asp-area="" asp-controller="Deal" asp-action="Cancel" asp-route-dealId="@deal.DealId" style="text-decoration: none; color: rgb(30,30,30);">Отклонить</a>
+                <div>
+                    <a class="btn btn-sm btn-outline-secondary w-100" asp-area="" asp-controller="Deal" asp-action="Cancel" asp-route-dealId="@deal.DealId">Отклонить</a>
                 </div>
             </div>
-        }
-       </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-10 text-center">
+                <a class="link-secondary" asp-area="" asp-controller="Home" asp-action="GetUser" asp-route-userId="@deal.UserMaster">@deal.UserMasterName</a>
+            </div>
+        </div>
+        <hr>
+    }
+    </div>
   </div>
   <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">
-      <div class="container p-2">
-        @foreach(DealDto deal in ViewBag.Deal)
+    <div class="container p-2">
+        <div class="row row-cols-3">
+            <div class="col"><p>Отданный</p></div>
+            <div class="col"></div>
+            <div class="col"><p>Полученный</p></div>
+        </div>
+        <hr>
+    @foreach(DealProductDto deal in ViewBag.Deal)
+    {
+        if (deal.UserMaster == ViewBag.User.UserId)
         {
-            <hr>
             <div class="row row-cols-3">
-                <div class="col">
-                    <a asp-area="" asp-controller="Product" asp-action="ViewProduct" asp-route-productId="@deal.ProductMaster" style="text-decoration: none; color: rgb(30,30,30);">@deal.ProductMasterName</a>
+                <div class="col container">
+                    @if (deal.ProductMaster != null)
+                    {
+                        <a asp-area="" asp-controller="Product" asp-action="ViewProduct" asp-route-productId="@deal.ProductMaster.ProductId" class="p-0" style="text-decoration: none; color: rgb(30,30,30);">
+                            @Html.Partial("ProductToList", deal.ProductMaster)
+                        </a>
+                    }
                 </div>
-                <div class="col">
-                    <a asp-area="" asp-controller="Product" asp-action="ViewProduct" asp-route-productId="@deal.ProductRecipient" style="text-decoration: none; color: rgb(30,30,30);">@deal.ProductRecipientName</a>
+                <div class="col center-top text-center p-5">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-arrow-left-right" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M1 11.5a.5.5 0 0 0 .5.5h11.793l-3.147 3.146a.5.5 0 0 0 .708.708l4-4a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 11H1.5a.5.5 0 0 0-.5.5zm14-7a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H14.5a.5.5 0 0 1 .5.5z"></path>
+                    </svg>
                 </div>
-                <div class="col">
-                    <a onclick="deal_extension('@deal.DealId')" style="text-decoration: none; color: rgb(30,30,30);">Показать подробности</a>
+                <div class="col container">
+                    @if (deal.ProductRecipient != null)
+                    {
+                        <a asp-area="" asp-controller="Product" asp-action="ViewProduct" asp-route-productId="@deal.ProductRecipient.ProductId" class="p-0" style="text-decoration: none; color: rgb(30,30,30);">
+                            @Html.Partial("ProductToList", deal.ProductRecipient)
+                        </a>
+                    }
                 </div>
             </div>
         }
-       </div>
+        else
+        {
+            <div class="row row-cols-3">
+                <div class="col">
+                    @if (deal.ProductRecipient != null)
+                    {
+                        <a asp-area="" asp-controller="Product" asp-action="ViewProduct" asp-route-productId="@deal.ProductRecipient.ProductId" class="p-0" style="text-decoration: none; color: rgb(30,30,30);">
+                            @Html.Partial("ProductToList", deal.ProductRecipient)
+                        </a>
+                    }
+                </div>
+                <div class="col center-top text-center p-5">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-arrow-left-right" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M1 11.5a.5.5 0 0 0 .5.5h11.793l-3.147 3.146a.5.5 0 0 0 .708.708l4-4a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 11H1.5a.5.5 0 0 0-.5.5zm14-7a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H14.5a.5.5 0 0 1 .5.5z"></path>
+                    </svg>
+                </div>
+                <div class="col">
+                    @if (deal.ProductMaster != null)
+                    {
+                        <a asp-area="" asp-controller="Product" asp-action="ViewProduct" asp-route-productId="@deal.ProductMaster.ProductId" class="p-0" style="text-decoration: none; color: rgb(30,30,30);">
+                            @Html.Partial("ProductToList", deal.ProductMaster)
+                        </a>
+                    }
+                </div>
+            </div>
+        }
+        <div class="row">
+            <div class="col text-center">
+                <a class="link-secondary" onclick="deal_extension('@deal.DealId')">Показать подробности</a>
+            </div>
+        </div>
+        <hr>
+    }
+    </div>
   </div>
 </div>
 <script src="~/js/deal.js" asp-append-version="true"></script>

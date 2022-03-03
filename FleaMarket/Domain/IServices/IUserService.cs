@@ -16,6 +16,6 @@ namespace Domain.IServices
         Task<Guid> Create(UserDTO item);
         Task<bool> Verification(string phoneNumber, string password);
         Task<User> Update(Guid id, User item);
-        void Delete(Guid id);
+        Task Delete(Guid id);
     }
 }

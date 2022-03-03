@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Domain.Dto;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,8 +15,9 @@ namespace Domain.DTO
         public string FirstPhoto { get; set; }
         public string Description { get; set; }
         public int CityId { get; set; }
-        public enumIsActive IsActive { get; set; }
+        public ProductIsActive IsActive { get; set; }
         public int CategoryId { get; set; }
+        public DateTime Date { get; set; }
         public Guid UserId { get; set; }
         public IEnumerable<string> Image { get; set; }
     }

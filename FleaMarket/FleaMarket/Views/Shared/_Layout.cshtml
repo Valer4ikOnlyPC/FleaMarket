@@ -33,10 +33,16 @@
                                 <li class="nav-item">
                                     <a class="nav-link text-dark" asp-area="" asp-controller="Product" asp-action="AddProduct">Добавить лот</a>
                                 </li>
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="GetUserByName">Моя страница</a>
-                                </li>
                     </ul>
+                    <div class="flex-shrink-0 dropdown">
+                        <button type="button" class="d-block dropdown-toggle nav-link bg-transparent text-danger border-0" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false" onclick="favorite_extension()">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-heart" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"></path>
+                            </svg>
+                        </button>
+                        <ul id="favoriteToList" class="dropdown-menu dropdown-menu-lg-end shadow scrollbar scrollbar-danger bordered-danger thin" aria-labelledby="dropdownUser2" style=" min-width: 400px;">
+                        </ul>
+                    </div>
                     <div class="flex-shrink-0 dropdown">
                         <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle nav-link text-dark" id="dropdownUser2" data-bs-toggle="dropdown" aria-expanded="false">@User.Identity.Name</a>
                         <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser2" style="">
@@ -82,6 +88,8 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/favorit.js" asp-append-version="true"></script>
+    
     
     @await RenderSectionAsync("Scripts", required: false)
 </body>

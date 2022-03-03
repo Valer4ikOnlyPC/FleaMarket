@@ -11,7 +11,7 @@ namespace Services.Service
 {
     public class RatingService : IRatingService
     {
-        IRatingRepository _ratingRepository;
+        private readonly IRatingRepository _ratingRepository;
         public RatingService(IRatingRepository ratingRepository)
         {
             _ratingRepository = ratingRepository;
@@ -21,9 +21,9 @@ namespace Services.Service
             return await _ratingRepository.Create(item);
         }
 
-        public async void Delete(Guid id)
+        public async Task Delete(Guid id)
         {
-            _ratingRepository.Delete(id);
+            await _ratingRepository.Delete(id);
         }
 
         public async Task<IEnumerable<Rating>> GetByDeal(Deal deal)

@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Domain.Core
+namespace Domain.IServices
 {
-    public interface IFavoritesRepository
+    public interface IFavoritesService
     {
         Task<IEnumerable<Favorite>> GetAll();
         Task<IEnumerable<Favorite>> GetByUser(User user);

@@ -14,12 +14,14 @@ namespace Domain.IServices
         Task<IEnumerable<DealDto>> GetByMaster(User userMaster);
         Task<IEnumerable<DealDto>> GetByRecipient(User userRecipient);
         Task<IEnumerable<DealDto>> GetByUser(User user);
+        Task<IEnumerable<Deal>> GetByProductId(Guid productId);
+        Task<IEnumerable<DealProductDto>> GetDealProductDtoByUser(User user);
         Task<int> GetByRecipientCount(User userRecipient);
         Task<bool> CheckRelevant(Deal deal);
-        void Accepted(Guid dealId);
-        void Update(Guid dealId, Deal.enumIsActive enumIsActive);
+        Task Accepted(Guid dealId);
+        Task Update(Guid dealId, DealIsActive enumIsActive);
         Task<Deal> GetById(Guid id);
         Task<Guid> Create(Deal item);
-        void Delete(Guid id);
+        Task Delete(Guid id);
     }
 }

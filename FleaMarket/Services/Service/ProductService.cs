@@ -1,4 +1,5 @@
 ﻿using Domain.Core;
+using Domain.Dto;
 using Domain.DTO;
 using Domain.IServices;
 using Domain.Models;
@@ -15,15 +16,17 @@ namespace Services.Service
 {
     public class ProductService : IProductService
     {
-        IProductPhotoRepository _productPhotoRepository;
-        IProductRepository _productRepository;
-        IFileService _fileService;
+        private readonly IProductPhotoRepository _productPhotoRepository;
+        private readonly IProductRepository _productRepository;
+        private readonly IFileService _fileService;
+        private readonly IDealService _dealService;
         private int Minimum(int a, int b, int c) => (a = a < b ? a : b) < c ? a : c;
-        public ProductService(IProductPhotoRepository productPhotoRepository, IProductRepository productRepository, IFileService fileService)
+        public ProductService(IProductPhotoRepository productPhotoRepository, IProductRepository productRepository, IFileService fileService, IDealService dealService)
         {
             _productPhotoRepository = productPhotoRepository;
             _productRepository = productRepository;
             _fileService = fileService;
+            _dealService = dealService;
         }
         public async Task<Guid> Create(ProductDTO item)
         {
@@ -37,9 +40,9 @@ namespace Services.Service
                 ProductId = productId,
                 Name = item.Name,
                 Description = item.Description,
-                CityId = item.CityId,
-                IsActive = enumIsActive.Active,
-                CategoryId = item.CategoryId,
+                CityId = item.CityId.Value,
+                IsActive = ProductIsActive.Active,
+                CategoryId = item.CategoryId.Value,
                 UserId = item.UserId,
                 FirstPhoto = files.FirstOrDefault().Link
             };
@@ -51,9 +54,14 @@ namespace Services.Service
             return productId;
         }
 
-        public async void Delete(Guid id)
+        public async Task Delete(Guid id)
         {
-            _productRepository.Delete(id);
+            var deals = await _dealService.GetByProductId(id);
+            foreach (var deal in deals)
+            {
+                await _dealService.Update(deal.DealId, DealIsActive.Terminated);
+            }
+            await _productRepository.Delete(id);
         }
 
         public async Task<IEnumerable<Product>> GetAll()
@@ -64,6 +72,8 @@ namespace Services.Service
         public async Task<ProductPhotoDto> GetById(Guid id)
         {
             var product = await _productRepository.GetById(id);
+            if (product == null)
+                throw new Exception("Product not found");
             var productPhoto = await _productPhotoRepository.GetByProduct(product);
             ProductPhotoDto productPhotoDTO = new ProductPhotoDto
             {
@@ -74,6 +84,7 @@ namespace Services.Service
                 CityId = product.CityId,
                 IsActive = product.IsActive,
                 CategoryId = product.CategoryId,
+                Date = product.Date,
                 UserId = product.UserId,
                 Image = productPhoto.Select(p => p.Link).Where(l=>l != product.FirstPhoto)
             };
@@ -86,6 +97,8 @@ namespace Services.Service
 
         public async Task<IEnumerable<Product>> GetByUser(User user)
         {
+            if (user == null)
+                throw new Exception("User is not found");
             return await _productRepository.GetByUser(user);
         }
 
@@ -93,46 +106,20 @@ namespace Services.Service
         {
             return await _productRepository.Update(id, item);
         }
-        public async Task<IEnumerable<Product>> GetBySearch(string search)
+        public async Task<IEnumerable<Product>> GetBySearch(string search, int categoryId)
         {
-            var allProduct = await _productRepository.GetAll();
-            return allProduct.Where(p => LevenshteinDistance(p.Name, search).GetAwaiter().GetResult()<6);
-        }
-
-        private async Task<int> LevenshteinDistance(string firstWord, string secondWord)
-        {
-            firstWord = firstWord.ToLower();
-            secondWord = secondWord.ToLower();
-            var n = firstWord.Length + 1;
-            var m = secondWord.Length + 1;
-            var matrixD = new int[n, m];
-
-            const int deletionCost = 1;
-            const int insertionCost = 1;
-
-            for (var i = 0; i < n; i++)
+            var words = search.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            var resultOr = words.FirstOrDefault();
+            var resultAnd = words.FirstOrDefault();
+            foreach (var word in words.Skip(1))
             {
-                matrixD[i, 0] = i;
+                resultOr+=string.Concat("|", word);
+                resultAnd += string.Concat("&", word);
             }
-
-            for (var j = 0; j < m; j++)
-            {
-                matrixD[0, j] = j;
-            }
-
-            for (var i = 1; i < n; i++)
-            {
-                for (var j = 1; j < m; j++)
-                {
-                    var substitutionCost = firstWord[i - 1] == secondWord[j - 1] ? 0 : 1;
-
-                    matrixD[i, j] = Minimum(matrixD[i - 1, j] + deletionCost,
-                                            matrixD[i, j - 1] + insertionCost,
-                                            matrixD[i - 1, j - 1] + substitutionCost);
-                }
-            }
-
-            return matrixD[n - 1, m - 1];
+            var result = string.Concat(resultOr, "|(", resultAnd, ")");
+            var product = await _productRepository.GetBySearch(result);
+            if (categoryId != -1) return product.Where(p => p.CategoryId == categoryId);
+            return product;
         }
     }
 }

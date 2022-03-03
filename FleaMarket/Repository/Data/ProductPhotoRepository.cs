@@ -57,7 +57,7 @@ namespace Repository.Data
             await db.ExecuteAsync(sqlQuery, item);
             return await GetById(item.PhotoId);
         }
-        public async void Delete(Guid id)
+        public async Task Delete(Guid id)
         {
             IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
             var sqlQuery =

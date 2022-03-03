@@ -13,8 +13,8 @@ namespace Services.Service
 {
     public class UserService : IUserService
     {
-        private IUserRepository _userRepository;
-        private IUserPasswordRepository _userPasswordRepository;
+        private readonly IUserRepository _userRepository;
+        private readonly IUserPasswordRepository _userPasswordRepository;
 
         public UserService(IUserRepository userRepository, IUserPasswordRepository userPasswordRepository)
         {
@@ -44,9 +44,9 @@ namespace Services.Service
             return userId;
         }
 
-        public async void Delete(Guid id)
+        public async Task Delete(Guid id)
         {
-            _userRepository.Delete(id);
+            await _userRepository.Delete(id);
         }
 
         public async Task<IEnumerable<User>> GetAll()
@@ -56,7 +56,10 @@ namespace Services.Service
 
         public async Task<User> GetById(Guid id)
         {
-            return await _userRepository.GetById(id);
+            var user = await _userRepository.GetById(id);
+            if (user == null)
+                throw new Exception("User not found");
+            return user;
         }
         public async Task<User> GetByPhone(string phone)
         {

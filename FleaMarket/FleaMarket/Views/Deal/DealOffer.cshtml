@@ -1,15 +1,18 @@
-﻿  <div class="modal-dialog" role="document">
-    <div class="modal-content rounded-6 shadow">
-      <div class="modal-header border-bottom-0">
+﻿  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable" role="document" >
+    <div class="modal-content rounded-5 shadow">
+      <div class="modal-header pb-2 border-bottom-0">
         <h5 class="modal-title">Выберите товар для обмена</h5>
         <button type="button" onclick="Close_deal()" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="container p-2">
+      <div class="modal-body container">
+          <hr/>
           @foreach(Product product in ViewBag.MyProduct)
             {
-                <a onclick="create_deal('@product.ProductId','@ViewBag.Product.ProductId','@ViewBag.Product.UserId')" style="text-decoration: none; color: rgb(30,30,30);">
-                    @Html.Partial("ProductToList", product)
-                </a>
+                <div class="mb-4">
+                    <a onclick="create_deal('@product.ProductId','@ViewBag.Product.ProductId','@ViewBag.Product.UserId')" class="p-0" style="text-decoration: none; color: rgb(30,30,30);">
+                        @Html.Partial("ProductToList", product)
+                    </a>
+                </div>
             }
       </div>
       <hr>

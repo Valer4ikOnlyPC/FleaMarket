@@ -17,7 +17,8 @@ namespace Domain.Core
         Task<int> GetByRecipientCount(User userRecipient);
         Task<Deal> GetById(Guid id);
         Task<Guid> Create(Deal item);
-        void Update(Guid id, int number);
-        void Delete(Guid id);
+        Task Update(Guid id, int number);
+        Task UpdateDate(Guid id);
+        Task Delete(Guid id);
     }
 }

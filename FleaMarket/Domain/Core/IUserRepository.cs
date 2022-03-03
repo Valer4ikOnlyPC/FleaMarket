@@ -15,6 +15,6 @@ namespace Domain.Core
         Task<User> GetByPhone(string phone);
         Task<Guid> Create(User item);
         Task<User> Update(Guid id, User item);
-        void Delete(Guid id);
+        Task Delete(Guid id);
     }
 }

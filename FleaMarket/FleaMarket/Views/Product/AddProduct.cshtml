@@ -6,7 +6,7 @@
       <div class="col-md-10 mx-auto col-lg-5">
         <form  asp-action="AddProduct" asp-controller="Product" asp-anti-forgery="true" enctype="multipart/form-data" id="form1"  class="p-4 p-md-5 border rounded-3 bg-light needs-validation" novalidate>
           <div class="form-floating mb-3">
-            <input type="text" name="Name" class="form-control" id="validationDefault01" placeholder="Name" required>
+            <input type="text" name="Name" class="form-control" id="validationDefault01" placeholder="Name" required minlength="3" maxlength="30">
             <label for="validationDefault01">Название</label>
           </div>
           

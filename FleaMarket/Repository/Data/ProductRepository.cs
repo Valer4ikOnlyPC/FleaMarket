@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Npgsql;
 using Dapper;
 using Microsoft.Extensions.Configuration;
+using Domain.Dto;
 
 namespace Repository.Data
 {
@@ -26,7 +27,7 @@ namespace Repository.Data
             var product = await db.QueryAsync<Product>(
                 "SELECT * " +
                 "FROM \"Products\" ");
-            return product.Where(p => p.IsActive == Product.enumIsActive.Active);
+            return product.Where(p => p.IsActive == ProductIsActive.Active);
         }
         public async Task<IEnumerable<Product>> GetByUser(User user)
         {
@@ -48,14 +49,15 @@ namespace Repository.Data
         }
         public async Task<Guid> Create(Product item)
         {
+            item.Date = DateTime.Now;
             IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
             var result = await db.QueryAsync<Guid>(
-                "INSERT INTO \"Products\" (\"ProductId\", \"Name\", \"FirstPhoto\", \"Description\", \"CityId\", \"IsActive\", \"CategoryId\", \"UserId\") " +
-                "VALUES(@ProductId, @Name, @FirstPhoto, @Description, @CityId, 2, @CategoryId, @UserId) " +
-                "RETURNING \"ProductId\";", new { item.ProductId, item.Name, item.FirstPhoto, item.Description, item.CityId, item.CategoryId, item.UserId });
+                "INSERT INTO \"Products\" (\"ProductId\", \"Name\", \"FirstPhoto\", \"Description\", \"CityId\", \"IsActive\", \"CategoryId\", \"Date\", \"UserId\") " +
+                "VALUES(@ProductId, @Name, @FirstPhoto, @Description, @CityId, 2, @CategoryId, @Date, @UserId) " +
+                "RETURNING \"ProductId\";", new { item.ProductId, item.Name, item.FirstPhoto, item.Description, item.CityId, item.CategoryId, item.Date, item.UserId });
             return result.FirstOrDefault();
         }
-        public async void UpdatePhoto(Guid id, string Photo)
+        public async Task UpdatePhoto(Guid id, string Photo)
         {
             IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
             var sqlQuery =
@@ -75,7 +77,7 @@ namespace Repository.Data
                 "RETURNING \"ProductId\";", new { item.Name, item.Description, item.CityId, id });
             return await GetById(result.FirstOrDefault());
         }
-        public async void UpdateState(Guid id, int number)
+        public async Task UpdateState(Guid id, int number)
         {
             IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
             var sqlQuery =
@@ -84,7 +86,7 @@ namespace Repository.Data
                 "WHERE \"ProductId\" = @id";
             await db.ExecuteAsync(sqlQuery, new { number, id });
         }
-        public async void DealCompleted(Guid id)
+        public async Task DealCompleted(Guid id)
         {
             IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
             var sqlQuery =
@@ -93,9 +95,8 @@ namespace Repository.Data
                 "WHERE \"ProductId\" = @id";
             await db.ExecuteAsync(sqlQuery, id);
         }
-        public async void Delete(Guid id)
+        public async Task Delete(Guid id)
         {
-            Console.WriteLine(id);
             IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
             var sqlQuery =
                 "UPDATE \"Products\" " +
@@ -110,7 +111,17 @@ namespace Repository.Data
                 "SELECT * " +
                 "FROM \"Products\" " +
                 "WHERE \"CategoryId\" = @CategoryId", new { categoryId });
-            return result.Where(p => p.IsActive == Product.enumIsActive.Active);
+            return result.Where(p => p.IsActive == ProductIsActive.Active);
+        }
+        public async Task<IEnumerable<Product>> GetBySearch(string search)
+        {
+            IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
+            var result = await db.QueryAsync<Product>(
+                "SELECT *, ts_rank_cd(vector, query) AS rank " +
+                "FROM \"Products\", to_tsquery('russian', @search) query, to_tsvector('russian', \"Name\" ||' '|| \"Description\") vector " +
+                "WHERE query @@ vector " +
+                "ORDER BY rank DESC", new { search });
+            return result.Where(p => p.IsActive == ProductIsActive.Active);
         }
     }
 }

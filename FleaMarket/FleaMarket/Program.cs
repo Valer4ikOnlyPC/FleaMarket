@@ -15,6 +15,8 @@ builder.Services.AddTransient<IUserRepository, UserRepository>();
 builder.Services.AddTransient<ICityRepository, CityRepository>();
 builder.Services.AddTransient<IDealRepository, DealRepository>();
 builder.Services.AddTransient<IRatingRepository, RatingRepository>();
+builder.Services.AddTransient<IFavoritesRepository, FavoritesRepository>();
+builder.Services.AddTransient<IFavoritesService, FavoritesService>();
 builder.Services.AddTransient<IRatingService, RatingService>();
 builder.Services.AddTransient<ICityService, CityService>();
 builder.Services.AddTransient<IUserService, UserService>();

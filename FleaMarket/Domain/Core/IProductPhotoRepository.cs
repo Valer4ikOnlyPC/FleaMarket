@@ -13,6 +13,6 @@ namespace Domain.Core
         Task<ProductPhoto> GetById(Guid id);
         Task<Guid> Create(ProductPhoto item);
         Task<ProductPhoto> Update(Guid id, ProductPhoto item);
-        void Delete(Guid id);
+        Task Delete(Guid id);
     }
 }

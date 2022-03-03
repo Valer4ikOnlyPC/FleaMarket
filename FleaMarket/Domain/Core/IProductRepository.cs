@@ -14,10 +14,11 @@ namespace Domain.Core
         Task<IEnumerable<Product>> GetByCategory(int categoryId);
         Task<Product> GetById(Guid id);
         Task<Guid> Create(Product item);
-        void UpdatePhoto(Guid id, string Photo);
+        Task UpdatePhoto(Guid id, string Photo);
         Task<Product> Update(Guid id, Product item);
-        void UpdateState(Guid id, int number);
-        void DealCompleted(Guid id);
-        void Delete(Guid id);
+        Task UpdateState(Guid id, int number);
+        Task DealCompleted(Guid id);
+        Task<IEnumerable<Product>> GetBySearch(string search);
+        Task Delete(Guid id);
     }
 }

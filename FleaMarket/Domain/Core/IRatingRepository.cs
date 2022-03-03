@@ -12,6 +12,6 @@ namespace Domain.Core
         Task<IEnumerable<Rating>> GetByUser(User user);
         Task<IEnumerable<Rating>> GetByDeal(Deal deal);
         Task<Guid> Create(Rating item);
-        void Delete(Guid id);
+        Task Delete(Guid id);
     }
 }

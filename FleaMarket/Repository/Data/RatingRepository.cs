@@ -58,7 +58,7 @@ namespace Repository.Data
 
             return ratingId.FirstOrDefault();
         }
-        public async void Delete(Guid id)
+        public async Task Delete(Guid id)
         {
             IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
             var sqlQuery =

@@ -15,12 +15,12 @@ namespace Services.Service
     {
         private readonly IConfiguration _configuration;
         private readonly long _fileSizeLimit;
-        private string _filePath;
+        private readonly string _filePath;
         private enum FileType
         {
+            Unknown,
             Jpg,
-            Png,
-            Unknown
+            Png
         }
         private static readonly Dictionary<FileType, byte[]> _fileSignature =
             new()
@@ -46,17 +46,17 @@ namespace Services.Service
                     continue;
 
                 var photoId = Guid.NewGuid();
-                var relativePath = String.Concat(productId.ToString(), "--", photoId, ".", check.ToString().ToLower());
+                var relativePath = string.Concat(productId.ToString(), "--", photoId, ".", check.ToString().ToLower());
                 string filePath = Path.Combine(_filePath, relativePath);
 
                 using var fileStream = new FileStream(filePath, FileMode.Create);
                 img.CopyTo(fileStream);
-                files.Add(new ProductPhoto { PhotoId = photoId, Link = String.Concat("/img/", relativePath), ProductId = productId });
+                files.Add(new ProductPhoto { PhotoId = photoId, Link = string.Concat("/img/", relativePath), ProductId = productId });
 
             }
             return files;
         }
-        public int FileCheck(IFormFile formFile)
+        public async Task<int> FileCheck(IFormFile formFile)
         {
             var check = FileCheck(new BinaryReader(formFile.OpenReadStream()).ReadBytes(8));
             return ((int)check);

@@ -80,14 +80,25 @@ namespace Repository.Data
         public async Task<Guid> Create(Deal item)
         {
             item.DealId = Guid.NewGuid();
+            item.Date = DateTime.Now;
             IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
             var deal = await db.QueryAsync<Guid>(
-               "INSERT INTO \"Deals\" (\"DealId\", \"UserMaster\", \"ProductMaster\", \"UserRecipient\", \"ProductRecipient\", \"IsActive\") " +
-               "VALUES(@DealId, @UserMaster, @ProductMaster, @UserRecipient, @ProductRecipient, 0) " +
-               "RETURNING \"DealId\";", new { item.DealId, item.UserMaster, item.ProductMaster, item.UserRecipient, item.ProductRecipient });
+               "INSERT INTO \"Deals\" (\"DealId\", \"UserMaster\", \"ProductMaster\", \"UserRecipient\", \"ProductRecipient\", \"IsActive\", \"Date\") " +
+               "VALUES(@DealId, @UserMaster, @ProductMaster, @UserRecipient, @ProductRecipient, 0, @Date) " +
+               "RETURNING \"DealId\";", new { item.DealId, item.UserMaster, item.ProductMaster, item.UserRecipient, item.ProductRecipient, item.Date });
             return deal.FirstOrDefault();
         }
-        public async void Update(Guid id, int number)
+        public async Task UpdateDate(Guid id)
+        {
+            var date = DateTime.Now;
+            IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
+            var sqlQuery =
+                "UPDATE \"Deals\" " +
+                "SET \"Date\" = @date " +
+                "WHERE \"DealId\" = @id";
+            await db.ExecuteAsync(sqlQuery, new { id, date });
+        }
+        public async Task Update(Guid id, int number)
         {
             IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
             var sqlQuery =
@@ -97,7 +108,7 @@ namespace Repository.Data
             await db.ExecuteAsync(sqlQuery, new { number, id });
         }
  
-        public async void Delete(Guid id)
+        public async Task Delete(Guid id)
         {
             IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
             var sqlQuery =

@@ -14,23 +14,25 @@ namespace Services.Service
 {
     public class DealService : IDealService
     {
-        IDealRepository _dealRepository;
-        IProductRepository _productRepository;
-        IUserRepository _userRepository;
-        public DealService(IDealRepository dealRepository, IProductRepository productRepository, IUserRepository userRepository)
+        private readonly IDealRepository _dealRepository;
+        private readonly IProductRepository _productRepository;
+        private readonly IUserRepository _userRepository;
+        private readonly IFavoritesService _favoritesService;
+        public DealService(IDealRepository dealRepository, IProductRepository productRepository, IUserRepository userRepository, IFavoritesService favoritesService)
         {
             _dealRepository = dealRepository;
             _productRepository = productRepository;
             _userRepository = userRepository;
+            _favoritesService = favoritesService;
         }
         public async Task<Guid> Create(Deal item)
         {
             return await _dealRepository.Create(item);
         }
 
-        public async void Delete(Guid id)
+        public async Task Delete(Guid id)
         {
-            _dealRepository.Delete(id);
+            await _dealRepository.Delete(id);
         }
 
         public async Task<IEnumerable<Deal>> GetAll()
@@ -40,7 +42,8 @@ namespace Services.Service
 
         public async Task<Deal> GetById(Guid id)
         {
-            return await _dealRepository.GetById(id);
+            var deal = await _dealRepository.GetById(id);
+            return deal;
         }
 
         public async Task<IEnumerable<DealDto>> GetByMaster(User userMaster)
@@ -53,14 +56,15 @@ namespace Services.Service
                 {
                     DealId = item.DealId,
                     UserMaster = item.UserMaster,
-                    UserMasterName = _userRepository.GetById(item.UserMaster).GetAwaiter().GetResult().Name,
+                    UserMasterName = (await _userRepository.GetById(item.UserMaster)).Name,
                     UserRecipient = item.UserRecipient,
-                    UserRecipientName = _userRepository.GetById(item.UserRecipient).GetAwaiter().GetResult().Name,
+                    UserRecipientName = (await _userRepository.GetById(item.UserRecipient)).Name,
                     ProductMaster = item.ProductMaster,
-                    ProductMasterName = _productRepository.GetById(item.ProductMaster).GetAwaiter().GetResult().Name,
+                    ProductMasterName = (await _productRepository.GetById(item.ProductMaster)).Name,
                     ProductRecipient = item.ProductRecipient,
-                    ProductRecipientName = _productRepository.GetById(item.ProductRecipient).GetAwaiter().GetResult().Name,
-                    IsActive = item.IsActive
+                    ProductRecipientName = (await _productRepository.GetById(item.ProductRecipient)).Name,
+                    IsActive = item.IsActive,
+                    Date = item.Date
                 };
                 result.Add(dealDto);
             }
@@ -77,16 +81,17 @@ namespace Services.Service
                 {
                     DealId = item.DealId,
                     UserMaster = item.UserMaster,
-                    UserMasterName = _userRepository.GetById(item.UserMaster).GetAwaiter().GetResult().Name,
+                    UserMasterName = (await _userRepository.GetById(item.UserMaster)).Name,
                     UserRecipient = item.UserRecipient,
-                    UserRecipientName = _userRepository.GetById(item.UserRecipient).GetAwaiter().GetResult().Name,
+                    UserRecipientName = (await _userRepository.GetById(item.UserRecipient)).Name,
                     ProductMaster = item.ProductMaster,
                     ProductRecipient = item.ProductRecipient,
-                    ProductRecipientName = _productRepository.GetById(item.ProductRecipient).GetAwaiter().GetResult().Name,
-                    IsActive = item.IsActive
+                    ProductRecipientName = (await _productRepository.GetById(item.ProductRecipient)).Name,
+                    IsActive = item.IsActive,
+                    Date = item.Date
                 };
                 if (item.ProductMaster != Guid.Empty)
-                    dealDto.ProductMasterName = _productRepository.GetById(item.ProductMaster).GetAwaiter().GetResult().Name;
+                    dealDto.ProductMasterName = (await _productRepository.GetById(item.ProductMaster)).Name;
                 result.Add(dealDto);
             }
             return result;
@@ -102,16 +107,41 @@ namespace Services.Service
                 {
                     DealId = item.DealId,
                     UserMaster = item.UserMaster,
-                    UserMasterName = _userRepository.GetById(item.UserMaster).GetAwaiter().GetResult().Name,
+                    UserMasterName = (await _userRepository.GetById(item.UserMaster)).Name,
                     UserRecipient = item.UserRecipient,
-                    UserRecipientName = _userRepository.GetById(item.UserRecipient).GetAwaiter().GetResult().Name,
+                    UserRecipientName = (await _userRepository.GetById(item.UserRecipient)).Name,
                     ProductMaster = item.ProductMaster,
                     ProductRecipient = item.ProductRecipient,
-                    ProductRecipientName = _productRepository.GetById(item.ProductRecipient).GetAwaiter().GetResult().Name,
-                    IsActive = item.IsActive
+                    ProductRecipientName = (await _productRepository.GetById(item.ProductRecipient)).Name,
+                    IsActive = item.IsActive,
+                    Date = item.Date
                 };
                 if (item.ProductMaster != Guid.Empty)
-                    dealDto.ProductMasterName = _productRepository.GetById(item.ProductMaster).GetAwaiter().GetResult().Name;
+                    dealDto.ProductMasterName = (await _productRepository.GetById(item.ProductMaster)).Name;
+                result.Add(dealDto);
+            }
+            return result;
+        }
+
+        public async Task<IEnumerable<DealProductDto>> GetDealProductDtoByUser(User user)
+        {
+            var deal = await _dealRepository.GetByUser(user);
+            var result = new List<DealProductDto>();
+            foreach (var item in deal)
+            {
+                var dealDto = new DealProductDto()
+                {
+                    DealId = item.DealId,
+                    UserMaster = item.UserMaster,
+                    UserMasterName = (await _userRepository.GetById(item.UserMaster)).Name,
+                    UserRecipient = item.UserRecipient,
+                    UserRecipientName = (await _userRepository.GetById(item.UserRecipient)).Name,
+                    ProductRecipient = await _productRepository.GetById(item.ProductRecipient),
+                    IsActive = item.IsActive,
+                    Date = item.Date
+                };
+                if (item.ProductMaster != Guid.Empty)
+                    dealDto.ProductMaster = await _productRepository.GetById(item.ProductMaster);
                 result.Add(dealDto);
             }
             return result;
@@ -120,38 +150,53 @@ namespace Services.Service
         {
             return await _dealRepository.GetByRecipientCount(userRecipient);
         }
+        public async Task<IEnumerable<Deal>> GetByProductId(Guid productId)
+        {
+            return await _dealRepository.GetByProduct(productId);
+        }
         public async Task<bool> CheckRelevant(Deal deal)
         {
-            var result = _dealRepository.GetAll().GetAwaiter().GetResult().Where(d => d.UserMaster == deal.UserMaster
+            var result = (await _dealRepository.GetAll()).Where(d => d.UserMaster == deal.UserMaster
                 && d.UserRecipient == deal.UserRecipient && d.ProductMaster == deal.ProductMaster && d.ProductRecipient == deal.ProductRecipient);
-            if(result.Count()==0)
-                return true;
-            return false;
+            return !result.Any();
         }
-        public async void Accepted(Guid dealId)
+        public async Task Accepted(Guid dealId)
         {
             var deal = await _dealRepository.GetById(dealId);
-            _dealRepository.Update(dealId, (int)Deal.enumIsActive.Accepted);
-            _productRepository.UpdateState(deal.ProductRecipient, (int)Product.enumIsActive.InDeal);
-            _productRepository.UpdateState(deal.ProductMaster, (int)Product.enumIsActive.InDeal);
-            
-            var dealsRecipient = await _dealRepository.GetByProduct(deal.ProductRecipient);
+            if (deal == null)
+                throw new Exception();
+            await _dealRepository.Update(dealId, (int)DealIsActive.Accepted);
+            await _productRepository.UpdateState(deal.ProductRecipient, (int)ProductIsActive.InDeal);
+            await _productRepository.UpdateState(deal.ProductMaster, (int)ProductIsActive.InDeal);
+            await _dealRepository.UpdateDate(dealId);
+
+            var favoriteProduct = (await _favoritesService.GetAll()).Where(x => x.ProductId == deal.ProductMaster | x.ProductId == deal.ProductRecipient);
+            foreach (var favorite in favoriteProduct)
+            {
+                await _favoritesService.Delete(favorite.FavoriteId);
+            }
+
+            var dealsRecipient = new List<Deal>();
+            if (deal.ProductRecipient == Guid.Empty) 
+                dealsRecipient = (await _dealRepository.GetByProduct(deal.ProductRecipient)).ToList();
             foreach (Deal dealRecipient in dealsRecipient)
             {
                 if(dealRecipient.DealId != dealId)
-                    _dealRepository.Update(dealRecipient.DealId, (int)Deal.enumIsActive.Terminated);
+                    await _dealRepository.Update(dealRecipient.DealId, (int)DealIsActive.Terminated);
             }
 
-            var dealsMaster = await _dealRepository.GetByProduct(deal.ProductMaster);
+            var dealsMaster = new List<Deal>();
+            if (deal.ProductMaster != Guid.Empty) 
+                dealsMaster = (await _dealRepository.GetByProduct(deal.ProductMaster)).ToList();
             foreach (Deal dealMaster in dealsMaster)
             {
                 if (dealMaster.DealId != dealId)
-                    _dealRepository.Update(dealMaster.DealId, (int)Deal.enumIsActive.Terminated);
+                    await _dealRepository.Update(dealMaster.DealId, (int)DealIsActive.Terminated);
             }
         }
-        public async void Update(Guid dealId, Deal.enumIsActive enumIsActive)
+        public async Task Update(Guid dealId, DealIsActive enumIsActive)
         {
-            _dealRepository.Update(dealId, (int)enumIsActive);
+            await _dealRepository.Update(dealId, (int)enumIsActive);
         }
     }
 }

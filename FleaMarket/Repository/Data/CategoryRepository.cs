@@ -54,7 +54,7 @@ namespace Repository.Data
                 "WHERE \"CategoryId\" = @id", new { category.CategoryParent });
             return result.FirstOrDefault();
         }
-        public async void Create(Category item)
+        public async Task Create(Category item)
         {
             IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
             var sqlQuery =
@@ -62,7 +62,7 @@ namespace Repository.Data
                 "VALUES(@Name, @CategoryParent)";
             await db.ExecuteAsync(sqlQuery, item);
         }
-        public async void Delete(int id)
+        public async Task Delete(int id)
         {
             IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
             var sqlQuery =
