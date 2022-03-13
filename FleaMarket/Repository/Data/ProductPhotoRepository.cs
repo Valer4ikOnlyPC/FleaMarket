@@ -20,13 +20,13 @@ namespace Repository.Data
         {
             _configuration = configuration;
         }
-        public async Task<IEnumerable<ProductPhoto>> GetByProduct(Product product)
+        public async Task<IEnumerable<ProductPhoto>> GetByProduct(Guid productId)
         {
             IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
             return await db.QueryAsync<ProductPhoto>(
                 "SELECT * " +
                 "FROM \"ProductPhotos\" " +
-                "WHERE \"ProductId\" = @ProductId ", new { product.ProductId});
+                "WHERE \"ProductId\" = @ProductId ", new { productId });
         }
         public async Task<ProductPhoto> GetById(Guid id)
         {

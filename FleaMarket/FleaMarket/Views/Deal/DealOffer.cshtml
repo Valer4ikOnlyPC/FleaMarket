@@ -4,8 +4,8 @@
         <h5 class="modal-title">Выберите товар для обмена</h5>
         <button type="button" onclick="Close_deal()" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body container">
-          <hr/>
+      <hr/>
+      <div class="modal-body container scrollbarT scrollbar-secondary bordered-danger">
           @foreach(Product product in ViewBag.MyProduct)
             {
                 <div class="mb-4">

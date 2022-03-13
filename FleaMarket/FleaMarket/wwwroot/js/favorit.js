@@ -1,11 +1,15 @@
 ﻿function heart_visible(ProductId) {
     var elem = document.getElementById("heart_" + ProductId);
+    var elem_min = document.getElementById("heart-min_" + ProductId);
     check_favorit(ProductId);
     elem.style.visibility = 'visible'
+    elem_min.style.visibility = 'visible'
 }
 function heart_anvisible(ProductId) {
     var elem = document.getElementById("heart_" + ProductId);
+    var elem_min = document.getElementById("heart-min_" + ProductId);
     elem.style.visibility = 'hidden'
+    elem_min.style.visibility = 'hidden'
 }
 function check_favorit(ProductId) {
     $.get("/Product/CheckFavorite", { productId: ProductId })
@@ -14,11 +18,17 @@ function check_favorit(ProductId) {
                 var elem = document.getElementById("heart_" + ProductId);
                 elem.classList.remove("text-secondary");
                 elem.classList.add("text-danger");
+                var elem_min = document.getElementById("heart-min_" + ProductId);
+                elem_min.classList.remove("text-secondary");
+                elem_min.classList.add("text-danger");
             }
             else {
                 var elem = document.getElementById("heart_" + ProductId);
                 elem.classList.remove("text-danger");
                 elem.classList.add("text-secondary");
+                var elem_min = document.getElementById("heart-min_" + ProductId);
+                elem_min.classList.remove("text-danger");
+                elem_min.classList.add("text-secondary");
             }
         });
 }
@@ -34,6 +44,15 @@ function favorit_add(e, ProductId) {
             else {
                 elem.classList.remove("text-danger");
                 elem.classList.add("text-secondary");
+            }
+            var elem_min = document.getElementById("heart-min_" + ProductId);
+            if (elem_min.classList.contains("text-secondary")) {
+                elem_min.classList.remove("text-secondary");
+                elem_min.classList.add("text-danger");
+            }
+            else {
+                elem_min.classList.remove("text-danger");
+                elem_min.classList.add("text-secondary");
             }
         });
 }
@@ -57,4 +76,16 @@ function favorite_extension() {
         .done(function (msg) {
             $('#favoriteToList').html(msg);
         });
+}
+
+
+function Product_extension() {
+    document.getElementById("addProduct").style.visibility = 'visible';
+    $.get("/Product/AddProduct", {})
+        .done(function (msg) {
+            $('#addProduct').html(msg);
+        });
+}
+function Close_product() {
+    document.getElementById("addProduct").style.visibility = 'hidden';
 }

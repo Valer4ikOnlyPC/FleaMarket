@@ -27,7 +27,7 @@ namespace Repository.Data
             var product = await db.QueryAsync<Product>(
                 "SELECT * " +
                 "FROM \"Products\" ");
-            return product.Where(p => p.IsActive == ProductIsActive.Active);
+            return product.Where(p => p.IsActive == ProductState.Active);
         }
         public async Task<IEnumerable<Product>> GetByUser(User user)
         {
@@ -72,9 +72,9 @@ namespace Repository.Data
             item.ProductId = id;
             var result = await db.QueryAsync<Guid>(
                 "UPDATE \"Products\" " +
-                "SET \"Name\" = @Name, \"Description\" = @Description " +
+                "SET \"Name\" = @Name, \"Description\" = @Description, \"CityId\" = @CityId, \"CategoryId\" = @CategoryId " +
                 "WHERE \"ProductId\" = @id " +
-                "RETURNING \"ProductId\";", new { item.Name, item.Description, item.CityId, id });
+                "RETURNING \"ProductId\";", new { item.Name, item.Description, item.CityId, item.CategoryId, id });
             return await GetById(result.FirstOrDefault());
         }
         public async Task UpdateState(Guid id, int number)
@@ -111,7 +111,7 @@ namespace Repository.Data
                 "SELECT * " +
                 "FROM \"Products\" " +
                 "WHERE \"CategoryId\" = @CategoryId", new { categoryId });
-            return result.Where(p => p.IsActive == ProductIsActive.Active);
+            return result.Where(p => p.IsActive == ProductState.Active);
         }
         public async Task<IEnumerable<Product>> GetBySearch(string search)
         {
@@ -121,7 +121,7 @@ namespace Repository.Data
                 "FROM \"Products\", to_tsquery('russian', @search) query, to_tsvector('russian', \"Name\" ||' '|| \"Description\") vector " +
                 "WHERE query @@ vector " +
                 "ORDER BY rank DESC", new { search });
-            return result.Where(p => p.IsActive == ProductIsActive.Active);
+            return result.Where(p => p.IsActive == ProductState.Active);
         }
     }
 }

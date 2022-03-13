@@ -20,19 +20,21 @@ namespace Services.Service
         private readonly IProductRepository _productRepository;
         private readonly IFileService _fileService;
         private readonly IDealService _dealService;
+        private readonly ICategoryService _categoryService;
         private int Minimum(int a, int b, int c) => (a = a < b ? a : b) < c ? a : c;
-        public ProductService(IProductPhotoRepository productPhotoRepository, IProductRepository productRepository, IFileService fileService, IDealService dealService)
+        public ProductService(IProductPhotoRepository productPhotoRepository, IProductRepository productRepository, IFileService fileService, IDealService dealService, ICategoryService categoryService)
         {
             _productPhotoRepository = productPhotoRepository;
             _productRepository = productRepository;
             _fileService = fileService;
             _dealService = dealService;
+            _categoryService = categoryService;
         }
         public async Task<Guid> Create(ProductDTO item)
         {
             var productId = Guid.NewGuid();
 
-            var files = await _fileService.UploadMany(item.Image, productId);
+            var files = await _fileService.UploadMany(item.Image, productId, 5);
             if(files.Count() == 0)
                 return Guid.Empty;
             Product product = new Product
@@ -41,7 +43,7 @@ namespace Services.Service
                 Name = item.Name,
                 Description = item.Description,
                 CityId = item.CityId.Value,
-                IsActive = ProductIsActive.Active,
+                IsActive = ProductState.Active,
                 CategoryId = item.CategoryId.Value,
                 UserId = item.UserId,
                 FirstPhoto = files.FirstOrDefault().Link
@@ -53,15 +55,36 @@ namespace Services.Service
             }
             return productId;
         }
-
+        public async Task UpdatePhoto(ProductDTO item)
+        {
+            var productPhotoCount = (await _productPhotoRepository.GetByProduct(item.ProductId)).Count();
+            var photoCount = 5 - productPhotoCount;
+            var photos = await _fileService.UploadMany(item.Image, item.ProductId, photoCount);
+            foreach (ProductPhoto photo in photos)
+            {
+                await _productPhotoRepository.Create(photo);
+            }
+            var images = await _productPhotoRepository.GetByProduct(item.ProductId);
+            var firstPhoto = images.FirstOrDefault();
+            await _productRepository.UpdatePhoto(item.ProductId, firstPhoto.Link);
+        }
         public async Task Delete(Guid id)
         {
             var deals = await _dealService.GetByProductId(id);
             foreach (var deal in deals)
             {
-                await _dealService.Update(deal.DealId, DealIsActive.Terminated);
+                await _dealService.Update(deal.DealId, DealState.Terminated);
             }
             await _productRepository.Delete(id);
+        }
+        public async Task DeletePhoto(Guid ProductId, Guid PhotoId)
+        {
+            var product = await GetById(ProductId);
+            if (product.Image.Count() > 0)
+                await _productPhotoRepository.Delete(PhotoId);
+            var images = await _productPhotoRepository.GetByProduct(ProductId);
+            var firstPhoto = images.FirstOrDefault();
+            await _productRepository.UpdatePhoto(ProductId, firstPhoto.Link);
         }
 
         public async Task<IEnumerable<Product>> GetAll()
@@ -74,7 +97,7 @@ namespace Services.Service
             var product = await _productRepository.GetById(id);
             if (product == null)
                 throw new Exception("Product not found");
-            var productPhoto = await _productPhotoRepository.GetByProduct(product);
+            var productPhoto = await _productPhotoRepository.GetByProduct(product.ProductId);
             ProductPhotoDto productPhotoDTO = new ProductPhotoDto
             {
                 ProductId = product.ProductId,
@@ -92,7 +115,14 @@ namespace Services.Service
         }
         public async Task<IEnumerable<Product>> GetByCategory(int categoryId)
         {
-            return await _productRepository.GetByCategory(categoryId);
+            var products = await _productRepository.GetAll();
+            if (categoryId == -1) return products;
+
+            var categoryParent = (List<Category>)await _categoryService.GetByParent(categoryId);
+            var category = await CategoriesAsync(categoryParent, new List<Category>());
+            category.AddRange(categoryParent);
+            var categoryResult = category.Select(x => x.CategoryId);
+            return products.Where(p => categoryResult.Contains(p.CategoryId) | p.CategoryId == categoryId);
         }
 
         public async Task<IEnumerable<Product>> GetByUser(User user)
@@ -118,8 +148,32 @@ namespace Services.Service
             }
             var result = string.Concat(resultOr, "|(", resultAnd, ")");
             var product = await _productRepository.GetBySearch(result);
-            if (categoryId != -1) return product.Where(p => p.CategoryId == categoryId);
+
+            if (categoryId != -1)
+            {
+                var categoryParent = (List<Category>)await _categoryService.GetByParent(categoryId);
+                var category = await CategoriesAsync(categoryParent, new List<Category>());
+                category.AddRange(categoryParent);
+                var categoryResult = category.Select(x => x.CategoryId);
+                return product.Where(p => categoryResult.Contains(p.CategoryId) | p.CategoryId == categoryId);
+            }
             return product;
+        }
+        public async Task<IEnumerable<ProductPhoto>> GetPhotos(Guid productId)
+        {
+            return await _productPhotoRepository.GetByProduct(productId);
+        }
+        private async Task<List<Category>> CategoriesAsync(List<Category> categoryParent, List<Category> categoryResult)
+        {
+            var categories = new List<Category>();
+            foreach (var categoryItem in categoryParent)
+            {
+                var cat = await _categoryService.GetByParent(categoryItem.CategoryId);
+                categories.AddRange(cat);
+            }
+            categoryResult.AddRange(categories);
+            if (categories.Count() == 0) return categoryResult;
+            return await CategoriesAsync(categories, categoryResult);
         }
     }
 }

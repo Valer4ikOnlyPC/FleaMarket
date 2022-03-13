@@ -1,7 +1,17 @@
-﻿<div id="CheckResult" style="font-size: 12px">
+﻿<div class="container m-1 p-0" id="CheckResult" style="font-size: 12px">
     Прошли проверку:<br>
-    @foreach(IFormFile item in @Model)
-    {
-        @item.FileName<br>
+    @{
+        foreach(IFormFile item in @Model)
+        {
+            {
+                <div class="row row-cols-2">
+                    <div class="col-12">
+                        <p class="mb-1">@item.FileName</p>
+                    </div>
+                </div>
+            }
+        }
     }
+    
 </div>
+

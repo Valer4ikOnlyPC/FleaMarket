@@ -1,8 +1,8 @@
-﻿function check_extension() {
-    var data = new FormData($('#form1')[0]);
+﻿function photo_check_extension() {
+    var data = new FormData($("#formAdd")[0]);
     $.ajax({
         type: "POST",
-        url: "PhotoCheck",
+        url: "Product/PhotoCheck",
         data: data,
         contentType: false,
         processData: false,
@@ -14,6 +14,9 @@
             $('#results').html(msg);
         });
 }
+
+
+
 function category_extension(categoryId) {
     $.post("/Product/CategoryByParent", { CategoryId: categoryId })
         .done(function (msg) {
@@ -29,4 +32,29 @@ function category_extension(categoryId) {
 }
 function category_select(categoryId) {
     $('#CategoryId').val(categoryId);
+}
+
+
+function edit_product() {
+    var data = new FormData($('#form1')[0]);
+    $.ajax({
+        type: "POST",
+        url: "UpdatePhoto",
+        data: data,
+        contentType: false,
+        processData: false,
+        beforeSend: function () {
+            $('#deal').show();
+        }
+    })
+        .done(function (msg) {
+            $('#deal').html(msg);
+        });
+}
+
+function delete_photo(productId, photoId) {
+    $.get("/Product/DeletePhoto", { ProductId: productId, PhotoId: photoId })
+        .done(function (msg) {
+            $('#deal').html(msg);
+        });
 }

@@ -10,7 +10,7 @@ namespace Domain.IServices
 {
     public interface IFileService
     {
-        Task<IEnumerable<ProductPhoto>> UploadMany(IEnumerable<IFormFile> Image, Guid productId);
+        Task<IEnumerable<ProductPhoto>> UploadMany(IEnumerable<IFormFile> Image, Guid productId, int photoCount);
         Task<int> FileCheck(IFormFile formFile);
     }
 }

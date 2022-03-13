@@ -38,12 +38,12 @@ namespace FleaMarket.Controllers
             try
             {
                 var product = await _productService.GetById(ProductId);
-                if (product.IsActive != ProductIsActive.Active)
+                if (product.IsActive != ProductState.Active)
                     return BadRequest();
                 var user = await _userService.GetByPhone(User.Identity.Name);
                 var myProduct = await _productService.GetByUser(user);
                 ViewBag.Product = product;
-                ViewBag.MyProduct = myProduct.Where(p => p.IsActive == ProductIsActive.Active);
+                ViewBag.MyProduct = myProduct.Where(p => p.IsActive == ProductState.Active);
                 return PartialView();
             }
             catch (Exception ex)
@@ -85,10 +85,10 @@ namespace FleaMarket.Controllers
         {
             var user = await _userService.GetByPhone(User.Identity.Name);
             var deal = await _dealService.GetDealProductDtoByUser(user);
-            ViewBag.DealMaster = deal.Where(d => (d.IsActive == DealIsActive.Сonsideration |
-                d.IsActive == DealIsActive.Terminated) & d.UserMaster == user.UserId).OrderByDescending(d => d.Date);
-            ViewBag.DealRecipient = deal.Where(d => d.IsActive == DealIsActive.Сonsideration & d.UserRecipient == user.UserId).OrderByDescending(d => d.Date);
-            ViewBag.Deal = deal.Where(d => d.IsActive == Domain.Dto.DealIsActive.Accepted).OrderByDescending(d => d.Date);
+            ViewBag.DealMaster = deal.Where(d => (d.IsActive == DealState.Сonsideration |
+                d.IsActive == DealState.Terminated) & d.UserMaster == user.UserId).OrderByDescending(d => d.Date);
+            ViewBag.DealRecipient = deal.Where(d => d.IsActive == DealState.Сonsideration & d.UserRecipient == user.UserId).OrderByDescending(d => d.Date);
+            ViewBag.Deal = deal.Where(d => d.IsActive == Domain.Dto.DealState.Accepted).OrderByDescending(d => d.Date);
             ViewBag.User = user;
             return View();
         }
@@ -150,7 +150,7 @@ namespace FleaMarket.Controllers
         }
         public async Task<IActionResult> Cancel(Guid dealId)
         {
-            await _dealService.Update(dealId, DealIsActive.Terminated);
+            await _dealService.Update(dealId, DealState.Terminated);
             return RedirectToAction("MyDeal", "Deal");
         }
         public async Task<IActionResult> Delete(Guid dealId)

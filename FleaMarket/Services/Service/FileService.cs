@@ -35,11 +35,11 @@ namespace Services.Service
             _fileSizeLimit = Int32.Parse(configuration["FileSizeLimit"]);
             _filePath = _configuration["FileDirectory"];
         }
-        public async Task<IEnumerable<ProductPhoto>> UploadMany(IEnumerable<IFormFile> Image, Guid productId)
+        public async Task<IEnumerable<ProductPhoto>> UploadMany(IEnumerable<IFormFile> Image, Guid productId, int photoCount)
         {
             List<ProductPhoto> files = new List<ProductPhoto>();
             var result = Image.Where(i => i.Length < _fileSizeLimit & i.Length > 0);
-            foreach (IFormFile img in result.Take(5))
+            foreach (IFormFile img in result.Take(photoCount))
             {
                 var check = FileCheck(new BinaryReader(img.OpenReadStream()).ReadBytes(8));
                 if (check == FileType.Unknown)

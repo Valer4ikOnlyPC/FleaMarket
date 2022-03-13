@@ -6,19 +6,19 @@
         @{
             if (@ViewBag.User.Rating == 0)
             {
-                <h2 id="rating" class="blog-post-title">@ViewBag.User.Surname @ViewBag.User.Name <span class="badge bg-secondary" data-bs-toggle="tooltip" data-bs-placement="right" title="@ViewBag.RatingCount отзывов">@Math.Round(ViewBag.User.Rating, 2)</span></h2>
+                <h2 id="rating" class="blog-post-title">@ViewBag.User.Surname @ViewBag.User.Name <span class="badge bg-secondary" data-bs-toggle="tooltip" data-bs-placement="right" title="Отзывов: @ViewBag.RatingCount">@Math.Round(ViewBag.User.Rating, 2)</span></h2>
             }
             else if (@ViewBag.User.Rating < 3)
             {
-                <h2 id="rating" class="blog-post-title">@ViewBag.User.Surname @ViewBag.User.Name <span class="badge bg-danger" data-bs-toggle="tooltip" data-bs-placement="right" title="@ViewBag.RatingCount отзывов">@Math.Round(ViewBag.User.Rating, 2)</span></h2>
+                <h2 id="rating" class="blog-post-title">@ViewBag.User.Surname @ViewBag.User.Name <span class="badge bg-danger" data-bs-toggle="tooltip" data-bs-placement="right" title="Отзывов: @ViewBag.RatingCount">@Math.Round(ViewBag.User.Rating, 2)</span></h2>
             }
             else if (@ViewBag.User.Rating < 4)
             {
-                <h2 id="rating" class="blog-post-title">@ViewBag.User.Surname @ViewBag.User.Name <span class="badge bg-warning" data-bs-toggle="tooltip" data-bs-placement="right" title="@ViewBag.RatingCount отзывов">@Math.Round(ViewBag.User.Rating, 2)</span></h2>
+                <h2 id="rating" class="blog-post-title">@ViewBag.User.Surname @ViewBag.User.Name <span class="badge bg-warning" data-bs-toggle="tooltip" data-bs-placement="right" title="Отзывов: @ViewBag.RatingCount">@Math.Round(ViewBag.User.Rating, 2)</span></h2>
             }
             else
             {
-                <h2 id="rating" class="blog-post-title">@ViewBag.User.Surname @ViewBag.User.Name <span class="badge bg-success" data-bs-toggle="tooltip" data-bs-placement="right" title="@ViewBag.RatingCount отзывов">@Math.Round(ViewBag.User.Rating, 2)</span></h2>
+                <h2 id="rating" class="blog-post-title">@ViewBag.User.Surname @ViewBag.User.Name <span class="badge bg-success" data-bs-toggle="tooltip" data-bs-placement="right" title="Отзывов: @ViewBag.RatingCount">@Math.Round(ViewBag.User.Rating, 2)</span></h2>
             }
         }
         <p class="blog-post-meta">@ViewBag.City.Name</p>

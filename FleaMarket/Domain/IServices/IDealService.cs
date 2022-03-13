@@ -19,7 +19,7 @@ namespace Domain.IServices
         Task<int> GetByRecipientCount(User userRecipient);
         Task<bool> CheckRelevant(Deal deal);
         Task Accepted(Guid dealId);
-        Task Update(Guid dealId, DealIsActive enumIsActive);
+        Task Update(Guid dealId, DealState enumIsActive);
         Task<Deal> GetById(Guid id);
         Task<Guid> Create(Deal item);
         Task Delete(Guid id);

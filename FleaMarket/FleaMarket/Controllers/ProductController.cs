@@ -15,6 +15,7 @@ using Domain.Dto;
 
 namespace FleaMarket.Controllers
 {
+    
     [Authorize]
     public class ProductController : Controller
     {
@@ -48,40 +49,46 @@ namespace FleaMarket.Controllers
         {
             ViewBag.City = await _cityService.GetAll();
             ViewBag.Category = await _categoryService.GetAll();
-            return View();
+            ViewBag.CitySelected = (await _userService.GetByPhone(User.Identity.Name)).CityId;
+            return PartialView();
         }
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> AddProduct(ProductDTO product)
         {
-            if (!(ModelState.IsValid & true)) return BadRequest();
+            if (!(ModelState.IsValid & true)) return RedirectToAction("Index", "Home");
             try
             {
-                if (product.CityId == null | product.CategoryId == null) return BadRequest();
+                var city = await _cityService.GetById(product.CityId.Value);
+                var category = await _categoryService.GetById(product.CategoryId.Value);
+                if (category == null | city == null) return RedirectToAction("Index", "Home");
                 var user = await _userService.GetByPhone(User.Identity.Name);
                 product.UserId = user.UserId;
                 Guid productId = await _productService.Create(product);
                 if (productId == Guid.Empty)
-                    return BadRequest();
+                    return RedirectToAction("Error", "Home", new { errorMessage = "Photo does not match" });
                 return RedirectToAction("MyProducts", "Product", new { number = user.PhoneNumber });
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return BadRequest();
+                return RedirectToAction("Error", "Home", new { errorMessage = e.Message });
             }
         }
+
         public async Task<IActionResult> PhotoCheck(ProductDTO product)
         {
             if (product.Image == null)
                 return PartialView("Error", new ErrorViewModel { RequestId = "Photo does not match" });
             var formFiles = product.Image;
             var filesResult = new List<IFormFile>();
+            
             foreach (IFormFile file in formFiles.Take(5))
             {
                 var result = await _fileService.FileCheck(file);
                 if (result != 0)
                     filesResult.Add(file);
             }
+
             return PartialView(filesResult);
         }
         public async Task<IActionResult> CategoryByParent(int CategoryId)
@@ -97,8 +104,8 @@ namespace FleaMarket.Controllers
             try
             {
                 var products = await _productService.GetByUser(await _userService.GetByPhone(number));
-                var productsActive = products.Where(p => p.IsActive == ProductIsActive.Active);
-                var productsClosed = products.Where(p => (p.IsActive != ProductIsActive.Active));
+                var productsActive = products.Where(p => p.IsActive == ProductState.Active);
+                var productsClosed = products.Where(p => (p.IsActive != ProductState.Active));
                 ViewBag.ProductCount = productsActive.Count();
                 ViewBag.ProductClosedCount = productsClosed.Count();
                 return View(new { productsActive, productsClosed });
@@ -131,11 +138,11 @@ namespace FleaMarket.Controllers
                 ViewBag.City = city.Name;
                 ViewBag.SimilarProduct = similarProduct.Take(45);
                 ViewBag.SimilarCount = similarProduct.Count();
-                ViewBag.DealCount = dealCount.Where(d => d.IsActive == DealIsActive.Accepted).Count();
+                ViewBag.DealCount = dealCount.Where(d => d.IsActive == DealState.Accepted).Count();
                 var userMaster = await _userService.GetByPhone(User.Identity.Name);
                 if (productPhotoDTO.UserId == userMaster.UserId)
                     ViewBag.Master = true;
-                if (productPhotoDTO.IsActive != ProductIsActive.Active)
+                if (productPhotoDTO.IsActive != ProductState.Active)
                     ViewBag.Active = false;
                 return View(productPhotoDTO);
             }
@@ -144,24 +151,47 @@ namespace FleaMarket.Controllers
                 return RedirectToAction("Error", "Home", new { errorMessage = ex.Message });
             }
         }
-
+        public async Task<IActionResult> UpdatePhoto(ProductDTO product)
+        {
+            try
+            {
+                await _productService.GetById(product.ProductId);
+                await _productService.UpdatePhoto(product);
+                return RedirectToAction("EditProduct", "Product", new { productId = product.ProductId });
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("Error", "Home", new { errorMessage = ex.Message });
+            }
+        }
+        public async Task<IActionResult> DeletePhoto(Guid ProductId, Guid PhotoId)
+        {
+            try
+            {
+                await _productService.DeletePhoto(ProductId, PhotoId);
+                return RedirectToAction("EditProduct", "Product", new { productId = ProductId });
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("Error", "Home", new { errorMessage = ex.Message });
+            }
+        }
         public async Task<IActionResult> EditProduct(Guid productId)
         {
             try
             {
                 var productPhotoDTO = await _productService.GetById(productId);
-                var categoty = await _categoryService.GetById(productPhotoDTO.CategoryId);
-                var user = await _userService.GetById(productPhotoDTO.UserId);
                 int imgCount = productPhotoDTO.Image.Count();
-                var city = await _cityService.GetById(productPhotoDTO.CityId);
+                var photos = await _productService.GetPhotos(productId);
+
 
                 ViewBag.ImageCount = imgCount;
                 ViewBag.Firstphoto = productPhotoDTO.FirstPhoto;
-                ViewBag.Category = categoty.Name;
-                ViewBag.User = user;
-                ViewBag.City = city.Name;
+                ViewBag.City = await _cityService.GetAll();
+                ViewBag.Category = await _categoryService.GetAll();
+                ViewBag.Photos = photos;
 
-                return View(productPhotoDTO);
+                return PartialView(productPhotoDTO);
             }
             catch (Exception ex)
             {
@@ -173,17 +203,35 @@ namespace FleaMarket.Controllers
         [Authorize]
         public async Task<IActionResult> EditProduct(Product product)
         {
-            if (!(ModelState.IsValid & true)) return BadRequest();
-            var result = await _productService.Update(product.ProductId, product);
-            return RedirectToAction("ViewProduct", "Product", new { productId = result.ProductId });
+            try
+            {
+                await _productService.GetById(product.ProductId);
+                var city = await _cityService.GetById(product.CityId);
+                var category = await _categoryService.GetById(product.CategoryId);
+                if (category != null & city != null & ModelState.IsValid) await _productService.Update(product.ProductId, product);
+                return RedirectToAction("ViewProduct", "Product", new { productId = product.ProductId });
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("Error", "Home", new { errorMessage = ex.Message });
+            }
         }
 
         [Authorize]
         public async Task<IActionResult> DeleteProduct(Guid productId)
         {
-            await _productService.Delete(productId);
-            var user = await _userService.GetByPhone(User.Identity.Name);
-            return RedirectToAction("MyProducts", "Product", new { number = user.PhoneNumber });
+            try
+            {
+                var product = await _productService.GetById(productId);
+                var user = await _userService.GetByPhone(User.Identity.Name);
+                if(product.UserId != user.UserId) throw new Exception("The product does not belong to you");
+                await _productService.Delete(productId);
+                return RedirectToAction("MyProducts", "Product", new { number = user.PhoneNumber });
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("Error", "Home", new { errorMessage = ex.Message });
+            }
         }
 
         [HttpGet]

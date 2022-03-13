@@ -1,10 +1,10 @@
 ﻿@{
     ViewData["Title"] = @Model.Name;
 }
-    <div id="deal" class="modal modal-signin position-fixed d-block" role="dialog" style="z-index:9999; visibility: hidden; background: rgba(0,0,0,0); backdrop-filter: blur(50px);">
+    <div id="deal" class="modal modal-signin position-fixed d-block" role="dialog" style="z-index:9999; visibility: hidden; background: rgba(0,0,0,0); backdrop-filter: blur(10px);">
     </div>
 
-  <p class="lead">@ViewBag.Category</p>
+  <a asp-area="" asp-controller="Home" asp-action="Index" asp-route-searchDto="new {CategoryId = @Model.CategoryId, CityId = @Model.CityId}" class="lead">@ViewBag.Category</a>
   <div id="myCarousel" class="carousel slide mb-3 shadow" style="background: gray; height: 500px; " data-bs-ride="carousel">
     <div class="carousel-indicators" style="z-index:3">
         <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="0" aria-label="0" class="active" aria-current="true"></button>
@@ -50,18 +50,18 @@
   </div>
 
   <div class="row featurette border-top pt-3">
-      <div class="col-md-9">
-        <div class="alert alert-success" style="background: rgb(250,250,250); color: black;" role="alert">
+      <div class="col-md-9 bg-light shadow bg-gradient rounded position-relative">
+        <div role="alert">
             <h2 class="featurette-heading">@Model.Name</h2>
             <hr>
-            
-            <div >@{
-                    string[] words = @Model.Description.Split(new char[] { '\n' });
-                    foreach (string s in words)
-                    {
-                        @s<br>
-                    }
-                }
+            <div class="mb-1">
+                <p>Категория: @ViewBag.Category</p>
+                <p>Город: @ViewBag.City</p>
+                <p>Дата размещения: @Model.Date.ToShortDateString()</p>
+            </div>
+            <hr class="bg-secondary w-25">
+            <div class="mb-5">
+                <textarea class="textarea-read bg-light" id="exampleFormControlTextarea1" readonly>@Model.Description</textarea>
             </div>
         </div>
         @{
@@ -69,10 +69,10 @@
             {
                 if (@ViewBag.Active)
                 {
-                    <div class="d-flex justify-content-between align-items-center mb-5">
+                    <div class="p-2 d-flex justify-content-between align-items-center" style="position:absolute;bottom:0;left:0">
                       <div class="btn-group">
-                        <a class="btn btn-sm btn-outline-secondary" asp-area="" asp-controller="Product" asp-action="EditProduct" asp-route-productId="@Model.ProductId">Редактировать</a>
-                        <a class="btn btn-sm btn-outline-secondary" asp-area="" asp-controller="Product" asp-action="DeleteProduct" asp-route-productId="@Model.ProductId">Удалить</a>
+                        <a class="btn btn-sm btn-outline-secondary" onclick="edit_extension('@Model.ProductId')">Редактировать</a>
+                        <a class="btn btn-sm btn-outline-danger" asp-area="" asp-controller="Product" asp-action="DeleteProduct" asp-route-productId="@Model.ProductId">Удалить</a>
                       </div>
                     </div>
                 }
@@ -80,12 +80,11 @@
         }
       </div>
 
-      <div class="col-md-3">
-        <div class="alert alert-success" style="background: rgb(250,250,250); color: black;" role="alert">
-          <a asp-area="" asp-controller="Home" asp-action="GetUser" asp-route-userId="@ViewBag.User.UserId" style="text-decoration: none; color: rgb(30,30,30);"><h4 class="featurette-heading pb-2">@ViewBag.User.Name</h4></a>
+      <div class="ps-4 col-md-3">
+        <div class="bg-light shadow bg-gradient rounded p-2" role="alert">
+          <a asp-area="" asp-controller="Home" asp-action="GetUser" asp-route-userId="@ViewBag.User.UserId" style="text-decoration: none; color: rgb(30,30,30);"><h4 class="featurette-heading">@ViewBag.User.Name</h4></a>
           <hr>
           <p>Рейтинг: @Math.Round(ViewBag.User.Rating, 2)</p>
-          <p>Город: @ViewBag.City</p>
           <p>Кол-во обменов: @ViewBag.DealCount</p>
             @{
                 if (!@ViewBag.Master)
@@ -99,8 +98,8 @@
         </div>
       </div>
 
-      <h4>Похожие товары</h4>
-        <div class="row mt-5 mb-2">
+      <h4 class="mt-5 mb-2">Похожие товары</h4>
+        <div class="row mb-2">
             @{
                 if (@ViewBag.SimilarCount>0)
                 {
@@ -121,6 +120,9 @@
             }
         </div>
     </div>
+    <script>
+        
+    </script>
     <script src="~/js/addDeal.js" asp-append-version="true"></script>
 
   

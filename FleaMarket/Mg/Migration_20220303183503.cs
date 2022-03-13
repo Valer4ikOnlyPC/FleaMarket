@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FluentMigrator;
+using FluentMigrator.Model;
+using FluentMigrator.Postgres;
 
 namespace Mg
 {

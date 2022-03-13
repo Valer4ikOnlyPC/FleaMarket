@@ -55,8 +55,6 @@ namespace FleaMarket.Controllers
         [HttpPost]
         public async Task<IActionResult> Index(SearchDto searchDto)
         {
-            if (!ModelState.IsValid & searchDto.CategoryId == -1)
-                return RedirectToAction("Index", "Home");
             var category = await _categoryService.GetAll();
             var city = await _cityRepository.GetAll();
             IEnumerable<Product> allProduct = new List<Product>();
@@ -64,7 +62,7 @@ namespace FleaMarket.Controllers
                 allProduct = await _productService.GetBySearch(searchDto.Search, searchDto.CategoryId);
             else
                 allProduct = await _productService.GetByCategory(searchDto.CategoryId);
-            if(searchDto.CityId != -1) allProduct = allProduct.Where(x => x.CityId== searchDto.CityId);
+            if(searchDto.CityId != -1) allProduct = allProduct.Where(x => x.CityId == searchDto.CityId);
             ViewBag.Category = category;
             ViewBag.CategorySelected = searchDto.CategoryId;
             ViewBag.City = city;
@@ -86,8 +84,8 @@ namespace FleaMarket.Controllers
             {
                 var owner = await _userService.GetById(userId);
                 var city = await _cityRepository.GetById(owner.CityId);
-                var product = (await _productService.GetByUser(owner)).Where(p => p.IsActive == Domain.Dto.ProductIsActive.Active);
-                var deal = (await _dealService.GetDealProductDtoByUser(owner)).Where(d => d.IsActive == Domain.Dto.DealIsActive.Accepted);
+                var product = (await _productService.GetByUser(owner)).Where(p => p.IsActive == Domain.Dto.ProductState.Active);
+                var deal = (await _dealService.GetDealProductDtoByUser(owner)).Where(d => d.IsActive == Domain.Dto.DealState.Accepted);
                 var user = await _userService.GetByPhone(User.Identity.Name);
                 var ratingCount = (await _ratingService.GetByUser(owner)).Count();
                 var favorite = false;

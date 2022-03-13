@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html id="html" lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -10,8 +10,8 @@
     <link rel="stylesheet" href="~/FleaMarket.styles.css" asp-append-version="true" />
 
 </head>
-<body>
-    <header>
+<body class="scrollbarT scrollbar-secondary bordered-danger">
+    <header class="w-100" style="position: fixed; display: block; z-index: 1000;">
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">FleaMarket</a>
@@ -31,7 +31,7 @@
                                     <a class="nav-link text-dark" asp-area="" asp-controller="Product" asp-action="MyProducts" asp-route-number="@User.Identity.Name">Мои лоты</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="Product" asp-action="AddProduct">Добавить лот</a>
+                                    <a class="nav-link text-dark" onclick="Product_extension()">Добавить лот</a>
                                 </li>
                     </ul>
                     <div class="flex-shrink-0 dropdown">
@@ -40,13 +40,13 @@
                                 <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"></path>
                             </svg>
                         </button>
-                        <ul id="favoriteToList" class="dropdown-menu dropdown-menu-lg-end shadow scrollbar scrollbar-danger bordered-danger thin" aria-labelledby="dropdownUser2" style=" min-width: 400px;">
+                        <ul id="favoriteToList" class="dropdown-menu dropdown-menu-lg-end shadow scrollbar scrollbar-danger bordered-danger thin" aria-labelledby="dropdownUser2" style=" min-width: 450px;">
                         </ul>
                     </div>
                     <div class="flex-shrink-0 dropdown">
                         <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle nav-link text-dark" id="dropdownUser2" data-bs-toggle="dropdown" aria-expanded="false">@User.Identity.Name</a>
                         <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser2" style="">
-                            <li><a class="nav-link text-dark" asp-area="" asp-controller="Product" asp-action="AddProduct">Добавить лот</a></li>
+                            <li><a class="nav-link text-dark" onclick="Product_extension()">Добавить лот</a></li>
                             <li><a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="GetUserByName">Моя страница</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Logout">Выйти</a></li>
@@ -72,8 +72,10 @@
             </div>
         </nav>
     </header>
-    <div class="container">
+    <div class="container" style="padding-top:70px">
         <main role="main" class="pb-3">
+            <div id="addProduct" class="modal modal-signin position-fixed d-block" role="dialog" style="z-index:9999; visibility: hidden; background: rgba(0,0,0,0); backdrop-filter: blur(10px);">
+            </div>
             @RenderBody()
         </main>
     </div>
@@ -83,10 +85,10 @@
             &copy; 2022 - FleaMarket - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
-    
+
     <script src="~/js/count_new_deals.js" asp-append-version="true"></script>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.js"></script>
+    <script src="~/lib/jquery/dist/jquery.min.js" asp-append-version="true"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.js" asp-append-version="true"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/js/favorit.js" asp-append-version="true"></script>
     

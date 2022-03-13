@@ -15,6 +15,9 @@ namespace Domain.IServices
         Task<ProductPhotoDto> GetById(Guid id);
         Task<IEnumerable<Product>> GetByCategory(int categoryId);
         Task<IEnumerable<Product>> GetBySearch(string search, int categoryId);
+        Task<IEnumerable<ProductPhoto>> GetPhotos(Guid productId);
+        Task DeletePhoto(Guid ProductId, Guid PhotoId);
+        Task UpdatePhoto(ProductDTO item);
         Task<Guid> Create(ProductDTO item);
         Task<Product> Update(Guid id, Product item);
         Task Delete(Guid id);

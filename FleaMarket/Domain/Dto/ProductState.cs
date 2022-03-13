@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Domain.Dto
 {
-    public enum ProductIsActive : int
+    public enum ProductState : int
     {
         Closed,
         InDeal,

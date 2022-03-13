@@ -16,7 +16,7 @@ namespace Domain.Dto
         public Guid UserRecipient { get; set; }
         public string UserRecipientName { get; set; }
         public Product ProductRecipient { get; set; }
-        public DealIsActive IsActive { get; set; }
+        public DealState IsActive { get; set; }
         public DateTime Date { get; set; }
     }
 }

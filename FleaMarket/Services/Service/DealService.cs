@@ -165,9 +165,9 @@ namespace Services.Service
             var deal = await _dealRepository.GetById(dealId);
             if (deal == null)
                 throw new Exception();
-            await _dealRepository.Update(dealId, (int)DealIsActive.Accepted);
-            await _productRepository.UpdateState(deal.ProductRecipient, (int)ProductIsActive.InDeal);
-            await _productRepository.UpdateState(deal.ProductMaster, (int)ProductIsActive.InDeal);
+            await _dealRepository.Update(dealId, (int)DealState.Accepted);
+            await _productRepository.UpdateState(deal.ProductRecipient, (int)ProductState.InDeal);
+            await _productRepository.UpdateState(deal.ProductMaster, (int)ProductState.InDeal);
             await _dealRepository.UpdateDate(dealId);
 
             var favoriteProduct = (await _favoritesService.GetAll()).Where(x => x.ProductId == deal.ProductMaster | x.ProductId == deal.ProductRecipient);
@@ -182,7 +182,7 @@ namespace Services.Service
             foreach (Deal dealRecipient in dealsRecipient)
             {
                 if(dealRecipient.DealId != dealId)
-                    await _dealRepository.Update(dealRecipient.DealId, (int)DealIsActive.Terminated);
+                    await _dealRepository.Update(dealRecipient.DealId, (int)DealState.Terminated);
             }
 
             var dealsMaster = new List<Deal>();
@@ -191,10 +191,10 @@ namespace Services.Service
             foreach (Deal dealMaster in dealsMaster)
             {
                 if (dealMaster.DealId != dealId)
-                    await _dealRepository.Update(dealMaster.DealId, (int)DealIsActive.Terminated);
+                    await _dealRepository.Update(dealMaster.DealId, (int)DealState.Terminated);
             }
         }
-        public async Task Update(Guid dealId, DealIsActive enumIsActive)
+        public async Task Update(Guid dealId, DealState enumIsActive)
         {
             await _dealRepository.Update(dealId, (int)enumIsActive);
         }
