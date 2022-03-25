@@ -5,6 +5,7 @@ using Domain.IServices;
 using Domain.Models;
 using FleaMarket.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
@@ -50,6 +51,7 @@ namespace FleaMarket.Controllers
             ViewBag.Category = category;
             ViewBag.CategorySelected = -1;
             ViewBag.ProductCount = allProduct.Count();
+            ViewBag.SelectedPage = 1;
             return View(allProduct);
         }
         [HttpPost]
@@ -80,29 +82,22 @@ namespace FleaMarket.Controllers
         [HttpGet]
         public async Task<IActionResult> GetUser(Guid userId)
         {
-            try
-            {
-                var owner = await _userService.GetById(userId);
-                var city = await _cityRepository.GetById(owner.CityId);
-                var product = (await _productService.GetByUser(owner)).Where(p => p.IsActive == Domain.Dto.ProductState.Active);
-                var deal = (await _dealService.GetDealProductDtoByUser(owner)).Where(d => d.IsActive == Domain.Dto.DealState.Accepted);
-                var user = await _userService.GetByPhone(User.Identity.Name);
-                var ratingCount = (await _ratingService.GetByUser(owner)).Count();
-                var favorite = false;
-                if (owner.UserId == user.UserId)
-                    favorite = true;
-                ViewBag.MyProfile = favorite;
-                ViewBag.RatingCount = ratingCount;
-                ViewBag.Deal = deal.OrderByDescending(d => d.Date);
-                ViewBag.Product = product;
-                ViewBag.User = owner;
-                ViewBag.City = city;
-                return View();
-            }
-            catch (Exception ex)
-            {
-                return RedirectToAction("Error", "Home", new { errorMessage = ex.Message });
-            }
+            var owner = await _userService.GetById(userId);
+            var city = await _cityRepository.GetById(owner.CityId);
+            var product = (await _productService.GetByUser(owner)).Where(p => p.IsActive == Domain.Dto.ProductState.Active);
+            var deal = (await _dealService.GetDealProductDtoByUser(owner)).Where(d => d.IsActive == Domain.Dto.DealState.Accepted);
+            var user = await _userService.GetByPhone(User.Identity.Name);
+            var ratingCount = (await _ratingService.GetByUser(owner)).Count();
+            var favorite = false;
+            if (owner.UserId == user.UserId)
+                favorite = true;
+            ViewBag.MyProfile = favorite;
+            ViewBag.RatingCount = ratingCount;
+            ViewBag.Deal = deal.OrderByDescending(d => d.Date);
+            ViewBag.Product = product;
+            ViewBag.User = owner;
+            ViewBag.City = city;
+            return View();
         }
 
         public async Task<IActionResult> Privacy()
@@ -111,9 +106,24 @@ namespace FleaMarket.Controllers
         }
 
         
-        public async Task<IActionResult> Error(string errorMessage)
+        public async Task<IActionResult> Error()
         {
-            return View(new ErrorViewModel { RequestId = errorMessage });
+            var exceptionHandlerPathFeature =
+                HttpContext.Features.Get<IExceptionHandlerPathFeature>();
+            try
+            {
+                var error = (ErrorModel)exceptionHandlerPathFeature.Error;
+                return View(error);
+            }
+            catch
+            {
+                var error = new ErrorModel(500, exceptionHandlerPathFeature.Error.Message);
+                return View(error);
+            }
+        }
+        public async Task<IActionResult> Error404()
+        {
+            throw new ErrorModel(404, "Page not found");
         }
     }
 }

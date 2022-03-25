@@ -2,7 +2,7 @@
     ViewData["Title"] = @ViewBag.User.Name;
 }
 <div class="">
-      <article class="blog-post">
+      <article class="blog-post position-relative">
         @{
             if (@ViewBag.User.Rating == 0)
             {
@@ -22,6 +22,10 @@
             }
         }
         <p class="blog-post-meta">@ViewBag.City.Name</p>
+        @if (ViewBag.MyProfile != true)
+        {
+            <a class="btn btn-outline-primary position-absolute bottom-0 end-0 translate-middle" href="#" onclick="chat_create('@ViewBag.User.UserId')" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">Написать</a>
+        }
         <hr/>
       </article>
       <nav>

@@ -7,6 +7,11 @@ using Services.Service;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Extensions.FileProviders;
 using Mg;
+using System.Net;
+using Microsoft.AspNetCore.Diagnostics;
+using FleaMarket.Models;
+using FleaMarket.Hubs;
+using Microsoft.AspNetCore.SignalR;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +21,8 @@ builder.Services.AddTransient<ICityRepository, CityRepository>();
 builder.Services.AddTransient<IDealRepository, DealRepository>();
 builder.Services.AddTransient<IRatingRepository, RatingRepository>();
 builder.Services.AddTransient<IFavoritesRepository, FavoritesRepository>();
+builder.Services.AddTransient<IDialogRepository, DialogRepository>();
+builder.Services.AddTransient<IDialogService, DialogService>();
 builder.Services.AddTransient<IFavoritesService, FavoritesService>();
 builder.Services.AddTransient<IRatingService, RatingService>();
 builder.Services.AddTransient<ICityService, CityService>();
@@ -28,6 +35,7 @@ builder.Services.AddTransient<ICategoryService, CategoryService>();
 builder.Services.AddTransient<IProductRepository, ProductRepository>();
 builder.Services.AddTransient<IProductService, ProductService>();
 builder.Services.AddTransient<Migration>();
+builder.Services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
 
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
@@ -39,15 +47,21 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddSignalR();
+builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
+    app.UseDeveloperExceptionPage();
+}
+else
+{
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
+    app.UseStatusCodePagesWithReExecute("/Home/Error404");
 }
 
 app.UseHttpsRedirection();
@@ -63,11 +77,14 @@ app.UseStaticFiles(new StaticFileOptions
 });
 
 app.UseRouting();
-
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseAuthorization();
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapHub<ChatHub>("/chat");
+    endpoints.MapDefaultControllerRoute();
+});
 
 app.MapControllerRoute(
     name: "default",

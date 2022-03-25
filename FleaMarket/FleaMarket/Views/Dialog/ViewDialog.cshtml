@@ -1,0 +1,50 @@
+﻿<div id="dialog" class="position-relative h-100 w-100">
+@{
+    if (Model != null)
+    {
+        <div id="textElem" class="position-absolute w-100 scrollbarС scrollbar-secondary bordered-danger thin mb-5 pe-1" >
+            @foreach(Message message in Model)
+            {
+                if (ViewBag.UserId == message.UserId)
+                {
+                    <div class="ms-4 border rounded-top-5 rounded-start-5 bg-light text-dark p-1 mb-2 position-relative">
+                        <p class="mb-4">@message.Text</p>
+                        @if (message.IsRead == false)
+                        {
+                            <span class="position-absolute top-100 start-100 translate-middle p-1 bg-info border border-light rounded-circle">
+                                <span class="visually-hidden">New alerts</span>
+                            </span>
+                        }
+                        <div class="position-absolute bottom-0 end-0">
+                            <p class="m-0 p-1">@message.DateTime.ToShortTimeString()</p>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="me-4 rounded-top-5 rounded-end-5 bg-primary text-white p-1 mb-2 position-relative">
+                        <p class="mb-4">@message.Text</p>
+                        <div class="position-absolute bottom-0 end-0">
+                            <p class="m-0 p-1">@message.DateTime.ToShortTimeString()</p>
+                        </div>
+                    </div>
+                }
+            
+            }
+            <div class="wrapper_Scrollbottom" style="height: 155px;"></div>
+        </div>
+    }
+    else
+    {
+        <div class="position-relative h-100">
+            <p class="position-absolute top-50 start-50 translate-middle text-center text-secondary">сообщений нет</p>
+        </div>
+    }
+    <form id="messageForm" class="position-absolute bottom-0 p-2 bg-white w-100" style="height: 150px" asp-anti-forgery="true" enctype="multipart/form-data" novalidate>
+        <input type="hidden" name="dialogId" value="@ViewBag.DialogId"/>
+        <textarea type="text" id="validationDefault02" name="text" class="mb-2 form-control rounded scrollbarT scrollbar-secondary bordered-danger thin" placeholder="Сообщение..." style="overflow-x: hidden !important; overflow-y: hidden; overflow-wrap: break-word !important; height: 100px; width: 100%; overflow-y: scroll; resize: none;" required=""></textarea>
+        <input class="w-100 btn btn btn-primary" onclick="add_message(event, '@ViewBag.DialogId')" id="uploadProduct" type="submit" value="Отправить">
+    </form>
+}
+</div>
+

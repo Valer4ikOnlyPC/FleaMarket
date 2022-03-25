@@ -34,6 +34,12 @@
                                     <a class="nav-link text-dark" onclick="Product_extension()">Добавить лот</a>
                                 </li>
                     </ul>
+                    <button onclick="chat_active()" class="btn btn-primary position-relative" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
+                        Мои чаты
+                        <span id="MyChat" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="visibility:hidden">
+                            0
+                        </span>
+                    </button>
                     <div class="flex-shrink-0 dropdown">
                         <button type="button" class="d-block dropdown-toggle nav-link bg-transparent text-danger border-0" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false" onclick="favorite_extension()">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-heart" viewBox="0 0 16 16">
@@ -76,6 +82,21 @@
         <main role="main" class="pb-3">
             <div id="addProduct" class="modal modal-signin position-fixed d-block" role="dialog" style="z-index:9999; visibility: hidden; background: rgba(0,0,0,0); backdrop-filter: blur(10px);">
             </div>
+            <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" style="width: 600px" aria-labelledby="offcanvasRightLabel">
+              <div class="offcanvas-header">
+                <h5 id="offcanvasRightLabel">Чаты:</h5>
+                <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+              </div>
+              <div class="container offcanvas-body pt-0">
+                  <div class="row h-100 w-100 p-0 m-0">
+                      <div id="SelectedChat" class="col-7 border-end p-0">
+
+                      </div>
+                      <div id="AllChat" class="col-5 scrollbarС scrollbar-secondary bordered-danger thin p-0 m-0">
+                      </div>
+                  </div>
+              </div>
+            </div>
             @RenderBody()
         </main>
     </div>
@@ -91,7 +112,71 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.js" asp-append-version="true"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/js/favorit.js" asp-append-version="true"></script>
+    <script src="~/lib/js/signalr/dist/browser/signalr.js" asp-append-version="true"></script>
+    <script src="~/js/chat_event.js" asp-append-version="true"></script>
+    <script>
+        function chat_create(userId){
+            $.get("/Dialog/CreateDialog", {userId: userId})
+                .done(function (msg) {
+                    chat_active();
+                    open_chat(msg);
+
+                    document.getElementById(msg).classList.add("active");
+                });
+        }
+        function chat_active(){
+            $.get("/Dialog/AllDialog", {})
+                .done(function (msg) {
+                    $('#AllChat').html(msg);
+                });
+            $('#SelectedChat').html('<div class="h-100 position-relative pb-5"><p class="position-absolute pb-5 top-50 start-50 translate-middle text-center text-secondary">Выберите чат</p></div>');
+        }
+        function open_chat(dialogId){
+            var elem1 = document.getElementById("_" + dialogId);
+            elem1.style.visibility = "hidden";
+
+            $.get("/Dialog/ReadMessage", { dialogId: dialogId });
+            $.get("/Dialog/ViewDialog", {dialogId: dialogId})
+                .done(function (msg) {
+                    $('#SelectedChat').html(msg);
+                    let elements = document.getElementsByClassName("openDialog");
+                    for (let elem of elements) {
+                        elem.classList.remove("active");
+                    }
+                    document.getElementById(dialogId).classList.add("active");
+                    lastMessageScroll('smooth');
+                });
+        }
+        function add_message(e, dialogId){
+            e.preventDefault();
+            var data = new FormData($("#messageForm")[0]);
+            var text = data.get("text");
+            if(text == "" | text == null) return;
+
+            $.ajax({
+                type: "POST",
+                url: "/Dialog/AddMessage",
+                data: data,
+                contentType: false,
+                processData: false,
+                beforeSend: function () {
+                    $('#SelectedChat').show();
+                }
+            })
+                .done(function (msg) {
+                    $('#SelectedChat').html(msg);
+                    lastMessageScroll('smooth');
+                });
+        }
+        function lastMessageScroll(b) {
+            var e = document.querySelector('.wrapper_Scrollbottom');
+            if (!e) return ; 
     
+            e.scrollIntoView({
+                block: 'end',
+            });
+        }
+    </script>
     
     @await RenderSectionAsync("Scripts", required: false)
 </body>

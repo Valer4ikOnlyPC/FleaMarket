@@ -80,8 +80,11 @@ namespace Services.Service
         public async Task DeletePhoto(Guid ProductId, Guid PhotoId)
         {
             var product = await GetById(ProductId);
-            if (product.Image.Count() > 0)
-                await _productPhotoRepository.Delete(PhotoId);
+            if (product.Image.Count() == 0)
+                return;
+            var photoPath = await _productPhotoRepository.GetById(PhotoId);
+            await _fileService.DeletePhoto(photoPath.Link);
+            await _productPhotoRepository.Delete(PhotoId);
             var images = await _productPhotoRepository.GetByProduct(ProductId);
             var firstPhoto = images.FirstOrDefault();
             await _productRepository.UpdatePhoto(ProductId, firstPhoto.Link);
@@ -96,7 +99,7 @@ namespace Services.Service
         {
             var product = await _productRepository.GetById(id);
             if (product == null)
-                throw new Exception("Product not found");
+                throw new ErrorModel(400, "Product not found");
             var productPhoto = await _productPhotoRepository.GetByProduct(product.ProductId);
             ProductPhotoDto productPhotoDTO = new ProductPhotoDto
             {
@@ -128,7 +131,7 @@ namespace Services.Service
         public async Task<IEnumerable<Product>> GetByUser(User user)
         {
             if (user == null)
-                throw new Exception("User is not found");
+                throw new ErrorModel(400, "User is not found");
             return await _productRepository.GetByUser(user);
         }
 

@@ -56,6 +56,12 @@ namespace Services.Service
             }
             return files;
         }
+        public async Task DeletePhoto(string ImagePath)
+        {
+            string[] words = ImagePath.Split(new char[] { '/' });
+            var filePath = Path.Combine(_filePath, words.LastOrDefault());
+            File.Delete(filePath);
+        }
         public async Task<int> FileCheck(IFormFile formFile)
         {
             var check = FileCheck(new BinaryReader(formFile.OpenReadStream()).ReadBytes(8));

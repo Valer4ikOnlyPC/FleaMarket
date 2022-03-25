@@ -108,6 +108,11 @@
     background: #fff;
     overflow-y: scroll;
 }
+.scrollbarС {
+    background: #fff;
+    overflow-y: scroll;
+    max-height: 100%;
+}
 
 
 .scrollbar-secondary::-webkit-scrollbar-track {
@@ -164,6 +169,27 @@
 .thin::-webkit-scrollbar {
     width: 6px;
 }
+
+
+.error404 {
+    color: #fff;
+    font-size: 12em;
+    font-weight: bold;
+    font-family: Helvetica;
+    text-shadow: 0 1px 0 #ccc, 0 2px 0 #c9c9c9, 0 3px 0 #bbb, 0 4px 0 #b9b9b9, 0 5px 0 #aaa, 0 6px 1px rgba(0,0,0,.1), 0 0 5px rgba(0,0,0,.1), 0 1px 3px rgba(0,0,0,.3), 0 3px 5px rgba(0,0,0,.2), 0 5px 10px rgba(0,0,0,.25), 0 10px 10px rgba(0,0,0,.2), 0 20px 20px rgba(0,0,0,.15);
+}
+.error404-sm {
+    font-size: 1.5em;
+}
+
+.error404 {
+    text-align: center;
+}
+
+
+
+
+
 
 
 .non_visibility {
@@ -8022,6 +8048,9 @@ textarea.form-control-lg {
 .rounded-3 {
   border-radius: 0.3rem !important;
 }
+.rounded-4 {
+    border-radius: 0.5rem !important;
+}
 
 .rounded-circle {
   border-radius: 50% !important;
@@ -8035,10 +8064,18 @@ textarea.form-control-lg {
   border-top-left-radius: 0.25rem !important;
   border-top-right-radius: 0.25rem !important;
 }
+.rounded-top-5 {
+    border-top-left-radius: 0.5rem !important;
+    border-top-right-radius: 0.5rem !important;
+}
 
 .rounded-end {
   border-top-right-radius: 0.25rem !important;
   border-bottom-right-radius: 0.25rem !important;
+}
+.rounded-end-5 {
+    border-top-right-radius: 0.5rem !important;
+    border-bottom-right-radius: 0.5rem !important;
 }
 
 .rounded-bottom {
@@ -8049,6 +8086,10 @@ textarea.form-control-lg {
 .rounded-start {
   border-bottom-left-radius: 0.25rem !important;
   border-top-left-radius: 0.25rem !important;
+}
+.rounded-start-5 {
+    border-bottom-left-radius: 0.5rem !important;
+    border-top-left-radius: 0.5rem !important;
 }
 
 .visible {

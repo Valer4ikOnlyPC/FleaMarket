@@ -1,17 +1,13 @@
-﻿@model ErrorViewModel
+﻿@model Domain.Models.ErrorModel;
 @{
     ViewData["Title"] = "Error";
 }
 
-<h1 class="text-danger">Error :(</h1>
-
+<div class="error404">@Model?.Number</div>
 @if (Model?.ShowRequestId ?? false)
 {
-    <h2><strong>Error message:</strong> <code class="text-danger h2">@Model?.RequestId</code></h2>
+    <p class="error404 error404-sm" style="text-align:center">
+        <strong class="text-white-50">Error message: </strong>@Model?.Message
+    </p>
 }
-<p>
-    <strong>The Development environment shouldn't be enabled for deployed applications.</strong>
-    It can result in displaying sensitive information from exceptions to end users.
-    For local debugging, enable the <strong>Development</strong> environment by setting the <strong>ASPNETCORE_ENVIRONMENT</strong> environment variable to <strong>Development</strong>
-    and restarting the app.
-</p>
+

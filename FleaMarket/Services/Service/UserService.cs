@@ -58,7 +58,7 @@ namespace Services.Service
         {
             var user = await _userRepository.GetById(id);
             if (user == null)
-                throw new Exception("User not found");
+                throw new ErrorModel(400, "User not found");
             return user;
         }
         public async Task<User> GetByPhone(string phone)
@@ -88,7 +88,7 @@ namespace Services.Service
             byte[] buffer2;
             if (password == null)
             {
-                throw new ArgumentNullException("password");
+                throw new ErrorModel(406, "Argument Null");
             }
             using (Rfc2898DeriveBytes bytes = new Rfc2898DeriveBytes(password, 0x10, 0x3e8))
             {
@@ -110,7 +110,7 @@ namespace Services.Service
             }
             if (password == null)
             {
-                throw new ArgumentNullException("password");
+                throw new ErrorModel(406, "Argument Null");
             }
             byte[] src = Convert.FromBase64String(hashedPassword);
             if ((src.Length != 0x31) || (src[0] != 0))

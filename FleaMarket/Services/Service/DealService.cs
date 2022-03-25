@@ -164,7 +164,7 @@ namespace Services.Service
         {
             var deal = await _dealRepository.GetById(dealId);
             if (deal == null)
-                throw new Exception();
+                throw new ErrorModel(400, "Deal not found");
             await _dealRepository.Update(dealId, (int)DealState.Accepted);
             await _productRepository.UpdateState(deal.ProductRecipient, (int)ProductState.InDeal);
             await _productRepository.UpdateState(deal.ProductMaster, (int)ProductState.InDeal);
@@ -177,7 +177,7 @@ namespace Services.Service
             }
 
             var dealsRecipient = new List<Deal>();
-            if (deal.ProductRecipient == Guid.Empty) 
+            if (deal.ProductRecipient != Guid.Empty) 
                 dealsRecipient = (await _dealRepository.GetByProduct(deal.ProductRecipient)).ToList();
             foreach (Deal dealRecipient in dealsRecipient)
             {

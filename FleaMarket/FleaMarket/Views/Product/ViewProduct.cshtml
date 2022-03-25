@@ -4,7 +4,12 @@
     <div id="deal" class="modal modal-signin position-fixed d-block" role="dialog" style="z-index:9999; visibility: hidden; background: rgba(0,0,0,0); backdrop-filter: blur(10px);">
     </div>
 
-  <a asp-area="" asp-controller="Home" asp-action="Index" asp-route-searchDto="new {CategoryId = @Model.CategoryId, CityId = @Model.CityId}" class="lead">@ViewBag.Category</a>
+  <form asp-action="Index" asp-controller="Home" class="mb-1" asp-anti-forgery="true" enctype="multipart/form-data" novalidate>
+      <input type="hidden" name="Search" value=""/>
+      <input type="hidden" name="CategoryId" value="@Model.CategoryId"/>
+      <input type="hidden" name="CityId" value="@Model.CityId"/>
+      <button class="btn btn-link link-secondary" type="submit" name="subscribe">@ViewBag.Category</button>
+  </form>
   <div id="myCarousel" class="carousel slide mb-3 shadow" style="background: gray; height: 500px; " data-bs-ride="carousel">
     <div class="carousel-indicators" style="z-index:3">
         <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="0" aria-label="0" class="active" aria-current="true"></button>
@@ -91,7 +96,10 @@
                 {
                     if (@ViewBag.Active)
                     {
-                        <a class="btn btn-sm btn-outline-secondary" style="font-size:14pt" onclick="deal_extension('@Model.ProductId')" href="#" role="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">Предложить обмен</a>
+                        <div class="btn-group w-100">
+                            <a class="btn btn-outline-secondary" onclick="deal_extension('@Model.ProductId')" role="button">Предложить обмен</a>
+                            <a class="btn btn-outline-primary" href="#" onclick="chat_create('@Model.UserId')" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">Написать</a>
+                        </div>
                     }
                 }
             }
@@ -120,9 +128,6 @@
             }
         </div>
     </div>
-    <script>
-        
-    </script>
     <script src="~/js/addDeal.js" asp-append-version="true"></script>
 
   

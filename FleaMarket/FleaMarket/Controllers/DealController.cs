@@ -35,51 +35,37 @@ namespace FleaMarket.Controllers
         [HttpGet]
         public async Task<IActionResult> DealOffer(Guid ProductId)
         {
-            try
-            {
-                var product = await _productService.GetById(ProductId);
-                if (product.IsActive != ProductState.Active)
-                    return BadRequest();
-                var user = await _userService.GetByPhone(User.Identity.Name);
-                var myProduct = await _productService.GetByUser(user);
-                ViewBag.Product = product;
-                ViewBag.MyProduct = myProduct.Where(p => p.IsActive == ProductState.Active);
-                return PartialView();
-            }
-            catch (Exception ex)
-            {
-                return PartialView("Error", new ErrorViewModel { RequestId = ex.Message });
-            }
+            var product = await _productService.GetById(ProductId);
+            if (product.IsActive != ProductState.Active)
+                return BadRequest();
+            var user = await _userService.GetByPhone(User.Identity.Name);
+            var myProduct = await _productService.GetByUser(user);
+            ViewBag.Product = product;
+            ViewBag.MyProduct = myProduct.Where(p => p.IsActive == ProductState.Active);
+            return PartialView();
         }
         [HttpGet]
         public async Task<string> CreateDeal(Guid productMaster, Guid productRecipient, Guid userRecipient)
         {
-            try
-            {
-                await _productService.GetById(productMaster);
-                await _productService.GetById(productRecipient);
-                await _userService.GetById(userRecipient);
-                if (productMaster == productRecipient)
-                    productMaster = Guid.Empty;
+            await _productService.GetById(productMaster);
+            await _productService.GetById(productRecipient);
+            await _userService.GetById(userRecipient);
+            if (productMaster == productRecipient)
+                productMaster = Guid.Empty;
 
-                var user = await _userService.GetByPhone(User.Identity.Name);
-                Deal deal = new Deal
-                {
-                    ProductMaster = productMaster,
-                    UserMaster = user.UserId,
-                    ProductRecipient = productRecipient,
-                    UserRecipient = userRecipient
-                };
-                var result = await _dealService.CheckRelevant(deal);
-                if (!result)
-                    return "Это предложение уже существует";
-                await _dealService.Create(deal);
-                return "";
-            }
-            catch (Exception ex)
+            var user = await _userService.GetByPhone(User.Identity.Name);
+            Deal deal = new Deal
             {
-                return ex.Message;
-            }
+                ProductMaster = productMaster,
+                UserMaster = user.UserId,
+                ProductRecipient = productRecipient,
+                UserRecipient = userRecipient
+            };
+            var result = await _dealService.CheckRelevant(deal);
+            if (!result)
+                return "Это предложение уже существует";
+            await _dealService.Create(deal);
+            return "";
         }
         public async Task<IActionResult> MyDeal()
         {
@@ -96,7 +82,7 @@ namespace FleaMarket.Controllers
         {
             var deal = await _dealService.GetById(dealId);
             if (deal == null)
-                return PartialView("Error", new ErrorViewModel { RequestId = "Deal not found" });
+                throw new ErrorModel(400, "Deal not found");
             var user = await _userService.GetByPhone(User.Identity.Name);
             var rating = await _ratingService.GetByDeal(deal);
             ViewBag.Rating = false;
@@ -125,7 +111,7 @@ namespace FleaMarket.Controllers
             var userMaster = await _userService.GetByPhone(User.Identity.Name);
             var deal = await _dealService.GetById(dealId);
             if (deal == null)
-                return RedirectToAction("Error", "Home", new { errorMessage = "Deal not found" });
+                throw new ErrorModel(400, "Deal not found");
             var userRecipient = deal.UserMaster;
             if (deal.UserRecipient != userMaster.UserId)
                 userRecipient = deal.UserRecipient;
@@ -141,11 +127,7 @@ namespace FleaMarket.Controllers
         }
         public async Task<IActionResult> Accepted(Guid dealId)
         {
-            try
-            {
-                await _dealService.Accepted(dealId);
-            }
-            catch {}
+            await _dealService.Accepted(dealId);
             return RedirectToAction("MyDeal", "Deal");
         }
         public async Task<IActionResult> Cancel(Guid dealId)

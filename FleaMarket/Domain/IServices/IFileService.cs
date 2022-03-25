@@ -12,5 +12,6 @@ namespace Domain.IServices
     {
         Task<IEnumerable<ProductPhoto>> UploadMany(IEnumerable<IFormFile> Image, Guid productId, int photoCount);
         Task<int> FileCheck(IFormFile formFile);
+        Task DeletePhoto(string ImagePath);
     }
 }

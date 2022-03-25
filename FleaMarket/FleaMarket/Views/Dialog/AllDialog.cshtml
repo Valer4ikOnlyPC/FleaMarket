@@ -1,0 +1,43 @@
+﻿@using static Domain.Dto.DialogDto;
+
+
+<div class="container p-0 m-0">
+    @{
+    if (@Model != null)
+    {
+        @foreach(DialogDto dialogDto in @Model)
+        {
+            if (ViewBag.User.UserId == dialogDto.User1)
+            {
+
+                <a href="#" id="@dialogDto.DialogId" onclick="open_chat('@dialogDto.DialogId')" class="openDialog list-group-item list-group-item-action py-3 lh-tight position-relative" aria-current="true">
+                    <div class="d-flex w-100 align-items-center justify-content-between">
+                        <strong class="mb-1">@dialogDto.NameUser2</strong>
+                        <small>@dialogDto.Date.ToString("HH:mm dd/MM")</small>
+                    </div>
+                    <span id="_@dialogDto.DialogId" class="position-absolute top-0 start-0 p-1 bg-info border border-light rounded-circle" style="visibility:hidden">
+                        <span class="visually-hidden">New alerts</span>
+                    </span>
+                </a>
+            }
+            else
+            {
+                <a href="#" id="@dialogDto.DialogId" onclick="open_chat('@dialogDto.DialogId')" class="openDialog list-group-item list-group-item-action py-3 lh-tight position-relative" aria-current="true">
+                    <div class="d-flex w-100 align-items-center justify-content-between">
+                        <strong class="mb-1">@dialogDto.NameUser1</strong>
+                        <small>@dialogDto.Date.ToString("HH:mm dd/MM")</small>
+                    </div>
+                    <span id="_@dialogDto.DialogId" class="position-absolute top-0 start-0 p-1 bg-info border border-light rounded-circle" style="visibility:hidden">
+                        <span class="visually-hidden">New alerts</span>
+                    </span>
+                </a>
+            }
+        }
+        
+    }
+    else
+    {
+        <p>нет переписок</p>
+    }
+}
+</div>
