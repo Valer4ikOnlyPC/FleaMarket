@@ -62,7 +62,6 @@ namespace Mg
                 .WithColumn("\"UserId\"").AsGuid().NotNullable()
                 .WithColumn("\"Date\"").AsDateTime().NotNullable();
 
-            Execute.Sql("CREATE INDEX products_idx ON \"Products\" USING GIN (to_tsvector('russian', \"Name\"||' '||\"Description\"));");
 
             Create.ForeignKey()
                 .FromTable("\"Products\"").ForeignColumn("\"CityId\"")

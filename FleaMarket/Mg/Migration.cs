@@ -39,7 +39,7 @@ namespace Mg
                 .ConfigureRunner(rb => rb
                     .AddPostgres92()
                     .WithGlobalConnectionString(_configuration.GetConnectionString("myconn"))
-                    .ScanIn(typeof(Migration_20220303183503).Assembly).For.Migrations())
+                    .ScanIn(typeof(Migration_20220325203104).Assembly).For.Migrations())
                 .AddLogging(lb => lb.AddFluentMigratorConsole())
                 .BuildServiceProvider(false);
         }
