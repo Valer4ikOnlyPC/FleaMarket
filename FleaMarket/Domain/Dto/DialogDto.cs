@@ -13,7 +13,7 @@ namespace Domain.Dto
         public string NameUser1 { get; set; }
         public Guid User2 { get; set; }
         public string NameUser2 { get; set; }
-        public string Path { get; set; }
         public DateTime Date { get; set; }
+        public bool IsRead { get; set; }
     }
 }

@@ -24,6 +24,12 @@ namespace FleaMarket.Controllers
             _userService = userService;
             _hubContext = hubContext;
         }
+        public async Task<int> CountNewDialogs()
+        {
+            var user = await _userService.GetByPhone(User.Identity.Name);
+            var dialogs = (await _dialogService.GetByUser(user.UserId));
+            return dialogs.Where(d => d.IsRead == false).Count();
+        }
         public async Task<IActionResult> AllDialog()
         {
             var user = await _userService.GetByPhone(User.Identity.Name);
@@ -31,13 +37,18 @@ namespace FleaMarket.Controllers
             ViewBag.User = await _userService.GetByPhone(User.Identity.Name);
             return PartialView(dialogs);
         }
-        public async Task<IActionResult> ViewDialog(Guid dialogId)
+        public async Task<IActionResult> ViewDialog(Guid dialogId, int pageNumber = 1)
         {
             var dialog = await _dialogService.GetById(dialogId);
-            var messages = await _dialogService.GetMessage(dialog);
+            var allMessages = await _dialogService.GetMessage(dialog);
+            var countPage = (int)Math.Ceiling(((decimal)allMessages.Count() / (decimal)30));
+            var messages = allMessages.OrderByDescending(m => m.Date).Take(30 * pageNumber);
+            ViewBag.NextPage = true;
+            if ((countPage == pageNumber) | countPage == 0) ViewBag.NextPage = false;
             ViewBag.DialogId = dialogId;
             ViewBag.UserId = (await _userService.GetByPhone(User.Identity.Name)).UserId;
-            return PartialView(messages);
+            ViewBag.PageNumber = pageNumber;
+            return PartialView(messages.OrderBy(m => m.Date));
         }
         public async Task ReadMessage(Guid dialogId)
         {
@@ -65,7 +76,7 @@ namespace FleaMarket.Controllers
                 UserId = user.UserId,
                 User = user.Name,
                 Text = text,
-                DateTime = DateTime.Now,
+                Date = DateTime.Now,
                 IsRead = false
             };
             await _dialogService.CreateMessage(message, dialog);

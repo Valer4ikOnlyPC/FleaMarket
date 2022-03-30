@@ -59,7 +59,7 @@ namespace FleaMarket.Controllers
         {
             if (ModelState.IsValid)
             {
-                var result = _userService.GetByPhone(model.PhoneNumber).Result;
+                var result = await _userService.GetByPhone(model.PhoneNumber);
                 if (result == null)
                 {
                     var userId = await _userService.Create(model);

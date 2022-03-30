@@ -1,9 +1,19 @@
 ﻿<div id="dialog" class="position-relative h-100 w-100">
 @{
-    if (Model != null)
+    IEnumerable<Message> _model = Model as IEnumerable<Message>;
+    if (_model.Count() != 0)
     {
         <div id="textElem" class="position-absolute w-100 scrollbarС scrollbar-secondary bordered-danger thin mb-5 pe-1" >
-            @foreach(Message message in Model)
+            @if ( ViewBag.NextPage)
+            {
+                <div id="chatTop" style="visibility:hidden">@ViewBag.PageNumber</div>
+                <div class="d-flex justify-content-center" style="height: 70px">
+                    <div class="spinner-border text-primary" role="status">
+                      <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            }
+            @foreach(Message message in _model)
             {
                 if (ViewBag.UserId == message.UserId)
                 {
@@ -16,7 +26,7 @@
                             </span>
                         }
                         <div class="position-absolute bottom-0 end-0">
-                            <p class="m-0 p-1">@message.DateTime.ToShortTimeString()</p>
+                            <p class="m-0 p-1">@message.Date.ToShortTimeString()</p>
                         </div>
                     </div>
                 }
@@ -25,7 +35,7 @@
                     <div class="me-4 rounded-top-5 rounded-end-5 bg-primary text-white p-1 mb-2 position-relative">
                         <p class="mb-4">@message.Text</p>
                         <div class="position-absolute bottom-0 end-0">
-                            <p class="m-0 p-1">@message.DateTime.ToShortTimeString()</p>
+                            <p class="m-0 p-1">@message.Date.ToShortTimeString()</p>
                         </div>
                     </div>
                 }
@@ -41,10 +51,27 @@
         </div>
     }
     <form id="messageForm" class="position-absolute bottom-0 p-2 bg-white w-100" style="height: 150px" asp-anti-forgery="true" enctype="multipart/form-data" novalidate>
-        <input type="hidden" name="dialogId" value="@ViewBag.DialogId"/>
+        <input type="hidden" id="_dialogId" name="dialogId" value="@ViewBag.DialogId"/>
         <textarea type="text" id="validationDefault02" name="text" class="mb-2 form-control rounded scrollbarT scrollbar-secondary bordered-danger thin" placeholder="Сообщение..." style="overflow-x: hidden !important; overflow-y: hidden; overflow-wrap: break-word !important; height: 100px; width: 100%; overflow-y: scroll; resize: none;" required=""></textarea>
         <input class="w-100 btn btn btn-primary" onclick="add_message(event, '@ViewBag.DialogId')" id="uploadProduct" type="submit" value="Отправить">
     </form>
 }
 </div>
+<script>
+    var dialogId = document.getElementById('_dialogId').value;
+    var scrol = document.getElementById('textElem');
+    scrol.addEventListener('scroll', function() {
+            let obj = document.getElementById('chatTop');
+            let {top,bottom} = obj.getBoundingClientRect();
+            let height = document.documentElement.clientHeight;
+            if(top > 62){
+                var numberPage = Number(obj.textContent) + 1;
+                $.get("/Dialog/ViewDialog", {dialogId: dialogId, pageNumber: numberPage})
+                    .done(function (msg) {
+                        $('#SelectedChat').html(msg);
+                        scrol.scrollTop = height * 2;
+                    });
+            }
+        });
+</script>
 

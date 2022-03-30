@@ -19,18 +19,16 @@ namespace Repository.Data
         public DialogRepository(IConfiguration configuration)
         {
             _configuration = configuration;
-            _filePath = _configuration["DialogDirectory"];
         }
         public async Task<Guid> Create(Dialog item)
         {
             item.DialogId = Guid.NewGuid();
-            item.Path = string.Concat(_filePath,"\\",item.DialogId, ".json");
             item.Date = DateTime.Now;
             IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
             var favorite = await db.QueryAsync<Guid>(
-                "INSERT INTO \"Dialogues\" (\"DialogId\", \"User1\", \"User2\", \"Path\", \"Date\") " +
-                "VALUES(@DialogId, @User1, @User2, @Path, @Date) " +
-                "RETURNING \"DialogId\";", new { item.DialogId, item.User1, item.User2, item.Path, item.Date });
+                "INSERT INTO \"Dialogues\" (\"DialogId\", \"User1\", \"User2\", \"Date\") " +
+                "VALUES(@DialogId, @User1, @User2, @Date) " +
+                "RETURNING \"DialogId\";", new { item.DialogId, item.User1, item.User2, item.Date });
             return favorite.FirstOrDefault();
         }
 

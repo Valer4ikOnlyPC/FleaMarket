@@ -27,7 +27,7 @@ namespace Repository.Data
             var product = await db.QueryAsync<Product>(
                 "SELECT * " +
                 "FROM \"Products\" ");
-            return product.Where(p => p.IsActive == ProductState.Active);
+            return product;
         }
         public async Task<IEnumerable<Product>> GetByUser(User user)
         {

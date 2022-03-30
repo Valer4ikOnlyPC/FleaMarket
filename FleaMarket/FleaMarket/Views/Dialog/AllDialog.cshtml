@@ -1,11 +1,12 @@
 ﻿@using static Domain.Dto.DialogDto;
 
 
-<div class="container p-0 m-0">
+<div class="container p-0 m-0 position-relative h-100 w-100">
     @{
-    if (@Model != null)
+    IEnumerable<DialogDto> _model = Model as IEnumerable<DialogDto>;
+    if (_model.Any())
     {
-        @foreach(DialogDto dialogDto in @Model)
+        @foreach(DialogDto dialogDto in Model)
         {
             if (ViewBag.User.UserId == dialogDto.User1)
             {
@@ -15,9 +16,18 @@
                         <strong class="mb-1">@dialogDto.NameUser2</strong>
                         <small>@dialogDto.Date.ToString("HH:mm dd/MM")</small>
                     </div>
-                    <span id="_@dialogDto.DialogId" class="position-absolute top-0 start-0 p-1 bg-info border border-light rounded-circle" style="visibility:hidden">
-                        <span class="visually-hidden">New alerts</span>
-                    </span>
+                    @if (dialogDto.IsRead)
+                    {
+                        <span id="_@dialogDto.DialogId" class="position-absolute top-0 start-0 p-1 bg-info border border-light rounded-circle" style="visibility:hidden">
+                            <span class="visually-hidden">New alerts</span>
+                        </span>
+                    }
+                    else
+                    {
+                        <span id="_@dialogDto.DialogId" class="position-absolute top-0 start-0 p-1 bg-info border border-light rounded-circle" style="visibility:visible">
+                            <span class="visually-hidden">New alerts</span>
+                        </span>
+                    }
                 </a>
             }
             else
@@ -27,9 +37,18 @@
                         <strong class="mb-1">@dialogDto.NameUser1</strong>
                         <small>@dialogDto.Date.ToString("HH:mm dd/MM")</small>
                     </div>
-                    <span id="_@dialogDto.DialogId" class="position-absolute top-0 start-0 p-1 bg-info border border-light rounded-circle" style="visibility:hidden">
-                        <span class="visually-hidden">New alerts</span>
-                    </span>
+                    @if (dialogDto.IsRead)
+                    {
+                        <span id="_@dialogDto.DialogId" class="position-absolute top-0 start-0 p-1 bg-info border border-light rounded-circle" style="visibility:hidden">
+                            <span class="visually-hidden">New alerts</span>
+                        </span>
+                    }
+                    else
+                    {
+                        <span id="_@dialogDto.DialogId" class="position-absolute top-0 start-0 p-1 bg-info border border-light rounded-circle" style="visibility:visible">
+                            <span class="visually-hidden">New alerts</span>
+                        </span>
+                    }
                 </a>
             }
         }
@@ -37,7 +56,9 @@
     }
     else
     {
-        <p>нет переписок</p>
+        <div class="position-relative h-100">
+            <p class="position-absolute top-50 start-50 translate-middle text-center text-secondary pb-5">Нет чатов</p>
+        </div>
     }
 }
 </div>

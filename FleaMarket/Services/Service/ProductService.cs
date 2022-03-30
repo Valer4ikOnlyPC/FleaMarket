@@ -92,7 +92,7 @@ namespace Services.Service
 
         public async Task<IEnumerable<Product>> GetAll()
         {
-            return await _productRepository.GetAll();
+            return (await _productRepository.GetAll()).Where(p => p.IsActive == ProductState.Active);
         }
 
         public async Task<ProductPhotoDto> GetById(Guid id)
@@ -118,7 +118,7 @@ namespace Services.Service
         }
         public async Task<IEnumerable<Product>> GetByCategory(int categoryId)
         {
-            var products = await _productRepository.GetAll();
+            var products = await GetAll();
             if (categoryId == -1) return products;
 
             var categoryParent = (List<Category>)await _categoryService.GetByParent(categoryId);

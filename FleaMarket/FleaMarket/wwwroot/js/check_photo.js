@@ -2,7 +2,7 @@
     var data = new FormData($("#formAdd")[0]);
     $.ajax({
         type: "POST",
-        url: "Product/PhotoCheck",
+        url: "/Product/PhotoCheck",
         data: data,
         contentType: false,
         processData: false,

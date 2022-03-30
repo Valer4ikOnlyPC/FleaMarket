@@ -17,10 +17,11 @@ namespace Mg
     public class Migration
     {
         private static IConfiguration _configuration;
+        private static string _connString;
 
-        public Migration(IConfiguration configuration)
+        public Migration(string connString)
         {
-            _configuration = configuration;
+            _connString = connString;
 
             var serviceProvider = CreateServices();
             using (var scope = serviceProvider.CreateScope())
@@ -30,6 +31,9 @@ namespace Mg
         }
         static void Main(string[] args)
         {
+            Console.WriteLine("Enter connection string: ");
+            var conn = Console.ReadLine();
+            var migration = new Migration(conn);
             Console.ReadKey();
         }
         private static IServiceProvider CreateServices()
@@ -38,7 +42,7 @@ namespace Mg
                 .AddFluentMigratorCore()
                 .ConfigureRunner(rb => rb
                     .AddPostgres92()
-                    .WithGlobalConnectionString(_configuration.GetConnectionString("myconn"))
+                    .WithGlobalConnectionString(_connString)
                     .ScanIn(typeof(Migration_20220325203104).Assembly).For.Migrations())
                 .AddLogging(lb => lb.AddFluentMigratorConsole())
                 .BuildServiceProvider(false);

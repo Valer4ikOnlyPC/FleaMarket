@@ -34,12 +34,6 @@
                                     <a class="nav-link text-dark" onclick="Product_extension()">Добавить лот</a>
                                 </li>
                     </ul>
-                    <button onclick="chat_active()" class="btn btn-primary position-relative" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
-                        Мои чаты
-                        <span id="MyChat" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="visibility:hidden">
-                            0
-                        </span>
-                    </button>
                     <div class="flex-shrink-0 dropdown">
                         <button type="button" class="d-block dropdown-toggle nav-link bg-transparent text-danger border-0" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false" onclick="favorite_extension()">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-heart" viewBox="0 0 16 16">
@@ -49,6 +43,10 @@
                         <ul id="favoriteToList" class="dropdown-menu dropdown-menu-lg-end shadow scrollbar scrollbar-danger bordered-danger thin" aria-labelledby="dropdownUser2" style=" min-width: 450px;">
                         </ul>
                     </div>
+                    <button onclick="chat_active()" class="btn btn-primary position-relative" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
+                        Мои чаты
+                        <span id="MyChat" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="visibility:hidden">0</span>
+                    </button>
                     <div class="flex-shrink-0 dropdown">
                         <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle nav-link text-dark" id="dropdownUser2" data-bs-toggle="dropdown" aria-expanded="false">@User.Identity.Name</a>
                         <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser2" style="">
@@ -80,12 +78,12 @@
     </header>
     <div class="container" style="padding-top:70px">
         <main role="main" class="pb-3">
-            <div id="addProduct" class="modal modal-signin position-fixed d-block" role="dialog" style="z-index:9999; visibility: hidden; background: rgba(0,0,0,0); backdrop-filter: blur(10px);">
+            <div id="addProduct" class="modal modal-signin position-fixed d-block" role="dialog" style="z-index:9999; visibility:hidden; background: rgba(0,0,0,0); backdrop-filter: blur(10px);">
             </div>
-            <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" style="width: 600px" aria-labelledby="offcanvasRightLabel">
+            <div class="offcanvas offcanvas-end border-0 shadow-lg" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1" id="offcanvasRight" style="width: 600px" aria-labelledby="offcanvasRightLabel">
               <div class="offcanvas-header">
                 <h5 id="offcanvasRightLabel">Чаты:</h5>
-                <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                <button type="button" class="btn-close text-reset" onclick="DeActive()" data-bs-dismiss="offcanvas" aria-label="Close"></button>
               </div>
               <div class="container offcanvas-body pt-0">
                   <div class="row h-100 w-100 p-0 m-0">
@@ -115,13 +113,41 @@
     <script src="~/lib/js/signalr/dist/browser/signalr.js" asp-append-version="true"></script>
     <script src="~/js/chat_event.js" asp-append-version="true"></script>
     <script>
+        $.get("/Dialog/CountNewDialogs", {})
+            .done(function (countDialog) {
+                if(Number(countDialog) == 0){
+                    document.getElementById("MyChat").style.visibility = "hidden";
+                }
+                else{
+                    document.getElementById("MyChat").style.visibility = "visible";
+                    document.getElementById("MyChat").textContent = String(countDialog);
+                }
+            });
+
+        function DeActive(){
+            $.get("/Dialog/CountNewDialogs", {})
+                .done(function (countDialog) {
+                    if(Number(countDialog) == 0){
+                        document.getElementById("MyChat").style.visibility = "hidden";
+                    }
+                    else{
+                        document.getElementById("MyChat").style.visibility = "visible";
+                        document.getElementById("MyChat").textContent = String(countDialog);
+                    }
+                });
+            let elements = document.getElementsByClassName("openDialog");
+            for (let elem of elements) {
+                elem.classList.remove("active");
+            }
+        }
         function chat_create(userId){
             $.get("/Dialog/CreateDialog", {userId: userId})
-                .done(function (msg) {
-                    chat_active();
-                    open_chat(msg);
-
-                    document.getElementById(msg).classList.add("active");
+                .done(function (dialogId) {
+                    $.get("/Dialog/AllDialog", {})
+                        .done(function (msg) {
+                            $('#AllChat').html(msg);
+                            open_chat(dialogId);
+                        });
                 });
         }
         function chat_active(){

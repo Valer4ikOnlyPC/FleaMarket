@@ -37,7 +37,7 @@ namespace Services.Service
             var userId = await _userRepository.Create(user);
             var userPassword = new UserPassword
             {
-                Password = await Task.Run(() => HashPassword(item.Password)),
+                Password = HashPassword(item.Password),
                 UserId = userId
             };
             await _userPasswordRepository.Create(userPassword);

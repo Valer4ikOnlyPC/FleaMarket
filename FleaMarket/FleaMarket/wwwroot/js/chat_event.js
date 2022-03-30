@@ -1,8 +1,21 @@
 ﻿const hubConnection = new signalR.HubConnectionBuilder()
     .withUrl("/chat")
     .build();
-var NoRead = 0;
 hubConnection.on('SendMessage', function (dialogId) {
+    var elem = document.getElementById("offcanvasRight");
+    if (!elem.classList.contains('show')) {
+        $.get("/Dialog/CountNewDialogs", {})
+            .done(function (countDialog) {
+                if (countDialog == 0) {
+                    document.getElementById("MyChat").style.visibility = "hidden";
+                }
+                else {
+                    document.getElementById("MyChat").style.visibility = "visible";
+                    document.getElementById("MyChat").textContent = String(countDialog);
+                }
+            });
+    }
+
     var elem = document.getElementById(dialogId);
     if (elem.classList.contains('active')) {
         $.get("/Dialog/ReadMessage", { dialogId: dialogId });
@@ -10,8 +23,6 @@ hubConnection.on('SendMessage', function (dialogId) {
             .done(function (msg) {
                 $('#SelectedChat').html(msg);
                 lastMessageScroll('smooth');
-                NoRead -= 1;
-                BadgesVisually();
             });
     }
     else {
@@ -30,13 +41,3 @@ hubConnection.on('ReadMessage', function (dialogId) {
     }
 });
 hubConnection.start();
-
-function BadgesVisually() {
-    var badges = document.getElementById('badges');
-    if (NoRead > 0) {
-        badges.style.visibility = "visible";
-    }
-    else {
-        badges.style.visibility = "hidden";
-    }
-}

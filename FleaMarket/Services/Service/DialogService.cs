@@ -15,15 +15,17 @@ namespace Services.Service
     {
         private readonly IDialogRepository _dialogRepository;
         private readonly IUserService _userService;
+        private readonly IMessageRepository _messageRepository;
         private readonly JsonSerializerOptions _options = new JsonSerializerOptions
         {
             WriteIndented = true,
             AllowTrailingCommas = true
         };
-        public DialogService(IDialogRepository dialogRepository, IUserService userService)
+        public DialogService(IDialogRepository dialogRepository, IUserService userService, IMessageRepository messageRepository)
         {
             _dialogRepository = dialogRepository;
             _userService = userService;
+            _messageRepository = messageRepository;
         }
         public async Task<Guid> Create(Dialog item)
         {
@@ -62,7 +64,8 @@ namespace Services.Service
                     User2 = dialog.User2,
                     NameUser1 = (await _userService.GetById(dialog.User1)).Name,
                     NameUser2 = (await _userService.GetById(dialog.User2)).Name,
-                    Date = dialog.Date
+                    Date = dialog.Date,
+                    IsRead = await CheckRead(dialog, userId)
                 };
                 result.Add(dialogDto);
             }
@@ -71,45 +74,27 @@ namespace Services.Service
 
         public async Task<IEnumerable<Message>> GetMessage(Dialog dialog)
         {
-            try
-            {
-                var messages = JsonSerializer.Deserialize<List<Message>>(File.ReadAllText(dialog.Path));
-                return messages;
-            }
-            catch 
-            {
-                return null;
-            }
+            return (await _messageRepository.GetMessage(dialog.DialogId)).OrderBy(m => m.Date);
         }
         public async Task CreateMessage(Message message, Dialog dialog)
         {
             await UpdateDate(dialog.DialogId);
-            var messages = new List<Message>();
-            try
-            {
-                messages = JsonSerializer.Deserialize<List<Message>>(File.ReadAllText(dialog.Path));
-            }
-            catch
-            { }
-            messages.Add(message);
-            File.WriteAllText(dialog.Path, JsonSerializer.Serialize<List<Message>>(messages, _options));
+            message.DialogId = dialog.DialogId;
+            await _messageRepository.CreateMessage(message);
         }
         public async Task ReadMessage(Dialog dialog, Guid userId)
         {
-            var messages = await GetMessage(dialog);
-            var result = new List<Message>();
-            foreach (var message in messages.Where(d => d.UserId != userId))
-            {
-                message.IsRead = true;
-                result.Add(message);
-            }
-            result.AddRange(messages.Where(d => d.UserId == userId));
-            var result1 = result.OrderBy(d => d.DateTime).ToList<Message>();
-            File.WriteAllText(dialog.Path, JsonSerializer.Serialize<List<Message>>(result1, _options));
+            await _messageRepository.ReadMessage(dialog.DialogId, userId);
         }
         public async Task<Dialog> CheckSimilar(Dialog dialog)
         {
             return await _dialogRepository.CheckSimilar(dialog);
+        }
+        private async Task<bool> CheckRead(Dialog dialog, Guid userId)
+        {
+            var messages = (await GetMessage(dialog)).Where(m => m.UserId != userId);
+            if (!messages.Any()) return true;
+            return messages.LastOrDefault().IsRead;
         }
     }
 }
