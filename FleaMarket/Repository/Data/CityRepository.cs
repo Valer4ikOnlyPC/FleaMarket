@@ -36,5 +36,13 @@ namespace Repository.Data
                 "WHERE \"CityId\" = @id", new { id });
             return citys.FirstOrDefault();
         }
+        public async Task Create(City item)
+        {
+            IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
+            var sqlQuery =
+                "INSERT INTO \"Cities\" (\"Name\") " +
+                "VALUES(@Name)";
+            await db.ExecuteAsync(sqlQuery, item);
+        }
     }
 }

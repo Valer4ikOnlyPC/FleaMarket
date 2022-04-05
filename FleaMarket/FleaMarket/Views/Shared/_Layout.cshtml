@@ -14,7 +14,8 @@
     <header class="w-100" style="position: fixed; display: block; z-index: 1000;">
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">FleaMarket</a>
+                <a class="navbar-brand p-0 m-0 me-4" asp-area="" asp-controller="Home" asp-action="Index"><img class="p-0 m-0" style=" max-width:57px; max-height:40px;z-index:2; position: relative;" src="/images/logo-sm.jpg" /></a>
+                
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -35,7 +36,7 @@
                                 </li>
                     </ul>
                     <div class="flex-shrink-0 dropdown">
-                        <button type="button" class="d-block dropdown-toggle nav-link bg-transparent text-danger border-0" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false" onclick="favorite_extension()">
+                        <button type="button" class="d-block  nav-link bg-transparent text-danger border-0" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false" onclick="favorite_extension()">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-heart" viewBox="0 0 16 16">
                                 <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"></path>
                             </svg>
@@ -48,7 +49,7 @@
                         <span id="MyChat" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="visibility:hidden">0</span>
                     </button>
                     <div class="flex-shrink-0 dropdown">
-                        <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle nav-link text-dark" id="dropdownUser2" data-bs-toggle="dropdown" aria-expanded="false">@User.Identity.Name</a>
+                        <a href="#" class="d-block link-dark text-decoration-none nav-link text-dark" id="dropdownUser2" data-bs-toggle="dropdown" aria-expanded="false">@User.Identity.Name</a>
                         <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser2" style="">
                             <li><a class="nav-link text-dark" onclick="Product_extension()">Добавить лот</a></li>
                             <li><a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="GetUserByName">Моя страница</a></li>
@@ -121,6 +122,16 @@
                 else{
                     document.getElementById("MyChat").style.visibility = "visible";
                     document.getElementById("MyChat").textContent = String(countDialog);
+                }
+            });
+        $.get("/Home/GetCountNewDeals", {})
+            .done(function (msg) {
+                if (msg == 0) {
+                    document.getElementById("CountNewDeals").style.visibility = 'hidden';
+                }
+                else {
+                    document.getElementById("CountNewDeals").style.visibility = 'visible';
+                    $('#CountNewDeals').html(msg);
                 }
             });
 

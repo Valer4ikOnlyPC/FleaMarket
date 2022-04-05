@@ -15,6 +15,7 @@ namespace FleaMarket.Controllers
     [Authorize]
     public class HomeController : Controller
     {
+        private readonly ILogger<HomeController> _logger;
         private readonly ICityRepository _cityRepository;
         private readonly IUserService _userService;
         private readonly IProductService _productService;
@@ -24,13 +25,10 @@ namespace FleaMarket.Controllers
         private readonly ICityService _cityService;
         private readonly int _countView = 30;
 
-        public HomeController(ICityRepository cityRepository, IRatingService ratingService,
+        public HomeController(ICityRepository cityRepository, IRatingService ratingService, ILogger<HomeController> logger,
             IUserService userService, IProductService productService, IDealService dealService, ICategoryService categoryService, ICityService cityService)
         {
-            Log.Logger = new LoggerConfiguration()
-                .Enrich.FromLogContext()
-                .WriteTo.Console()
-                .CreateLogger();
+            _logger = logger;
             _cityRepository = cityRepository;
             _userService = userService;
             _productService = productService;
@@ -49,7 +47,7 @@ namespace FleaMarket.Controllers
         [Authorize]
         public async Task<IActionResult> Index(int pageNumber = 0)
         {
-            Log.Information("Open SearchPage {pageNumber}", pageNumber + 1);
+            _logger.LogInformation("Open SearchPage {pageNumber}", pageNumber + 1);
             var category = await _categoryService.GetAll();
             var allProduct = await _productService.GetAll();
             var viewProduct = allProduct.Skip(pageNumber * _countView).Take(_countView);
@@ -71,7 +69,7 @@ namespace FleaMarket.Controllers
         [HttpPost]
         public async Task<IActionResult> Index(SearchDto searchDto, int pageNumber = 0)
         {
-            Log.Information("Search event");
+            _logger.LogInformation("Search event");
             if (pageNumber != 0 ) pageNumber -= 1;
             var category = await _categoryService.GetAll();
             var city = await _cityService.GetAll();
@@ -102,14 +100,14 @@ namespace FleaMarket.Controllers
         [Authorize]
         public async Task<IActionResult> GetUserByName()
         {
-            Log.Information("Opening my UserPage");
+            _logger.LogInformation("Opening my UserPage");
             var us = await _userService.GetByPhone(User.Identity.Name);
             return RedirectToAction("GetUser", "Home", new { userId = us.UserId });
         }
         [HttpGet]
         public async Task<IActionResult> GetUser(Guid userId)
         {
-            Log.Information("Opening UserPage by id - {userId}", userId);
+            _logger.LogInformation("Opening UserPage by id - {userId}", userId);
             var owner = await _userService.GetById(userId);
             var city = await _cityService.GetById(owner.CityId);
             var product = (await _productService.GetByUser(owner)).Where(p => p.IsActive == Domain.Dto.ProductState.Active);
@@ -140,13 +138,13 @@ namespace FleaMarket.Controllers
                 HttpContext.Features.Get<IExceptionHandlerPathFeature>();
             try
             {
-                Log.Fatal(exceptionHandlerPathFeature.Error, "Error");
                 var error = (ErrorModel)exceptionHandlerPathFeature.Error;
+                _logger.LogError(error.Message);
                 return View(error);
             }
             catch
             {
-                Log.Fatal(exceptionHandlerPathFeature.Error.Message, "Error");
+                _logger.LogError(exceptionHandlerPathFeature.Error.Message);
                 var error = new ErrorModel(500, exceptionHandlerPathFeature.Error.Message);
                 return View(error);
             }

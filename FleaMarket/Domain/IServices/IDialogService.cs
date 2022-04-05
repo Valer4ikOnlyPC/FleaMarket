@@ -14,6 +14,8 @@ namespace Domain.IServices
         Task<Dialog> GetById(Guid id);
         Task<IEnumerable<DialogDto>> GetByUser(Guid userId);
         Task<IEnumerable<Message>> GetMessage(Dialog dialog);
+        Task<IEnumerable<Message>> GetMessageByPage(Dialog dialog, int page = 1);
+        Task<int> CountMessageByDialog(Guid dialogId);
         Task CreateMessage(Message message, Dialog dialog);
         Task<Guid> Create(Dialog item);
         Task Delete(Guid id);

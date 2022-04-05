@@ -11,5 +11,6 @@ namespace Domain.IServices
     {
         Task<IEnumerable<City>> GetAll();
         Task<City> GetById(int id);
+        Task Create(City item);
     }
 }

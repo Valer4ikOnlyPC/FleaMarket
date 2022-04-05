@@ -33,16 +33,15 @@ namespace Services.Service
 
         public async Task<City> GetById(int id)
         {
-            if (!_cache.TryGetValue("allCity", out IEnumerable<City> allCity))
-                throw new ErrorModel(400, "Cities not found");
-            var result = allCity.FirstOrDefault(c => c.CityId == id);
-            if (result == null)
+            return await _cityRepository.GetById(id);
+        }
+        public async Task Create(City item)
+        {
+            if (_cache.TryGetValue("allCity", out IEnumerable<City> cities))
             {
-                result = await _cityRepository.GetById(id);
-                _cache.Set("allCity", allCity.Append(result),
-                        new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromHours(12)));
+                _cache.Remove("allCity");
             }
-            return result;
+            await _cityRepository.Create(item);
         }
     }
 }

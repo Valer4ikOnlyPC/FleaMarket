@@ -76,6 +76,16 @@ namespace Services.Service
         {
             return (await _messageRepository.GetMessage(dialog.DialogId)).OrderBy(m => m.Date);
         }
+
+        public async Task<int> CountMessageByDialog(Guid dialogId)
+        {
+            return await _messageRepository.CountMessageByDialog(dialogId);
+        }
+        public async Task<IEnumerable<Message>> GetMessageByPage(Dialog dialog, int page = 1)
+        {
+            return await _messageRepository.GetMessageByPage(dialog.DialogId, page);
+        }
+
         public async Task CreateMessage(Message message, Dialog dialog)
         {
             await UpdateDate(dialog.DialogId);
@@ -92,7 +102,8 @@ namespace Services.Service
         }
         private async Task<bool> CheckRead(Dialog dialog, Guid userId)
         {
-            var messages = (await GetMessage(dialog)).Where(m => m.UserId != userId);
+            var messages = (await GetMessageByPage(dialog)).OrderBy(m => m.Date).Where(m => m.UserId != userId);
+            //var messages = (await GetMessage(dialog)).Where(m => m.UserId != userId);
             if (!messages.Any()) return true;
             return messages.LastOrDefault().IsRead;
         }

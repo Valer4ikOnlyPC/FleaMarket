@@ -1,4 +1,4 @@
-﻿setInterval(function () {
+﻿/*setInterval(function () {
     $.get("/Home/GetCountNewDeals", {})
         .done(function (msg) {
             if (msg == 0) {
@@ -9,4 +9,4 @@
                 $('#CountNewDeals').html(msg);
             }
         });
-}, 1000);
+}, 1000);*/

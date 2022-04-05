@@ -24,6 +24,10 @@ namespace Services.Service
         }
         public async Task Create(Category item)
         {
+            if (_cache.TryGetValue("allCategory", out IEnumerable<Category> category))
+            {
+                _cache.Remove("allCategory");
+            }
             await _categoryRepository.Create(item);
         }
 
@@ -45,16 +49,7 @@ namespace Services.Service
 
         public async Task<Category> GetById(int id)
         {
-            if (!_cache.TryGetValue("allCategory", out IEnumerable<Category> allCategory))
-                throw new ErrorModel(400, "Categories not found");
-            var result = allCategory.FirstOrDefault(c => c.CategoryId == id);
-            if (result == null)
-            {
-                result = await _categoryRepository.GetById(id);
-                _cache.Set("allCategory", allCategory.Append(result),
-                        new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromHours(12)));
-            }
-            return result;
+            return await _categoryRepository.GetById(id);
         }
 
         public async Task<IEnumerable<Category>> GetByParent(int id)

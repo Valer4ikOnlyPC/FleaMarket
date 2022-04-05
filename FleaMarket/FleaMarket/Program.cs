@@ -12,8 +12,19 @@ using Microsoft.AspNetCore.Diagnostics;
 using FleaMarket.Models;
 using FleaMarket.Hubs;
 using Microsoft.AspNetCore.SignalR;
+using Serilog;
+using Serilog.Events;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var logger = new LoggerConfiguration()
+  .ReadFrom.Configuration(builder.Configuration)
+  .Enrich.FromLogContext()
+  .WriteTo.Console()
+  .CreateLogger();
+builder.Logging.ClearProviders();
+builder.Logging.AddSerilog(logger);
+
 
 builder.Services.AddTransient<IUserPasswordRepository, UserPasswordRepository>();
 builder.Services.AddTransient<IUserRepository, UserRepository>();
