@@ -49,10 +49,11 @@ namespace FleaMarket.Controllers
         {
             _logger.LogInformation("Open SearchPage {pageNumber}", pageNumber + 1);
             var category = await _categoryService.GetAll();
-            var allProduct = await _productService.GetAll();
-            var viewProduct = allProduct.Skip(pageNumber * _countView).Take(_countView);
-            var allProductCount = allProduct.Count();
-            if (allProductCount == 0) allProductCount = 1;
+            var citySelected = (await _userService.GetByPhone(User.Identity.Name)).CityId;
+            var viewProduct = await _productService.GetAll(pageNumber, citySelected);
+            var allProductCount = await _productService.CountAllProduct(-1, citySelected);
+
+
             var city = await _cityService.GetAll();
             var pageCount = (int)Math.Ceiling(((decimal)allProductCount / (decimal)_countView));
             ViewBag.PageNumber = pageNumber;
@@ -60,7 +61,7 @@ namespace FleaMarket.Controllers
             if (pageCount < 1) ViewBag.PageCount = 1;
             ViewBag.IsSearch = false;
             ViewBag.City = city;
-            ViewBag.CitySelected = (await _userService.GetByPhone(User.Identity.Name)).CityId;
+            ViewBag.CitySelected = citySelected;
             ViewBag.Category = category;
             ViewBag.CategorySelected = -1;
             ViewBag.ProductCount = viewProduct.Count();
@@ -73,17 +74,25 @@ namespace FleaMarket.Controllers
             if (pageNumber != 0 ) pageNumber -= 1;
             var category = await _categoryService.GetAll();
             var city = await _cityService.GetAll();
-            IEnumerable<Product> allProduct = new List<Product>();
-            if(searchDto.Search != null)
-                allProduct = await _productService.GetBySearch(searchDto.Search, searchDto.CategoryId);
-            else
-                allProduct = await _productService.GetByCategory(searchDto.CategoryId);
-            if(searchDto.CityId != -1) allProduct = allProduct.Where(x => x.CityId == searchDto.CityId);
 
-            var viewProduct = allProduct.Skip(pageNumber * _countView).Take(_countView);
-            var allProductCount = allProduct.Count();
+
+
+            IEnumerable<Product> viewProduct = new List<Product>();
+            int allProductCount = 0;
+            if (searchDto.Search != null)
+            {
+                viewProduct = await _productService.GetBySearch(searchDto.Search, searchDto.CategoryId, pageNumber, searchDto.CityId);
+                allProductCount = await _productService.CountBySearch(searchDto.Search, searchDto.CategoryId, searchDto.CityId);
+            }
+            else
+            {
+                viewProduct = await _productService.GetByCategory(searchDto.CategoryId, pageNumber, searchDto.CityId);
+                allProductCount = await _productService.CountAllProduct(searchDto.CategoryId, searchDto.CityId);
+            }
+
             if (allProductCount == 0) allProductCount = 1;
             var pageCount = (int)Math.Ceiling(((decimal)allProductCount / (decimal)_countView));
+
             ViewBag.PageNumber = pageNumber;
             ViewBag.PageCount = pageCount;
             if (pageCount < 1) ViewBag.PageCount = 1;

@@ -9,7 +9,8 @@ namespace Domain.Core
 {
     public interface IProductRepository
     {
-        Task<IEnumerable<Product>> GetAll();
+        Task<IEnumerable<Product>> GetAll(string categories = null, int page = 0, int cityId = -1);
+        Task<int> GetCountAll(string categories = null, int cityId = -1);
         Task<IEnumerable<Product>> GetByUser(User user);
         Task<IEnumerable<Product>> GetByCategory(int categoryId);
         Task<Product> GetById(Guid id);
@@ -18,7 +19,8 @@ namespace Domain.Core
         Task<Product> Update(Guid id, Product item);
         Task UpdateState(Guid id, int number);
         Task DealCompleted(Guid id);
-        Task<IEnumerable<Product>> GetBySearch(string search);
+        Task<IEnumerable<Product>> GetBySearch(string search, string categories = null, int page = 0, int cityId = -1);
+        Task<int> GetCountAllBySearch(string search, string categories = null, int cityId = -1);
         Task Delete(Guid id);
     }
 }

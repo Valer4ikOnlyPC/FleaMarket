@@ -5,6 +5,7 @@ using Domain.IServices;
 using Domain.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Internal;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,14 +17,16 @@ namespace Services.Service
 {
     public class ProductService : IProductService
     {
+        private readonly ILogger<ProductService> _logger;
         private readonly IProductPhotoRepository _productPhotoRepository;
         private readonly IProductRepository _productRepository;
         private readonly IFileService _fileService;
         private readonly IDealService _dealService;
         private readonly ICategoryService _categoryService;
         private int Minimum(int a, int b, int c) => (a = a < b ? a : b) < c ? a : c;
-        public ProductService(IProductPhotoRepository productPhotoRepository, IProductRepository productRepository, IFileService fileService, IDealService dealService, ICategoryService categoryService)
+        public ProductService(ILogger<ProductService> logger, IProductPhotoRepository productPhotoRepository, IProductRepository productRepository, IFileService fileService, IDealService dealService, ICategoryService categoryService)
         {
+            _logger = logger;
             _productPhotoRepository = productPhotoRepository;
             _productRepository = productRepository;
             _fileService = fileService;
@@ -90,9 +93,9 @@ namespace Services.Service
             await _productRepository.UpdatePhoto(ProductId, firstPhoto.Link);
         }
 
-        public async Task<IEnumerable<Product>> GetAll()
+        public async Task<IEnumerable<Product>> GetAll(int page = 0, int cityId = -1)
         {
-            return (await _productRepository.GetAll()).Where(p => p.IsActive == ProductState.Active);
+            return await _productRepository.GetAll(null, page, cityId);
         }
 
         public async Task<ProductPhotoDto> GetById(Guid id)
@@ -116,16 +119,17 @@ namespace Services.Service
             };
             return productPhotoDTO;
         }
-        public async Task<IEnumerable<Product>> GetByCategory(int categoryId)
+        public async Task<IEnumerable<Product>> GetByCategory(int categoryId, int page = 0, int cityId = -1)
         {
-            var products = await GetAll();
-            if (categoryId == -1) return products;
-
-            var categoryParent = (List<Category>)await _categoryService.GetByParent(categoryId);
-            var category = await CategoriesAsync(categoryParent, new List<Category>());
-            category.AddRange(categoryParent);
-            var categoryResult = category.Select(x => x.CategoryId);
-            return products.Where(p => categoryResult.Contains(p.CategoryId) | p.CategoryId == categoryId);
+            if (categoryId == -1) return await _productRepository.GetAll(null, page, cityId);
+            var categories = await CategoriesToQuery(categoryId);
+            return await _productRepository.GetAll(categories, page, cityId);
+        }
+        public async Task<int> CountAllProduct(int categoryId, int cityId = -1)
+        {
+            string categories = null;
+            if (categoryId != -1) categories = await CategoriesToQuery(categoryId);
+            return await _productRepository.GetCountAll(categories, cityId);
         }
 
         public async Task<IEnumerable<Product>> GetByUser(User user)
@@ -139,7 +143,7 @@ namespace Services.Service
         {
             return await _productRepository.Update(id, item);
         }
-        public async Task<IEnumerable<Product>> GetBySearch(string search, int categoryId)
+        public async Task<IEnumerable<Product>> GetBySearch(string search, int categoryId, int page = 0, int cityId = -1)
         {
             var words = search.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
             var resultOr = words.FirstOrDefault();
@@ -150,21 +154,48 @@ namespace Services.Service
                 resultAnd += string.Concat("&", word);
             }
             var result = string.Concat(resultOr, "|(", resultAnd, ")");
-            var product = await _productRepository.GetBySearch(result);
 
-            if (categoryId != -1)
-            {
-                var categoryParent = (List<Category>)await _categoryService.GetByParent(categoryId);
-                var category = await CategoriesAsync(categoryParent, new List<Category>());
-                category.AddRange(categoryParent);
-                var categoryResult = category.Select(x => x.CategoryId);
-                return product.Where(p => categoryResult.Contains(p.CategoryId) | p.CategoryId == categoryId);
-            }
+            string categories = null;
+            if (categoryId != -1) categories = await CategoriesToQuery(categoryId);
+
+            var product = await _productRepository.GetBySearch(result, categories, page, cityId);
             return product;
+        }
+        public async Task<int> CountBySearch(string search, int categoryId, int cityId = -1)
+        {
+            var words = search.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            var resultOr = words.FirstOrDefault();
+            var resultAnd = words.FirstOrDefault();
+            foreach (var word in words.Skip(1))
+            {
+                resultOr += string.Concat("|", word);
+                resultAnd += string.Concat("&", word);
+            }
+            var result = string.Concat(resultOr, "|(", resultAnd, ")");
+
+            string categories = null;
+            if (categoryId != -1) categories = await CategoriesToQuery(categoryId);
+
+            var productCount = await _productRepository.GetCountAllBySearch(result, categories, cityId);
+            return productCount;
         }
         public async Task<IEnumerable<ProductPhoto>> GetPhotos(Guid productId)
         {
             return await _productPhotoRepository.GetByProduct(productId);
+        }
+        private async Task<string> CategoriesToQuery(int categoryId)
+        {
+            var categoryParent = (List<Category>)await _categoryService.GetByParent(categoryId);
+            var category = await CategoriesAsync(categoryParent, new List<Category>());
+            category.AddRange(categoryParent);
+            var categoryResult = category.Select(x => x.CategoryId);
+            string categories = "(" + categoryId.ToString();
+            foreach (var catId in categoryResult)
+            {
+                categories = string.Concat(categories, ",", catId.ToString());
+            }
+            categories = string.Concat(categories, ")");
+            return categories;
         }
         private async Task<List<Category>> CategoriesAsync(List<Category> categoryParent, List<Category> categoryResult)
         {

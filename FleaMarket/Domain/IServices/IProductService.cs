@@ -10,11 +10,13 @@ namespace Domain.IServices
 {
     public interface IProductService
     {
-        Task<IEnumerable<Product>> GetAll();
+        Task<IEnumerable<Product>> GetAll(int page = 0, int cityId = -1);
         Task<IEnumerable<Product>> GetByUser(User user);
         Task<ProductPhotoDto> GetById(Guid id);
-        Task<IEnumerable<Product>> GetByCategory(int categoryId);
-        Task<IEnumerable<Product>> GetBySearch(string search, int categoryId);
+        Task<IEnumerable<Product>> GetByCategory(int categoryId, int page = 0, int cityId = -1);
+        Task<int> CountAllProduct(int categoryId, int cityId = -1);
+        Task<IEnumerable<Product>> GetBySearch(string search, int categoryId, int page = 0, int cityId = -1);
+        Task<int> CountBySearch(string search, int categoryId, int cityId = -1);
         Task<IEnumerable<ProductPhoto>> GetPhotos(Guid productId);
         Task DeletePhoto(Guid ProductId, Guid PhotoId);
         Task UpdatePhoto(ProductDTO item);
