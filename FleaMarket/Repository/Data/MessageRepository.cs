@@ -34,7 +34,27 @@ namespace Repository.Data
             var messages = await db.QueryAsync<Message>(
                 "SELECT * " +
                 "FROM \"Messages\" " +
-                "WHERE \"DialogId\" = @dialogId", new { dialogId });
+                "WHERE \"DialogId\" = @dialogId ", new { dialogId });
+            return messages;
+        }
+        public async Task<int> CountMessageByDialog(Guid dialogId)
+        {
+            IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
+            var messages = await db.QueryAsync<int>(
+                "SELECT COUNT(*) " +
+                "FROM \"Messages\" " +
+                "WHERE \"DialogId\" = @dialogId ", new { dialogId });
+            return messages.FirstOrDefault();
+        }
+        public async Task<IEnumerable<Message>> GetMessageByPage(Guid dialogId, int pageNumber)
+        {
+            IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
+            var messages = await db.QueryAsync<Message>(
+                "SELECT * " +
+                "FROM \"Messages\" " +
+                "WHERE \"DialogId\" = @dialogId " +
+                "ORDER BY \"Date\" desc " +
+                "LIMIT 30*@pageNumber " , new { dialogId, pageNumber });
             return messages;
         }
 

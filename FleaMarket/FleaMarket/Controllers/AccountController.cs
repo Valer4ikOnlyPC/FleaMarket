@@ -28,6 +28,7 @@ namespace FleaMarket.Controllers
         [HttpGet]
         public async Task<IActionResult> Login()
         {
+            _logger.LogInformation("Authorization window opened");
             return View();
         }
         [HttpPost]
@@ -40,7 +41,7 @@ namespace FleaMarket.Controllers
                 if (result)
                 {
                     await Authenticate(model.PhoneNumber);
-
+                    _logger.LogInformation("User is authorized");
                     return RedirectToAction("Index", "Home");
                 }
                 ModelState.AddModelError("", "Некорректные логин и(или) пароль");
@@ -50,6 +51,7 @@ namespace FleaMarket.Controllers
         [HttpGet]
         public async Task<IActionResult> Register()
         {
+            _logger.LogInformation("Registration window open");
             ViewBag.City = await _cityRepository.GetAll();
             return View();
         }
@@ -64,7 +66,7 @@ namespace FleaMarket.Controllers
                 {
                     var userId = await _userService.Create(model);
                     await Authenticate(model.PhoneNumber);
-
+                    _logger.LogInformation($"User registered. UserId {userId}");
                     return RedirectToAction("Index", "Home");
                 }
                 else
@@ -87,6 +89,7 @@ namespace FleaMarket.Controllers
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            _logger.LogInformation("User deauthorized");
             return RedirectToAction("Login", "Account");
         }
     }

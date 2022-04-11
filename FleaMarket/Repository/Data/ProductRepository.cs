@@ -21,13 +21,52 @@ namespace Repository.Data
         {
             _configuration = configuration;
         }
-        public async Task<IEnumerable<Product>> GetAll()
+        public async Task<IEnumerable<Product>> GetAll(string categories = null, int page = 0, int cityId = -1)
         {
             IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
-            var product = await db.QueryAsync<Product>(
-                "SELECT * " +
-                "FROM \"Products\" ");
+            var query = "SELECT * " +
+                "FROM \"Products\" " +
+                $"WHERE \"IsActive\" = 2 ";
+            if (categories != null) query = string.Concat(query, $"AND \"CategoryId\" IN {categories}");
+            if (cityId != -1) query = string.Concat(query, $"AND \"CityId\" = {cityId}");
+            query = string.Concat(query, $"OFFSET {30 * page} LIMIT 30");
+            var product = await db.QueryAsync<Product>(query);
             return product;
+        }
+        public async Task<int> GetCountAll(string categories = null, int cityId = -1)
+        {
+            IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
+            var query = "SELECT COUNT(*) " +
+                "FROM \"Products\" " +
+                $"WHERE \"IsActive\" = 2 ";
+            if (categories != null) query = string.Concat(query, $"AND \"CategoryId\" IN {categories}");
+            if (cityId != -1) query = string.Concat(query, $"AND \"CityId\" = {cityId}");
+            var productCount = await db.QueryAsync<int>(query);
+            return productCount.FirstOrDefault();
+        }
+        public async Task<IEnumerable<Product>> GetBySearch(string search, string categories = null, int page = 0, int cityId = -1)
+        {
+            IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
+            var query = "SELECT *, ts_rank_cd(vector, query) AS rank " +
+                $"FROM \"Products\", to_tsquery('russian', '{search}') query, to_tsvector('russian', \"Name\" ||' '|| \"Description\") vector " +
+                $"WHERE  query @@ vector AND \"IsActive\" = 2 ";
+            if (categories != null) query = string.Concat(query, $"AND \"CategoryId\" IN {categories} ");
+            if (cityId != -1) query = string.Concat(query, $"AND \"CityId\" = {cityId} ");
+            query = string.Concat(query, "ORDER BY rank DESC ");
+            query = string.Concat(query, $"OFFSET {30 * page} LIMIT 30 ");
+            var result = await db.QueryAsync<Product>(query);
+            return result;
+        }
+        public async Task<int> GetCountAllBySearch(string search, string categories = null, int cityId = -1)
+        {
+            IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
+            var query = "SELECT COUNT(*) " +
+                $"FROM \"Products\", to_tsquery('russian', '{search}') query, to_tsvector('russian', \"Name\" ||' '|| \"Description\") vector " +
+                $"WHERE  query @@ vector AND \"IsActive\" = 2 ";
+            if (categories != null) query = string.Concat(query, $"AND \"CategoryId\" IN {categories} ");
+            if (cityId != -1) query = string.Concat(query, $"AND \"CityId\" = {cityId} ");
+            var result = await db.QueryAsync<int>(query);
+            return result.FirstOrDefault();
         }
         public async Task<IEnumerable<Product>> GetByUser(User user)
         {
@@ -111,16 +150,6 @@ namespace Repository.Data
                 "SELECT * " +
                 "FROM \"Products\" " +
                 "WHERE \"CategoryId\" = @CategoryId", new { categoryId });
-            return result.Where(p => p.IsActive == ProductState.Active);
-        }
-        public async Task<IEnumerable<Product>> GetBySearch(string search)
-        {
-            IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
-            var result = await db.QueryAsync<Product>(
-                "SELECT *, ts_rank_cd(vector, query) AS rank " +
-                "FROM \"Products\", to_tsquery('russian', @search) query, to_tsvector('russian', \"Name\" ||' '|| \"Description\") vector " +
-                "WHERE query @@ vector " +
-                "ORDER BY rank DESC", new { search });
             return result.Where(p => p.IsActive == ProductState.Active);
         }
     }

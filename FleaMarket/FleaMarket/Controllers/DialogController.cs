@@ -28,11 +28,14 @@ namespace FleaMarket.Controllers
         {
             var user = await _userService.GetByPhone(User.Identity.Name);
             var dialogs = (await _dialogService.GetByUser(user.UserId));
-            return dialogs.Where(d => d.IsRead == false).Count();
+            var countDialogs = dialogs.Where(d => d.IsRead == false).Count();
+            _logger.LogInformation($"Count new dialog {countDialogs}");
+            return countDialogs;
         }
         public async Task<IActionResult> AllDialog()
         {
             var user = await _userService.GetByPhone(User.Identity.Name);
+            _logger.LogInformation($"View all dialog by user {user.UserId}");
             var dialogs = (await _dialogService.GetByUser(user.UserId)).OrderByDescending(x => x.Date);
             ViewBag.User = await _userService.GetByPhone(User.Identity.Name);
             return PartialView(dialogs);
@@ -40,9 +43,10 @@ namespace FleaMarket.Controllers
         public async Task<IActionResult> ViewDialog(Guid dialogId, int pageNumber = 1)
         {
             var dialog = await _dialogService.GetById(dialogId);
-            var allMessages = await _dialogService.GetMessage(dialog);
-            var countPage = (int)Math.Ceiling(((decimal)allMessages.Count() / (decimal)30));
-            var messages = allMessages.OrderByDescending(m => m.Date).Take(30 * pageNumber);
+            _logger.LogInformation($"View dialog by id {dialog.DialogId}");
+            var messages = await _dialogService.GetMessageByPage(dialog, pageNumber);
+            var countPage = await _dialogService.CountMessageByDialog(dialogId);
+            countPage = (int)Math.Ceiling((decimal)countPage / (decimal)30);
             ViewBag.NextPage = true;
             if ((countPage == pageNumber) | countPage == 0) ViewBag.NextPage = false;
             ViewBag.DialogId = dialogId;
@@ -52,6 +56,7 @@ namespace FleaMarket.Controllers
         }
         public async Task ReadMessage(Guid dialogId)
         {
+            _logger.LogInformation($"Read messages dialogue {dialogId}");
             var user = await _userService.GetByPhone(User.Identity.Name);
             var dialog = await _dialogService.GetById(dialogId);
             await _dialogService.ReadMessage(dialog, user.UserId);
@@ -65,6 +70,7 @@ namespace FleaMarket.Controllers
         [HttpPost]
         public async Task<IActionResult> AddMessage(Guid dialogId, string text)
         {
+            _logger.LogInformation($"Add a message to a dialogue {dialogId}");
             var dialog = await _dialogService.GetById(dialogId);
             var user = await _userService.GetByPhone(User.Identity.Name);
             User user2;
@@ -87,11 +93,13 @@ namespace FleaMarket.Controllers
         public async Task<Guid> CreateDialog(Guid userId)
         {
             var user = await _userService.GetById(userId);
+            var userCreatorId = (await _userService.GetByPhone(User.Identity.Name)).UserId;
             var dialog = new Dialog()
             {
                 User1 = user.UserId,
-                User2 = (await _userService.GetByPhone(User.Identity.Name)).UserId
+                User2 = userCreatorId
             };
+            _logger.LogInformation($"Create a dalog at user {userId} and user {userCreatorId}");
             var result = await _dialogService.CheckSimilar(dialog);
             if (result != null) return result.DialogId;
             var dialogId = await _dialogService.Create(dialog);
