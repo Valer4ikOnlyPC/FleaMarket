@@ -13,7 +13,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace Repository.Data
 {
-    public class CityRepository: ICityRepository
+    public class CityRepository: BaseRepository, ICityRepository
     {
         private readonly IConfiguration _configuration;
         public CityRepository(IConfiguration configuration)
@@ -22,27 +22,31 @@ namespace Repository.Data
         }
         public async Task<IEnumerable<City>> GetAll()
         {
-            IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
-            return await db.QueryAsync<City>(
+            var db = base.DbOpen(_configuration);
+            var result = await db.QueryAsync<City>(
                 "SELECT * " +
                 "FROM \"Cities\"");
+            base.DbClose(db);
+            return result;
         }
         public async Task<City> GetById(int id)
         {
-            IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
+            var db = base.DbOpen(_configuration);
             var citys = await db.QueryAsync<City>(
                 "SELECT * " +
                 "FROM \"Cities\" " +
                 "WHERE \"CityId\" = @id", new { id });
+            base.DbClose(db);
             return citys.FirstOrDefault();
         }
         public async Task Create(City item)
         {
-            IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
+            var db = base.DbOpen(_configuration);
             var sqlQuery =
                 "INSERT INTO \"Cities\" (\"Name\") " +
                 "VALUES(@Name)";
             await db.ExecuteAsync(sqlQuery, item);
+            base.DbClose(db);
         }
     }
 }

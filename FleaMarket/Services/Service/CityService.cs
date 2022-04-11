@@ -14,6 +14,7 @@ namespace Services.Service
     {
         private readonly ICityRepository _cityRepository;
         private readonly IMemoryCache _cache;
+        private readonly string _cacheKey = "allCity";
 
         public CityService(ICityRepository cityRepository, IMemoryCache cache)
         {
@@ -22,10 +23,10 @@ namespace Services.Service
         }
         public async Task<IEnumerable<City>> GetAll()
         {
-            if (!_cache.TryGetValue("allCity", out IEnumerable<City> city))
+            if (!_cache.TryGetValue(_cacheKey, out IEnumerable<City> city))
             {
                 city = await _cityRepository.GetAll();
-                _cache.Set("allCity", city,
+                _cache.Set(_cacheKey, city,
                     new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromHours(12)));
             }
             return city;
@@ -37,9 +38,9 @@ namespace Services.Service
         }
         public async Task Create(City item)
         {
-            if (_cache.TryGetValue("allCity", out IEnumerable<City> cities))
+            if (_cache.TryGetValue(_cacheKey, out IEnumerable<City> cities))
             {
-                _cache.Remove("allCity");
+                _cache.Remove(_cacheKey);
             }
             await _cityRepository.Create(item);
         }

@@ -15,5 +15,6 @@ namespace Domain.Dto
         public string NameUser2 { get; set; }
         public DateTime Date { get; set; }
         public bool IsRead { get; set; }
+        public Guid? BlockedBy { get; set; }
     }
 }

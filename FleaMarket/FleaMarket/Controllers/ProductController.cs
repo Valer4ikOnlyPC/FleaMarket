@@ -114,7 +114,7 @@ namespace FleaMarket.Controllers
         {
             _logger.LogInformation("Open product by id {productId}", productId);
             var productPhotoDTO = await _productService.GetById(productId);
-            var categoty = await _categoryService.GetById(productPhotoDTO.CategoryId);
+            var category = await _categoryService.GetById(productPhotoDTO.CategoryId);
             var user = await _userService.GetById(productPhotoDTO.UserId);
             int imgCount = productPhotoDTO.Image.Count();
             var city = await _cityService.GetById(productPhotoDTO.CityId);
@@ -125,7 +125,7 @@ namespace FleaMarket.Controllers
             ViewBag.Active = true;
             ViewBag.ImageCount = imgCount;
             ViewBag.Firstphoto = productPhotoDTO.FirstPhoto;
-            ViewBag.Category = categoty.Name;
+            ViewBag.Category = category.Name;
             ViewBag.User = user;
             ViewBag.City = city.Name;
             ViewBag.SimilarProduct = similarProduct.Take(45);
@@ -140,7 +140,7 @@ namespace FleaMarket.Controllers
         }
         public async Task<IActionResult> UpdatePhoto(ProductDTO product)
         {
-            _logger.LogInformation("Update product photo {product}", product.ProductId);
+            _logger.LogInformation("Update product photo {ProductId}", product.ProductId);
             await _productService.GetById(product.ProductId);
             await _productService.UpdatePhoto(product);
             return RedirectToAction("EditProduct", "Product", new { productId = product.ProductId });
@@ -172,7 +172,7 @@ namespace FleaMarket.Controllers
         [Authorize]
         public async Task<IActionResult> EditProduct(Product product)
         {
-            _logger.LogInformation("Entered data in the product editing menu {product}", product.ProductId);
+            _logger.LogInformation("Entered data in the product editing menu {ProductId}", product.ProductId);
             var productDto = await _productService.GetById(product.ProductId);
             var user = await _userService.GetByPhone(User.Identity.Name);
             if (productDto.UserId != user.UserId) throw new ErrorModel(423, "The product does not belong to you");
@@ -205,7 +205,7 @@ namespace FleaMarket.Controllers
         public async Task AddFavorite(Guid productId)
         {
             var user = await _userService.GetByPhone(User.Identity.Name);
-            _logger.LogInformation("Adding product {productId} to favorites by user {user}", productId, user.UserId);
+            _logger.LogInformation("Adding product {productId} to favorites by user {UserId}", productId, user.UserId);
             var result = (await _favoritesService.GetByUser(user)).Where(f => f.ProductId == productId);
             if (result.Any())
                 await _favoritesService.Delete(result.FirstOrDefault().FavoriteId);
@@ -224,7 +224,7 @@ namespace FleaMarket.Controllers
         public async Task<IActionResult> FavoriteToList()
         {
             var user = await _userService.GetByPhone(User.Identity.Name);
-            _logger.LogInformation("Opening the list of favorite user {user}", user.UserId);
+            _logger.LogInformation("Opening the list of favorite user {UserId}", user.UserId);
             var result = await _favoritesService.GetByUser(user);
             var product = new List<ProductPhotoDto>();
             foreach (var item in result)

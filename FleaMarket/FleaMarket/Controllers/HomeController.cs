@@ -23,7 +23,6 @@ namespace FleaMarket.Controllers
         private readonly ICategoryService _categoryService;
         private readonly IRatingService _ratingService;
         private readonly ICityService _cityService;
-        private readonly int _countView = 30;
 
         public HomeController(ICityRepository cityRepository, IRatingService ratingService, ILogger<HomeController> logger,
             IUserService userService, IProductService productService, IDealService dealService, ICategoryService categoryService, ICityService cityService)
@@ -55,7 +54,7 @@ namespace FleaMarket.Controllers
 
 
             var city = await _cityService.GetAll();
-            var pageCount = (int)Math.Ceiling(((decimal)allProductCount / (decimal)_countView));
+            var pageCount = (int)Math.Ceiling((decimal)allProductCount / 30);
             ViewBag.PageNumber = pageNumber;
             ViewBag.PageCount = pageCount;
             if (pageCount < 1) ViewBag.PageCount = 1;
@@ -77,8 +76,8 @@ namespace FleaMarket.Controllers
 
 
 
-            IEnumerable<Product> viewProduct = new List<Product>();
-            int allProductCount = 0;
+            IEnumerable<Product> viewProduct = Enumerable.Empty<Product>();
+            int allProductCount;
             if (searchDto.Search != null)
             {
                 viewProduct = await _productService.GetBySearch(searchDto.Search, searchDto.CategoryId, pageNumber, searchDto.CityId);
@@ -91,7 +90,7 @@ namespace FleaMarket.Controllers
             }
 
             if (allProductCount == 0) allProductCount = 1;
-            var pageCount = (int)Math.Ceiling(((decimal)allProductCount / (decimal)_countView));
+            var pageCount = (int)Math.Ceiling((decimal)allProductCount / 30);
 
             ViewBag.PageNumber = pageNumber;
             ViewBag.PageCount = pageCount;

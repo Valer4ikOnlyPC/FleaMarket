@@ -15,6 +15,7 @@ namespace Domain.Core
         Task<Guid> Create(Dialog item);
         Task Delete(Guid id);
         Task UpdateDate(Guid id);
+        Task UpdateBlocked(Guid dialogId, Guid? userId);
         Task<Dialog> CheckSimilar(Dialog dialog);
     }
 }

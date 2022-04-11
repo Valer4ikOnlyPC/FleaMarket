@@ -13,7 +13,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace Repository.Data
 {
-    public class CategoryRepository: ICategoryRepository
+    public class CategoryRepository: BaseRepository, ICategoryRepository
     {
         private readonly IConfiguration _configuration;
         public CategoryRepository(IConfiguration configuration)
@@ -22,53 +22,60 @@ namespace Repository.Data
         }
         public async Task<IEnumerable<Category>> GetAll()
         {
-            IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
-            return await db.QueryAsync<Category>(
+            var db = base.DbOpen(_configuration);
+            var result = await db.QueryAsync<Category>(
                 "SELECT * " +
                 "FROM \"Categories\"");
+            base.DbClose(db);
+            return result;
         }
         public async Task<IEnumerable<Category>> GetByParent(int id)
         {
-            IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
+            var db = base.DbOpen(_configuration);
             var result = await db.QueryAsync<Category>(
                 "SELECT * " +
                 "FROM \"Categories\" " +
                 "WHERE \"CategoryParent\" = @id", new { id });
+            base.DbClose(db);
             return result;
         }
         public async Task<Category> GetById(int id)
         {
-            IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
+            var db = base.DbOpen(_configuration);
             var result = await db.QueryAsync<Category>(
                 "SELECT * " +
                 "FROM \"Categories\" " +
                 "WHERE \"CategoryId\" = @id", new { id });
+            base.DbClose(db);
             return result.FirstOrDefault();
         }
         public async Task<Category> GetParent(Category category)
         {
-            IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
+            var db = base.DbOpen(_configuration);
             var result = await db.QueryAsync<Category>(
                 "SELECT * " +
                 "FROM \"Categories\" " +
                 "WHERE \"CategoryId\" = @id", new { category.CategoryParent });
+            base.DbClose(db);
             return result.FirstOrDefault();
         }
         public async Task Create(Category item)
         {
-            IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
+            var db = base.DbOpen(_configuration);
             var sqlQuery =
                 "INSERT INTO \"Categories\" (\"Name\", \"CategoryParent\") " +
                 "VALUES(@Name, @CategoryParent)";
             await db.ExecuteAsync(sqlQuery, item);
+            base.DbClose(db);
         }
         public async Task Delete(int id)
         {
-            IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
+            var db = base.DbOpen(_configuration);
             var sqlQuery =
                 "DELETE FROM \"Categories\" " +
                 "WHERE \"CategoryId\" = @id";
             await db.ExecuteAsync(sqlQuery, new { id });
+            base.DbClose(db);
         }
     }
 }

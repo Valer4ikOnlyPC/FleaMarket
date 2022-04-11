@@ -31,6 +31,10 @@ namespace Services.Service
         {
             return await _dialogRepository.Create(item);
         }
+        public async Task UpdateBlocked(Guid dialogId, Guid? userId)
+        {
+            await _dialogRepository.UpdateBlocked(dialogId, userId);
+        }
 
         public async Task Delete(Guid id)
         {
@@ -65,7 +69,8 @@ namespace Services.Service
                     NameUser1 = (await _userService.GetById(dialog.User1)).Name,
                     NameUser2 = (await _userService.GetById(dialog.User2)).Name,
                     Date = dialog.Date,
-                    IsRead = await CheckRead(dialog, userId)
+                    IsRead = await CheckRead(dialog, userId),
+                    BlockedBy = dialog.BlockedBy
                 };
                 result.Add(dialogDto);
             }

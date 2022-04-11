@@ -14,7 +14,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace Repository.Data
 {
-    public class UserPasswordRepository: IUserPasswordRepository
+    public class UserPasswordRepository: BaseRepository, IUserPasswordRepository
     {
         private readonly IConfiguration _configuration;
         public UserPasswordRepository(IConfiguration configuration)
@@ -23,33 +23,33 @@ namespace Repository.Data
         }
         public async Task<Guid> Create(UserPassword userPassword)
         {
-            IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
-
+            var db = base.DbOpen(_configuration);
             userPassword.UserPasswordId = Guid.NewGuid();
             var passwordId = await db.QueryAsync<Guid>(
                 "INSERT INTO \"UserPasswords\" (\"UserPasswordId\", \"Password\", \"UserId\") " +
                 "VALUES(@userPasswordId, @password, @userId) " +
                 "RETURNING \"UserPasswordId\";", new { userPassword.UserPasswordId, userPassword.Password, userPassword.UserId });
+            base.DbClose(db);
             return passwordId.FirstOrDefault();
         }
         public async Task<UserPassword> GetById(Guid passwordID)
         {
-            IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
-
+            var db = base.DbOpen(_configuration);
             var userPassword = await db.QueryAsync<UserPassword>(
                 "SELECT * " +
                 "FROM \"UserPasswords\" " +
                 "WHERE \"UserPasswordId\" = @passwordID;", new { passwordID });
+            base.DbClose(db);
             return userPassword.FirstOrDefault();
         }
         public async Task<UserPassword> GetByUserId(Guid userID)
         {
-            IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
-
+            var db = base.DbOpen(_configuration);
             var userPassword = await db.QueryAsync<UserPassword>(
                 "SELECT * " +
                 "FROM \"UserPasswords\" " +
                 "WHERE \"UserId\" = @userID;", new { userID });
+            base.DbClose(db);
             return userPassword.FirstOrDefault();
         }
     }

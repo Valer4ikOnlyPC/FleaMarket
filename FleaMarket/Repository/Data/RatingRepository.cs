@@ -13,7 +13,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace Repository.Data
 {
-    public class RatingRepository: IRatingRepository
+    public class RatingRepository: BaseRepository, IRatingRepository
     {
         private readonly IConfiguration _configuration;
         public RatingRepository(IConfiguration configuration)
@@ -22,24 +22,28 @@ namespace Repository.Data
         }
         public async Task<IEnumerable<Rating>> GetByUser(User user)
         {
-            IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
-            return await db.QueryAsync<Rating>(
+            var db = base.DbOpen(_configuration);
+            var result = await db.QueryAsync<Rating>(
                 "SELECT * " +
                 "FROM \"Ratings\" " +
                 "WHERE \"UserRecipientId\" = @UserId", new { user.UserId });
+            base.DbClose(db);
+            return result;
         }
         public async Task<IEnumerable<Rating>> GetByDeal(Deal deal)
         {
-            IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
-            return await db.QueryAsync<Rating>(
+            var db = base.DbOpen(_configuration);
+            var result = await db.QueryAsync<Rating>(
                 "SELECT * " +
                 "FROM \"Ratings\" " +
                 "WHERE (\"UserMasterId\" = @UserMaster or \"UserMasterId\" = @UserRecipient) and \"DealId\" = @DealId", new { deal.UserMaster, deal.UserRecipient, deal.DealId });
+            base.DbClose(db);
+            return result;
         }
         public async Task<Guid> Create(Rating item)
         {
             item.RatingId = Guid.NewGuid();
-            IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
+            var db = base.DbOpen(_configuration);
             var ratingId = await db.QueryAsync<Guid>(
                 "INSERT INTO \"Ratings\" (\"RatingId\", \"Grade\", \"UserMasterId\", \"UserRecipientId\", \"DealId\") " +
                 "VALUES(@RatingId, @Grade, @UserMasterId, @UserRecipientId, @DealId) " +
@@ -55,16 +59,17 @@ namespace Repository.Data
                 "SET \"Rating\" = @ratings " +
                 "WHERE \"UserId\" = @UserRecipientId";
             await db.ExecuteAsync(sqlQuery,new { ratings = rating.FirstOrDefault(), item.UserRecipientId });
-
+            base.DbClose(db);
             return ratingId.FirstOrDefault();
         }
         public async Task Delete(Guid id)
         {
-            IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
+            var db = base.DbOpen(_configuration);
             var sqlQuery =
                 "DELETE FROM \"Ratings\" " +
                 "WHERE \"RatingId\" = @id";
             await db.ExecuteAsync(sqlQuery, new { id });
+            base.DbClose(db);
         }
     }
 }

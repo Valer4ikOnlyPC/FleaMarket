@@ -18,6 +18,7 @@ namespace Domain.IServices
         Task<int> CountMessageByDialog(Guid dialogId);
         Task CreateMessage(Message message, Dialog dialog);
         Task<Guid> Create(Dialog item);
+        Task UpdateBlocked(Guid dialogId, Guid? userId);
         Task Delete(Guid id);
         Task UpdateDate(Guid id);
         Task ReadMessage(Dialog dialog, Guid userId);

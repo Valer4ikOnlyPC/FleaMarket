@@ -39,7 +39,7 @@ namespace FleaMarket.Controllers
         [HttpGet]
         public async Task<IActionResult> DealOffer(Guid ProductId)
         {
-            _logger.LogInformation($"Deal offer window opened by productId {ProductId}");
+            _logger.LogInformation("Deal offer window opened by productId {ProductId}", ProductId);
             var product = await _productService.GetById(ProductId);
             if (product.IsActive != ProductState.Active)
                 return BadRequest();
@@ -70,7 +70,7 @@ namespace FleaMarket.Controllers
             if (!result)
                 return "Это предложение уже существует";
             var dealId = await _dealService.Create(deal);
-            _logger.LogInformation($"Deal created {dealId}");
+            _logger.LogInformation("Deal created {dealId}", dealId);
 
             await _hubContext.Clients.User(user2.PhoneNumber).SendAsync("CountNewDeals");
 
@@ -79,7 +79,7 @@ namespace FleaMarket.Controllers
         public async Task<IActionResult> MyDeal()
         {
             var user = await _userService.GetByPhone(User.Identity.Name);
-            _logger.LogInformation($"Opening my deals by userId {user.UserId}");
+            _logger.LogInformation("Opening my deals by userId {UserId}", user.UserId);
             var deal = await _dealService.GetDealProductDtoByUser(user);
             ViewBag.DealMaster = deal.Where(d => (d.IsActive == DealState.Сonsideration |
                 d.IsActive == DealState.Terminated) & d.UserMaster == user.UserId).OrderByDescending(d => d.Date);
@@ -90,7 +90,7 @@ namespace FleaMarket.Controllers
         }
         public async Task<IActionResult> ViewDetails(Guid dealId)
         {
-            _logger.LogInformation($"Opening deal details by id {dealId}");
+            _logger.LogInformation("Opening deal details by id {dealId}", dealId);
             var deal = await _dealService.GetById(dealId);
             if (deal == null)
                 throw new ErrorModel(400, "Deal not found");
@@ -118,7 +118,7 @@ namespace FleaMarket.Controllers
         [HttpPost]
         public async Task<IActionResult> ViewDetails(Guid dealId, int grade)
         {
-            _logger.LogInformation($"The deal is rated by id {dealId}");
+            _logger.LogInformation("The deal is rated by id {dealId}", dealId);
             if (grade < 0 | grade > 5) return RedirectToAction("MyDeal", "Deal");
             var userMaster = await _userService.GetByPhone(User.Identity.Name);
             var deal = await _dealService.GetById(dealId);
@@ -139,7 +139,7 @@ namespace FleaMarket.Controllers
         }
         public async Task<IActionResult> Accepted(Guid dealId)
         {
-            _logger.LogInformation($"Deal accepted by id {dealId}");
+            _logger.LogInformation("Deal accepted by id {dealId}", dealId);
             await _dealService.Accepted(dealId);
             var user = await _userService.GetByPhone(User.Identity.Name);
             await _hubContext.Clients.User(user.PhoneNumber).SendAsync("CountNewDeals");
@@ -147,13 +147,13 @@ namespace FleaMarket.Controllers
         }
         public async Task<IActionResult> Cancel(Guid dealId)
         {
-            _logger.LogInformation($"Deal denied by id {dealId}");
+            _logger.LogInformation("Deal denied by id {dealId}", dealId);
             await _dealService.Update(dealId, DealState.Terminated);
             return RedirectToAction("MyDeal", "Deal");
         }
         public async Task<IActionResult> Delete(Guid dealId)
         {
-            _logger.LogInformation($"Deal deleted by id {dealId}");
+            _logger.LogInformation("Deal deleted by id {dealId}", dealId);
             await _dealService.Delete(dealId);
             return RedirectToAction("MyDeal", "Deal");
         }

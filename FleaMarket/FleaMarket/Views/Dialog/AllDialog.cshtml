@@ -10,12 +10,12 @@
         {
             if (ViewBag.User.UserId == dialogDto.User1)
             {
-
-                <a href="#" id="@dialogDto.DialogId" onclick="open_chat('@dialogDto.DialogId')" class="openDialog list-group-item list-group-item-action py-3 lh-tight position-relative" aria-current="true">
-                    <div class="d-flex w-100 align-items-center justify-content-between">
-                        <strong class="mb-1">@dialogDto.NameUser2</strong>
-                        <small>@dialogDto.Date.ToString("HH:mm dd/MM")</small>
-                    </div>
+                <div class="btn-group w-100">
+                  <a href="#" id="@dialogDto.DialogId" onclick="open_chat('@dialogDto.DialogId')" class="openDialog w-75 list-group-item list-group-item-action lh-tight position-relative border-end-0" aria-current="true">
+                    <div class="w-100 align-items-center justify-content-between">
+                        <div><strong class="mb-1">@dialogDto.NameUser2</strong></div>
+                        <div><small class="opacity-75">@dialogDto.Date.ToString("HH:mm dd/MM")</small></div>
+                    </div>  
                     @if (dialogDto.IsRead)
                     {
                         <span id="_@dialogDto.DialogId" class="position-absolute top-0 start-0 p-1 bg-info border border-light rounded-circle" style="visibility:hidden">
@@ -28,14 +28,36 @@
                             <span class="visually-hidden">New alerts</span>
                         </span>
                     }
-                </a>
+                  </a>
+                  <a id="d_@dialogDto.DialogId" class="openDialog w-25 list-group-item list-group-item-action p-3 m-0 lh-tight position-relative dropdown-toggle-split border-start-0" data-bs-toggle="dropdown" aria-expanded="false">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-list" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z"></path>
+                    </svg>
+                  </a>
+                  <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" asp-area="" asp-controller="Home" asp-action="GetUser" asp-route-userId="@dialogDto.User2">Перейти</a></li>
+                    @if (dialogDto.BlockedBy == null)
+                    {
+                        <li><a class="dropdown-item" onclick="blocked_chat('@dialogDto.DialogId')" href="#">Заблокировать</a></li>
+                    }
+                    else if(dialogDto.BlockedBy == ViewBag.User.UserId)
+                    {
+                        <li><a class="dropdown-item" onclick="blocked_chat('@dialogDto.DialogId')" href="#">Разблокировать</a></li>
+                    }
+                    else
+                    {
+                        <li><a class="dropdown-item" href="#">Вы заблокированны</a></li>    
+                    }
+                  </ul>
+                </div>
             }
             else
             {
-                <a href="#" id="@dialogDto.DialogId" onclick="open_chat('@dialogDto.DialogId')" class="openDialog list-group-item list-group-item-action py-3 lh-tight position-relative" aria-current="true">
-                    <div class="d-flex w-100 align-items-center justify-content-between">
-                        <strong class="mb-1">@dialogDto.NameUser1</strong>
-                        <small>@dialogDto.Date.ToString("HH:mm dd/MM")</small>
+                <div class="btn-group w-100">
+                  <button type="button" href="#" id="@dialogDto.DialogId" onclick="open_chat('@dialogDto.DialogId')" class="openDialog w-75 list-group-item list-group-item-action lh-tight position-relative border-end-0" aria-current="true">
+                    <div class="w-100 align-items-center justify-content-between">
+                        <div><strong class="mb-1">@dialogDto.NameUser1</strong></div>
+                        <div><small class="opacity-75">@dialogDto.Date.ToString("HH:mm dd/MM")</small></div>
                     </div>
                     @if (dialogDto.IsRead)
                     {
@@ -49,7 +71,28 @@
                             <span class="visually-hidden">New alerts</span>
                         </span>
                     }
-                </a>
+                  </button>
+                  <button type="button" id="d_@dialogDto.DialogId" class="openDialog w-25 list-group-item list-group-item-action p-3 m-0 lh-tight position-relative dropdown-toggle-split border-start-0" data-bs-toggle="dropdown" aria-expanded="false">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-list" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z"></path>
+                    </svg>
+                  </button>
+                  <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" asp-area="" asp-controller="Home" asp-action="GetUser" asp-route-userId="@dialogDto.User2">Перейти</a></li>
+                    @if (dialogDto.BlockedBy == null)
+                    {
+                        <li><a class="dropdown-item" onclick="blocked_chat('@dialogDto.DialogId')" href="#">Заблокировать</a></li>
+                    }
+                    else if(dialogDto.BlockedBy == ViewBag.User.UserId)
+                    {
+                        <li><a class="dropdown-item" onclick="blocked_chat('@dialogDto.DialogId')" href="#">Разблокировать</a></li>
+                    }
+                    else
+                    {
+                        <li><a class="dropdown-item" href="#">Вы заблокированны</a></li>    
+                    }
+                  </ul>
+                </div>
             }
         }
         

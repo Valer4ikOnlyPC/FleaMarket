@@ -29,13 +29,13 @@ namespace FleaMarket.Controllers
             var user = await _userService.GetByPhone(User.Identity.Name);
             var dialogs = (await _dialogService.GetByUser(user.UserId));
             var countDialogs = dialogs.Where(d => d.IsRead == false).Count();
-            _logger.LogInformation($"Count new dialog {countDialogs}");
+            _logger.LogInformation("Count new dialog {countDialogs}", countDialogs);
             return countDialogs;
         }
         public async Task<IActionResult> AllDialog()
         {
             var user = await _userService.GetByPhone(User.Identity.Name);
-            _logger.LogInformation($"View all dialog by user {user.UserId}");
+            _logger.LogInformation("View all dialog by user {UserId}", user.UserId);
             var dialogs = (await _dialogService.GetByUser(user.UserId)).OrderByDescending(x => x.Date);
             ViewBag.User = await _userService.GetByPhone(User.Identity.Name);
             return PartialView(dialogs);
@@ -43,20 +43,28 @@ namespace FleaMarket.Controllers
         public async Task<IActionResult> ViewDialog(Guid dialogId, int pageNumber = 1)
         {
             var dialog = await _dialogService.GetById(dialogId);
-            _logger.LogInformation($"View dialog by id {dialog.DialogId}");
+            _logger.LogInformation("View dialog by id {DialogId}", dialog.DialogId);
             var messages = await _dialogService.GetMessageByPage(dialog, pageNumber);
             var countPage = await _dialogService.CountMessageByDialog(dialogId);
             countPage = (int)Math.Ceiling((decimal)countPage / (decimal)30);
             ViewBag.NextPage = true;
             if ((countPage == pageNumber) | countPage == 0) ViewBag.NextPage = false;
             ViewBag.DialogId = dialogId;
+            ViewBag.Blocked = dialog.BlockedBy;
             ViewBag.UserId = (await _userService.GetByPhone(User.Identity.Name)).UserId;
             ViewBag.PageNumber = pageNumber;
             return PartialView(messages.OrderBy(m => m.Date));
         }
+        public async Task BlockedDialog(Guid dialogId)
+        {
+            var dialog = await _dialogService.GetById(dialogId);
+            var user = await _userService.GetByPhone(User.Identity.Name);
+            if (dialog.BlockedBy == null) await _dialogService.UpdateBlocked(dialogId, user.UserId);
+            else if (dialog.BlockedBy == user.UserId) await _dialogService.UpdateBlocked(dialogId, null);
+        }
         public async Task ReadMessage(Guid dialogId)
         {
-            _logger.LogInformation($"Read messages dialogue {dialogId}");
+            _logger.LogInformation("Read messages dialogue {dialogId}", dialogId);
             var user = await _userService.GetByPhone(User.Identity.Name);
             var dialog = await _dialogService.GetById(dialogId);
             await _dialogService.ReadMessage(dialog, user.UserId);
@@ -70,8 +78,9 @@ namespace FleaMarket.Controllers
         [HttpPost]
         public async Task<IActionResult> AddMessage(Guid dialogId, string text)
         {
-            _logger.LogInformation($"Add a message to a dialogue {dialogId}");
+            _logger.LogInformation("Add a message to a dialogue {dialogId}", dialogId);
             var dialog = await _dialogService.GetById(dialogId);
+            if (dialog.BlockedBy != null) return RedirectToAction("ViewDialog", "Dialog", new { dialogId = dialogId });
             var user = await _userService.GetByPhone(User.Identity.Name);
             User user2;
             if (dialog.User1 == user.UserId)
@@ -99,7 +108,7 @@ namespace FleaMarket.Controllers
                 User1 = user.UserId,
                 User2 = userCreatorId
             };
-            _logger.LogInformation($"Create a dalog at user {userId} and user {userCreatorId}");
+            _logger.LogInformation("Create a dalog at user {userId} and user {userCreatorId}", userId, userCreatorId);
             var result = await _dialogService.CheckSimilar(dialog);
             if (result != null) return result.DialogId;
             var dialogId = await _dialogService.Create(dialog);
