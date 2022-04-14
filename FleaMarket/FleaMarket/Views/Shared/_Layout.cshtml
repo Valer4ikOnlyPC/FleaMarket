@@ -181,9 +181,17 @@
                         elem.classList.remove("active");
                     }
                     document.getElementById(dialogId).classList.add("active");
+                    document.getElementById('d_'+dialogId).classList.add("active");
                     lastMessageScroll('smooth');
                 });
         }
+        function blocked_chat(dialogId){
+            $.get("/Dialog/BlockedDialog", { dialogId: dialogId })
+                .done(function () {
+                    chat_active();
+                });
+        }
+
         function add_message(e, dialogId){
             e.preventDefault();
             var data = new FormData($("#messageForm")[0]);

@@ -17,5 +17,7 @@ namespace Domain.IServices
         Task<bool> Verification(string phoneNumber, string password);
         Task<User> Update(Guid id, User item);
         Task Delete(Guid id);
+        string HashPassword(string password);
+        bool VerifyHashedPassword(string hashedPassword, string password);
     }
 }

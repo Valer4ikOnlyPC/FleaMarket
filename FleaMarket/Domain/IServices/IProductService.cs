@@ -19,6 +19,7 @@ namespace Domain.IServices
         Task<int> CountBySearch(string search, int categoryId, int cityId = -1);
         Task<IEnumerable<ProductPhoto>> GetPhotos(Guid productId);
         Task DeletePhoto(Guid ProductId, Guid PhotoId);
+        Task<string> CategoriesToQuery(int categoryId);
         Task UpdatePhoto(ProductDTO item);
         Task<Guid> Create(ProductDTO item);
         Task<Product> Update(Guid id, Product item);

@@ -82,7 +82,7 @@ namespace Services.Service
             return VerifyHashedPassword(userPassword.Password, password);
         }
 
-        private string HashPassword(string password)
+        public string HashPassword(string password)
         {
             byte[] salt;
             byte[] buffer2;
@@ -101,7 +101,7 @@ namespace Services.Service
             return Convert.ToBase64String(dst);
         }
 
-        private static bool VerifyHashedPassword(string hashedPassword, string password)
+        public bool VerifyHashedPassword(string hashedPassword, string password)
         {
             byte[] buffer4;
             if (hashedPassword == null)

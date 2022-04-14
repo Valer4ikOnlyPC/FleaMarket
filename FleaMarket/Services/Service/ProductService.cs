@@ -40,7 +40,7 @@ namespace Services.Service
             var files = await _fileService.UploadMany(item.Image, productId, 5);
             if(files.Count() == 0)
                 return Guid.Empty;
-            Product product = new Product
+            var product = new Product
             {
                 ProductId = productId,
                 Name = item.Name,
@@ -104,7 +104,7 @@ namespace Services.Service
             if (product == null)
                 throw new ErrorModel(400, "Product not found");
             var productPhoto = await _productPhotoRepository.GetByProduct(product.ProductId);
-            ProductPhotoDto productPhotoDTO = new ProductPhotoDto
+            var productPhotoDTO = new ProductPhotoDto
             {
                 ProductId = product.ProductId,
                 Name = product.Name,
@@ -146,12 +146,12 @@ namespace Services.Service
         public async Task<IEnumerable<Product>> GetBySearch(string search, int categoryId, int page = 0, int cityId = -1)
         {
             var words = search.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-            var resultOr = words.FirstOrDefault();
-            var resultAnd = words.FirstOrDefault();
+            var resultOr = new StringBuilder(words.FirstOrDefault());
+            var resultAnd = new StringBuilder(words.FirstOrDefault());
             foreach (var word in words.Skip(1))
             {
-                resultOr+=string.Concat("|", word);
-                resultAnd += string.Concat("&", word);
+                resultOr.Append("|" + word);
+                resultAnd.Append("&" + word);
             }
             var result = string.Concat(resultOr, "|(", resultAnd, ")");
 
@@ -164,12 +164,12 @@ namespace Services.Service
         public async Task<int> CountBySearch(string search, int categoryId, int cityId = -1)
         {
             var words = search.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-            var resultOr = words.FirstOrDefault();
-            var resultAnd = words.FirstOrDefault();
+            var resultOr = new StringBuilder(words.FirstOrDefault());
+            var resultAnd = new StringBuilder(words.FirstOrDefault());
             foreach (var word in words.Skip(1))
             {
-                resultOr += string.Concat("|", word);
-                resultAnd += string.Concat("&", word);
+                resultOr.Append("|" + word);
+                resultAnd.Append("&" + word);
             }
             var result = string.Concat(resultOr, "|(", resultAnd, ")");
 
@@ -183,19 +183,20 @@ namespace Services.Service
         {
             return await _productPhotoRepository.GetByProduct(productId);
         }
-        private async Task<string> CategoriesToQuery(int categoryId)
+        public async Task<string> CategoriesToQuery(int categoryId)
         {
             var categoryParent = (List<Category>)await _categoryService.GetByParent(categoryId);
             var category = await CategoriesAsync(categoryParent, new List<Category>());
             category.AddRange(categoryParent);
             var categoryResult = category.Select(x => x.CategoryId);
-            string categories = "(" + categoryId.ToString();
+            var categories = new StringBuilder("(" + categoryId.ToString());
             foreach (var catId in categoryResult)
             {
-                categories = string.Concat(categories, ",", catId.ToString());
+                categories.Append("," + catId.ToString());
             }
-            categories = string.Concat(categories, ")");
-            return categories;
+            categories.Append(")");
+            _logger.LogInformation(categories.ToString());
+            return categories.ToString();
         }
         private async Task<List<Category>> CategoriesAsync(List<Category> categoryParent, List<Category> categoryResult)
         {

@@ -12,5 +12,6 @@ namespace Domain.Models
         public Guid User1 { get; set; }
         public Guid User2 { get; set; }
         public DateTime Date { get; set; }
+        public Guid? BlockedBy { get; set; }
     }
 }

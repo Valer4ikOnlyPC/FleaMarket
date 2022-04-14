@@ -14,13 +14,16 @@ using FleaMarket.Hubs;
 using Microsoft.AspNetCore.SignalR;
 using Serilog;
 using Serilog.Events;
+using SerilogWeb.Classic.Enrichers;
 
 var builder = WebApplication.CreateBuilder(args);
 
 var logger = new LoggerConfiguration()
   .ReadFrom.Configuration(builder.Configuration)
   .Enrich.FromLogContext()
+  .Enrich.WithHttpRequestId()
   .WriteTo.Console()
+  .WriteTo.Seq("http://localhost:7163")
   .CreateLogger();
 builder.Logging.ClearProviders();
 builder.Logging.AddSerilog(logger);

@@ -13,7 +13,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace Repository.Data
 {
-    public class UserRepository: IUserRepository
+    public class UserRepository: BaseRepository, IUserRepository
     {
         private readonly IConfiguration _configuration;
         public UserRepository(IConfiguration configuration)
@@ -22,63 +22,66 @@ namespace Repository.Data
         }
         public async Task<IEnumerable<User>> GetAll()
         {
-            IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
+            var db = base.DbOpen(_configuration);
             var users = await db.QueryAsync<User>(
                 "SELECT * " +
                 "FROM \"Users\"");
+            base.DbClose(db);
             return users;
         }
         public async Task<User> GetById(Guid id)
         {
-            IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
+            var db = base.DbOpen(_configuration);
             var users = await db.QueryAsync<User>(
                 "SELECT * " +
                 "FROM \"Users\" " +
                 "WHERE \"UserId\" = @id", new { id });
+            base.DbClose(db);
             return users.FirstOrDefault();
         }
         public async Task<User> GetByPhone(string phone)
         {
-            IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
+            var db = base.DbOpen(_configuration);
             var users = await db.QueryAsync<User>(
                 "SELECT * " +
                 "FROM \"Users\" " +
                 "WHERE \"PhoneNumber\" = @phone", new { phone });
+            base.DbClose(db);
             return users.FirstOrDefault();
         }
         public async Task<Guid> Create(User item)
         {
-            IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
-
+            var db = base.DbOpen(_configuration);
             item.UserId = Guid.NewGuid();
             var result = await db.QueryAsync<Guid>(
                 "INSERT INTO \"Users\" (\"UserId\", \"Surname\", \"Name\", \"PhoneNumber\", \"VkAddress\", \"Rating\", \"CityId\", \"IsDeleted\") " +
                 "VALUES(@userId, @Surname, @Name, @PhoneNumber, @VkAddress, @Rating, @CityId, @IsDelete) " +
                 "RETURNING \"UserId\";", new { item.UserId, item.Surname, item.Name, item.PhoneNumber, item.VkAddress, item.Rating, item.CityId, item.IsDelete });
+            base.DbClose(db);
             return result.FirstOrDefault();
         }
         public async Task<User> Update(Guid id, User item)
         {
-            IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
-
+            var db = base.DbOpen(_configuration);
             item.UserId = id;
             var sqlQuery =
                 "UPDATE \"Users\" " +
                 "SET \"Surname\" = @Surname, \"Name\" = @Name, \"VkAddress\" = @VkAddress, " +
-                    "\"Rating\" = @Rating, \"CityId\" = @CityId, \"IsDelete\" = @IsDelete " +
+                    "\"Rating\" = @Rating, \"CityId\" = @CityId, \"IsDeleted\" = @IsDelete " +
                 "WHERE \"UserId\" = @UserId";
-            await db.ExecuteAsync(sqlQuery, item);
+            await db.ExecuteAsync(sqlQuery, new { item.UserId, item.Surname, item.Name, item.VkAddress, item.Rating, item.CityId, item.IsDelete });
+            base.DbClose(db);
             return await GetById(item.UserId);
         }
         public async Task Delete(Guid id)
         {
-            IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
-
+            var db = base.DbOpen(_configuration);
             var sqlQuery =
                 "UPDATE \"Users\" " +
-                "SET \"IsDelete\" = True " +
+                "SET \"IsDeleted\" = true " +
                 "WHERE \"UserId\" = @id";
-            await db.ExecuteAsync(sqlQuery, id);
+            await db.ExecuteAsync(sqlQuery, new { id });
+            base.DbClose(db);
         }
     }
 }

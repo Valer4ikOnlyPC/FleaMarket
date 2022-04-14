@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Repository.Data
 {
-    public class MessageRepository : IMessageRepository
+    public class MessageRepository : BaseRepository, IMessageRepository
     {
         private readonly IConfiguration _configuration;
         public MessageRepository(IConfiguration configuration)
@@ -21,51 +21,56 @@ namespace Repository.Data
         }
         public async Task CreateMessage(Message message)
         {
-            IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
+            var db = base.DbOpen(_configuration);
             var favorite = await db.QueryAsync<Guid>(
                 "INSERT INTO \"Messages\" (\"UserId\", \"User\", \"Text\", \"Date\", \"IsRead\", \"DialogId\") " +
                 "VALUES(@UserId, @User, @Text, @Date, @IsRead, @DialogId) " +
                 "RETURNING \"DialogId\";", new { message.UserId, message.User, message.Text, message.Date, message.IsRead, message.DialogId });
+            base.DbClose(db);
         }
 
         public async Task<IEnumerable<Message>> GetMessage(Guid dialogId)
         {
-            IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
+            var db = base.DbOpen(_configuration);
             var messages = await db.QueryAsync<Message>(
                 "SELECT * " +
                 "FROM \"Messages\" " +
                 "WHERE \"DialogId\" = @dialogId ", new { dialogId });
+            base.DbClose(db);
             return messages;
         }
         public async Task<int> CountMessageByDialog(Guid dialogId)
         {
-            IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
+            var db = base.DbOpen(_configuration);
             var messages = await db.QueryAsync<int>(
                 "SELECT COUNT(*) " +
                 "FROM \"Messages\" " +
                 "WHERE \"DialogId\" = @dialogId ", new { dialogId });
+            base.DbClose(db);
             return messages.FirstOrDefault();
         }
         public async Task<IEnumerable<Message>> GetMessageByPage(Guid dialogId, int pageNumber)
         {
-            IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
+            var db = base.DbOpen(_configuration);
             var messages = await db.QueryAsync<Message>(
                 "SELECT * " +
                 "FROM \"Messages\" " +
                 "WHERE \"DialogId\" = @dialogId " +
                 "ORDER BY \"Date\" desc " +
                 "LIMIT 30*@pageNumber " , new { dialogId, pageNumber });
+            base.DbClose(db);
             return messages;
         }
 
         public async Task ReadMessage(Guid dialogId, Guid userId)
         {
-            IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
+            var db = base.DbOpen(_configuration);
             var sqlQuery =
                 "UPDATE \"Messages\" " +
                 "SET \"IsRead\" = true " +
                 "WHERE ( \"DialogId\" = @dialogId ) and ( \"UserId\" != @userId )";
             await db.ExecuteAsync(sqlQuery, new { dialogId, userId });
+            base.DbClose(db);
         }
     }
 }

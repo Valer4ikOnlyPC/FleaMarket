@@ -13,7 +13,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace Repository.Data
 {
-    public class ProductPhotoRepository: IProductPhotoRepository
+    public class ProductPhotoRepository: BaseRepository, IProductPhotoRepository
     {
         private readonly IConfiguration _configuration;
         public ProductPhotoRepository(IConfiguration configuration)
@@ -22,48 +22,54 @@ namespace Repository.Data
         }
         public async Task<IEnumerable<ProductPhoto>> GetByProduct(Guid productId)
         {
-            IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
-            return await db.QueryAsync<ProductPhoto>(
+            var db = base.DbOpen(_configuration);
+            var result = await db.QueryAsync<ProductPhoto>(
                 "SELECT * " +
                 "FROM \"ProductPhotos\" " +
                 "WHERE \"ProductId\" = @ProductId ", new { productId });
+            base.DbClose(db);
+            return result;
         }
         public async Task<ProductPhoto> GetById(Guid id)
         {
-            IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
+            var db = base.DbOpen(_configuration);
             var result = await db.QueryAsync<ProductPhoto>(
                 "SELECT * " +
                 "FROM \"ProductPhotos\" " +
                 "WHERE \"PhotoId\" = @id", new { id });
+            base.DbClose(db);
             return result.FirstOrDefault();
         }
         public async Task<Guid> Create(ProductPhoto item)
         {
-            IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
+            var db = base.DbOpen(_configuration);
             var result = await db.QueryAsync<Guid>(
                 "INSERT INTO \"ProductPhotos\" (\"PhotoId\", \"Link\", \"ProductId\") " +
                 "VALUES(@photoId, @Link, @ProductId) " +
                 "RETURNING \"ProductId\";", new { item.PhotoId, item.Link, item.ProductId });
+            base.DbClose(db);
             return result.FirstOrDefault();
         }
         public async Task<ProductPhoto> Update(Guid id, ProductPhoto item)
         {
-            IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
+            var db = base.DbOpen(_configuration);
             item.PhotoId = id;
             var sqlQuery =
                 "UPDATE \"ProductPhotos\" " +
                 "SET \"Link\" = @Link, \"ProductId\" = @ProductId " +
                 "WHERE \"PhotoId\" = @PhotoId";
             await db.ExecuteAsync(sqlQuery, item);
+            base.DbClose(db);
             return await GetById(item.PhotoId);
         }
         public async Task Delete(Guid id)
         {
-            IDbConnection db = new NpgsqlConnection(_configuration.GetConnectionString("myconn"));
+            var db = base.DbOpen(_configuration);
             var sqlQuery =
                 "DELETE FROM \"ProductPhotos\" " +
                 "WHERE \"PhotoId\" = @id";
             await db.ExecuteAsync(sqlQuery, new { id });
+            base.DbClose(db);
         }
     }
 }

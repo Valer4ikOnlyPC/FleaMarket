@@ -66,7 +66,7 @@ namespace FleaMarket.Controllers
                 {
                     var userId = await _userService.Create(model);
                     await Authenticate(model.PhoneNumber);
-                    _logger.LogInformation($"User registered. UserId {userId}");
+                    _logger.LogInformation("User registered. UserId {userId}", userId);
                     return RedirectToAction("Index", "Home");
                 }
                 else

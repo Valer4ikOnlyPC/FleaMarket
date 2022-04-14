@@ -16,6 +16,7 @@ namespace Services.Service
         private readonly ILogger<CategoryService> _logger;
         private readonly ICategoryRepository _categoryRepository;
         private readonly IMemoryCache _cache;
+        private readonly string _cacheKey = "allCategory";
         public CategoryService(ILogger<CategoryService> logger, ICategoryRepository categoryRepository, IMemoryCache cache)
         {
             _logger = logger;
@@ -24,9 +25,9 @@ namespace Services.Service
         }
         public async Task Create(Category item)
         {
-            if (_cache.TryGetValue("allCategory", out IEnumerable<Category> category))
+            if (_cache.TryGetValue(_cacheKey, out IEnumerable<Category> category))
             {
-                _cache.Remove("allCategory");
+                _cache.Remove(_cacheKey);
             }
             await _categoryRepository.Create(item);
         }
@@ -38,10 +39,10 @@ namespace Services.Service
 
         public async Task<IEnumerable<Category>> GetAll()
         {
-            if (!_cache.TryGetValue("allCategory", out IEnumerable<Category> category))
+            if (!_cache.TryGetValue(_cacheKey, out IEnumerable<Category> category))
             {
                 category = await _categoryRepository.GetAll();
-                _cache.Set("allCategory", category,
+                _cache.Set(_cacheKey, category,
                     new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromHours(12)));
             }
             return category;
