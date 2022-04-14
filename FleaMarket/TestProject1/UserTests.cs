@@ -25,78 +25,73 @@ namespace TestProject1
 {
     public class UserTests
     {
-        private string path;
-        private Guid userId;
-        private UserRepository _userRepository;
-        private UserPasswordRepository _userPasswordRepository;
         private UserService _userService;
 
         public UserTests()
         {
-            path = Directory.GetCurrentDirectory().Split("TestProject1").FirstOrDefault();
-            var builder = new ConfigurationBuilder()
-                .AddJsonFile(String.Concat(path, "/FleaMarket/appsettings.json"));
-            var conf = builder.Build();
-            _userRepository = new UserRepository(conf);
-            _userPasswordRepository = new UserPasswordRepository(conf);
-            _userService = new UserService(_userRepository, _userPasswordRepository);
-            userId = Guid.Parse("e4993600-0b60-4111-b7cd-85b7097ced9c");
+            var mockUser = new Mock<IUserRepository>();
+            var mockUserPassword = new Mock<IUserPasswordRepository>();
+            _userService = new UserService(mockUser.Object, mockUserPassword.Object);
         }
         [Fact]
-        public async Task TestCreate()
+        public async Task HashPasswordTest()
         {
-            // Arrange
-            var user = new UserDTO
-            {
-                Surname = "Пользователь",
-                Name = "Тестовый",
-                PhoneNumber = "+7 (922) 999 0001",
-                CityId = 1,
-                VkAddress = null,
-                Password = "12345678",
-            };
-            // Act
-            var userId = await _userService.Create(user);
-            // Assert
-            Assert.NotEqual(Guid.Empty, userId);
+            //Arrange
+            var password1 = _userService.HashPassword("bS39kr-1yd");
+            //Act
+            var password2 = _userService.HashPassword("bS39kr-1yd");
+            //Assert
+            Assert.NotEqual(password1, password2);
         }
         [Fact]
-        public async Task TestGetById()
+        public async Task VerifyHashedPasswordTest1()
         {
-            // Arrange
-            var users = (await _userService.GetAll()).FirstOrDefault(u => u.UserId == userId);
-            // Act
-            var user = await _userService.GetById(userId);
-            // Assert
-            Assert.Equal(user.PhoneNumber, users.PhoneNumber);
+            //Arrange
+            var password = "nD2_hY8`ta";
+            var hashedPassword = _userService.HashPassword(password);
+            //Act
+            var result = _userService.VerifyHashedPassword(hashedPassword, password);
+            //Assert
+            Assert.True(result);
         }
         [Fact]
-        public async Task TestGetByPhone()
+        public async Task VerifyHashedPasswordTest2()
         {
-            // Arrange
-            var user1 = await _userService.GetById(userId);
-            // Act
-            var user2 = await _userService.GetByPhone(user1.PhoneNumber);
-            // Assert
-            Assert.Equal(user1.Name, user2.Name);
+            //Arrange
+            var password = "htd(b@mk%";
+            var hashedPassword = _userService.HashPassword(password.ToUpper());
+            //Act
+            var result = _userService.VerifyHashedPassword(hashedPassword, password);
+            //Assert
+            Assert.False(result);
         }
         [Fact]
-        public async Task TestUpdate()
+        public async Task VerifyHashedPasswordTest3()
         {
-            // Arrange
-            var user1 = await _userService.GetById(userId);
-            user1.Name = "Обновление";
-            // Act
-            var user2 = await _userService.Update(userId, user1);
-            // Assert
-            Assert.Equal(user1.Name, user2.Name);
+            //Arrange
+            var password = _userService.HashPassword("up^N3$lEn");
+            var hashedPassword = _userService.HashPassword(password);
+            //Act
+            var result = _userService.VerifyHashedPassword(hashedPassword, password);
+            //Assert
+            Assert.True(result);
         }
+
         [Fact]
-        public async Task TestVerification()
+        public async Task VerificationTest()
         {
-            // Act
-            var result = await _userService.Verification("+7 (910) 922 8989", "12345678");
-            // Assert
+            //Arrange
+            var userId = Guid.NewGuid();
+            var mockUser = new Mock<IUserRepository>();
+            mockUser.Setup(m => m.GetByPhone("88005553535")).ReturnsAsync(new User()
+                { Name = "Name", Surname = "Surname", CityId = 1, IsDelete = false, PhoneNumber = "88005553535", Rating = 0, UserId = userId, VkAddress = null });
+            var mockUserPassword = new Mock<IUserPasswordRepository>();
+            mockUserPassword.Setup(m => m.GetByUserId(userId)).ReturnsAsync(new UserPassword()
+                { Password = _userService.HashPassword("ftN%o<^>X"), UserId = userId, UserPasswordId = Guid.NewGuid() });
+            var _userServiceTest = new UserService(mockUser.Object, mockUserPassword.Object);
+            //Act
+            var result = await _userServiceTest.Verification("88005553535", "ftN%o<^>X");
+            //Assert
             Assert.True(result);
         }
     }

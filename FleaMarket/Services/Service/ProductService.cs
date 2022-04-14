@@ -183,7 +183,7 @@ namespace Services.Service
         {
             return await _productPhotoRepository.GetByProduct(productId);
         }
-        private async Task<string> CategoriesToQuery(int categoryId)
+        public async Task<string> CategoriesToQuery(int categoryId)
         {
             var categoryParent = (List<Category>)await _categoryService.GetByParent(categoryId);
             var category = await CategoriesAsync(categoryParent, new List<Category>());
@@ -195,6 +195,7 @@ namespace Services.Service
                 categories.Append("," + catId.ToString());
             }
             categories.Append(")");
+            _logger.LogInformation(categories.ToString());
             return categories.ToString();
         }
         private async Task<List<Category>> CategoriesAsync(List<Category> categoryParent, List<Category> categoryResult)
