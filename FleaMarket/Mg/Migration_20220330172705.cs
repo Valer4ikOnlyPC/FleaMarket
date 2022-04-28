@@ -7,7 +7,7 @@ using FluentMigrator;
 
 namespace Mg
 {
-    [Migration(20220325203104)]
+    [Migration(20220330172705)]
     public class Migration_20220330172705 : FluentMigrator.Migration
     {
         public override void Down()
