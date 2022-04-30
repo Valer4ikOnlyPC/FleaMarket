@@ -1,7 +1,11 @@
 ﻿using Domain.IServices;
 using Domain.Models;
+using FFMpegCore;
+using FFMpegCore.Enums;
+using FFMpegCore.Pipes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +18,7 @@ namespace Services.Service
     public class FileService : IFileService
     {
         private readonly IConfiguration _configuration;
+        private readonly IFfmpegService _ffmpegService;
         private readonly long _fileSizeLimit;
         private readonly string _filePath;
         private enum FileType
@@ -29,8 +34,9 @@ namespace Services.Service
                 { FileType.Png, new byte[] { 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A } },
             };
 
-        public FileService(IConfiguration configuration)
+        public FileService(IConfiguration configuration, IFfmpegService ffmpegService)
         {
+            _ffmpegService = ffmpegService;
             _configuration = configuration;
             _fileSizeLimit = Int32.Parse(configuration["FileSizeLimit"]);
             _filePath = _configuration["FileDirectory"];
@@ -52,7 +58,8 @@ namespace Services.Service
                 using var fileStream = new FileStream(filePath, FileMode.Create);
                 img.CopyTo(fileStream);
                 files.Add(new ProductPhoto { PhotoId = photoId, Link = string.Concat("/img/", relativePath), ProductId = productId });
-
+                await _ffmpegService.GetState(filePath);
+                await _ffmpegService.ConvertImage(filePath);
             }
             return files;
         }

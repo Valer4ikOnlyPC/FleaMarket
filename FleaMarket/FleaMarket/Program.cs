@@ -50,6 +50,7 @@ builder.Services.AddTransient<ICategoryService, CategoryService>();
 builder.Services.AddTransient<IProductRepository, ProductRepository>();
 builder.Services.AddTransient<IProductService, ProductService>();
 builder.Services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
+builder.Services.AddSingleton<IFfmpegService, FfmpegService>();
 builder.Services.AddMemoryCache();
 
 
@@ -82,8 +83,8 @@ app.UseDefaultFiles();
 
 if (!Directory.Exists(app.Configuration["FileDirectory"]))
     Directory.CreateDirectory(app.Configuration["FileDirectory"]);
-if (!Directory.Exists(app.Configuration["DialogDirectory"]))
-    Directory.CreateDirectory(app.Configuration["DialogDirectory"]);
+if (!Directory.Exists(app.Configuration["TempFileDirectory"]))
+    Directory.CreateDirectory(app.Configuration["TempFileDirectory"]);
 app.UseStaticFiles(new StaticFileOptions
 {
     FileProvider = new PhysicalFileProvider(app.Configuration["FileDirectory"]),
