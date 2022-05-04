@@ -44,9 +44,9 @@ namespace Repository.Data
         {
             var db = base.DbOpen(_configuration);
             var result = await db.QueryAsync<Guid>(
-                "INSERT INTO \"ProductPhotos\" (\"PhotoId\", \"Link\", \"ProductId\") " +
-                "VALUES(@photoId, @Link, @ProductId) " +
-                "RETURNING \"ProductId\";", new { item.PhotoId, item.Link, item.ProductId });
+                "INSERT INTO \"ProductPhotos\" (\"PhotoId\", \"Link\", \"ProductId\", \"Location\") " +
+                "VALUES(@photoId, @Link, @ProductId, @Location) " +
+                "RETURNING \"ProductId\";", new { item.PhotoId, item.Link, item.ProductId, item.Location });
             base.DbClose(db);
             return result.FirstOrDefault();
         }

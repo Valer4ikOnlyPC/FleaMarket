@@ -21,6 +21,7 @@ namespace Services.Service
         private readonly IFfmpegService _ffmpegService;
         private readonly long _fileSizeLimit;
         private readonly string _filePath;
+        private readonly string _tempFilePath;
         private enum FileType
         {
             Unknown,
@@ -40,6 +41,7 @@ namespace Services.Service
             _configuration = configuration;
             _fileSizeLimit = Int32.Parse(configuration["FileSizeLimit"]);
             _filePath = _configuration["FileDirectory"];
+            _tempFilePath = _configuration["TempFileDirectory"];
         }
         public async Task<IEnumerable<ProductPhoto>> UploadMany(IEnumerable<IFormFile> Image, Guid productId, int photoCount)
         {
@@ -57,9 +59,10 @@ namespace Services.Service
 
                 using var fileStream = new FileStream(filePath, FileMode.Create);
                 img.CopyTo(fileStream);
-                files.Add(new ProductPhoto { PhotoId = photoId, Link = string.Concat("/img/", relativePath), ProductId = productId });
-                await _ffmpegService.GetState(filePath);
-                await _ffmpegService.ConvertImage(filePath);
+                var location = await _ffmpegService.GetState(filePath);
+                var taskConvertImage =  _ffmpegService.ConvertImage(filePath);
+                files.Add(new ProductPhoto { PhotoId = photoId, Link = string.Concat("/img/", relativePath), ProductId = productId, Location = location });
+                await taskConvertImage;
             }
             return files;
         }
@@ -67,7 +70,9 @@ namespace Services.Service
         {
             string[] words = ImagePath.Split(new char[] { '/' });
             var filePath = Path.Combine(_filePath, words.LastOrDefault());
+            var tempFilePath = Path.Combine(_tempFilePath, words.LastOrDefault());
             File.Delete(filePath);
+            File.Delete(tempFilePath);
         }
         public async Task<int> FileCheck(IFormFile formFile)
         {

@@ -90,6 +90,11 @@ app.UseStaticFiles(new StaticFileOptions
     FileProvider = new PhysicalFileProvider(app.Configuration["FileDirectory"]),
     RequestPath = "/img"
 });
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(app.Configuration["TempFileDirectory"]),
+    RequestPath = "/imgMin"
+});
 
 app.UseRouting();
 app.UseAuthentication();

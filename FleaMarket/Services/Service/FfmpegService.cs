@@ -19,15 +19,11 @@ namespace Services.Service
         public FfmpegService(ILogger<FfmpegService> logger, IConfiguration configuration)
         {
             var directory = Directory.GetCurrentDirectory();
-            directory = directory.Remove(directory.Length - 11);
+            directory = directory.Remove(directory.Length - 22);
             _configuration = configuration;
             _logger = logger;
-            _path = Path.Combine(directory, "Services", "Ffmpeg");
+            _path = Path.Combine(directory, "Lib", "Ffmpeg");
             _tempPath = _configuration["TempFileDirectory"];
-        }
-        public async Task GetPath()
-        {
-            _logger.LogError(_path);
         }
         public async Task<string> ConvertImage(string imagePath)
         {
@@ -36,34 +32,33 @@ namespace Services.Service
             var info = new ProcessStartInfo()
             {
                 UseShellExecute = false,
-                CreateNoWindow = false,
+                CreateNoWindow = true,
                 WorkingDirectory = _path,
                 FileName = Path.Combine(_path, "ffmpeg.exe"),
-                Arguments = string.Concat("-i ", imagePath, " -an -vf scale=100x100 ", savePath),
+                Arguments = string.Concat("-i ", imagePath, " -vf scale=200:-1 ", savePath),
             };
             using var process = new Process { StartInfo = info };
             process.Start();
-            process.WaitForExit();
+            await process.WaitForExitAsync();
             return savePath;
         }
-        public async Task GetState(string imagePath)
+        public async Task<string> GetState(string imagePath)
         {
             var info = new ProcessStartInfo()
             {
                 UseShellExecute = false,
                 RedirectStandardOutput = true,
-                CreateNoWindow = false,
+                CreateNoWindow = true,
                 WorkingDirectory = _path,
                 FileName = Path.Combine(_path, "ffprobe.exe"),
-                Arguments = string.Concat(" -v quiet -print_format json -show_streams ", imagePath),
+                Arguments = string.Concat("  -v verbose -print_format csv -show_frames ", imagePath),
             };
             using var process = new Process { StartInfo = info };
             process.Start();
-            var results = process.StandardOutput.ReadToEnd().Split(',');
-            process.WaitForExit();
-            _logger.LogInformation("Codec name - {results}", results[2]);
-            _logger.LogInformation("Codec long name - {results}", results[3]);
-            _logger.LogInformation("Codec type - {results}", results[5]);
+            var results = process.StandardOutput.ReadToEnd().Split('"');
+            await process.WaitForExitAsync();
+            if (results.Length >= 9) return string.Concat(results[7], ";", results[9]).Replace(" ", "");
+            return string.Empty;
         }
 
     }

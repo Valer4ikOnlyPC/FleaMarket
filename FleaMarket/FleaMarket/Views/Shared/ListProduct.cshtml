@@ -28,11 +28,14 @@
                             </svg>
                         </button>
                     }
-                    
+                    else
+                    {
+                        <div id="heart_@Model.product.ProductId"></div>
+                        <div id="heart-min_@Model.product.ProductId"></div>
+                    }
                     <a class="btn btn-sm btn-outline-secondary" asp-area="" asp-controller="Product" asp-action="ViewProduct" target="_blank" asp-route-productId="@Model.product.ProductId">Перейти</a>
                 </div>
             </div>
         </div>
     </div>
-    <script src="~/js/favorit.js" asp-append-version="true"></script>
     

@@ -8,8 +8,7 @@ namespace Domain.IServices
 {
     public interface IFfmpegService
     {
-        Task GetPath();
         Task<string> ConvertImage(string imagePath);
-        Task GetState(string imagePath);
+        Task<string> GetState(string imagePath);
     }
 }
