@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.SignalR;
 using Serilog;
 using Serilog.Events;
 using SerilogWeb.Classic.Enrichers;
+using AspNetCore.Yandex.ObjectStorage.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -52,6 +53,12 @@ builder.Services.AddTransient<IProductService, ProductService>();
 builder.Services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
 builder.Services.AddSingleton<IFfmpegService, FfmpegService>();
 builder.Services.AddMemoryCache();
+builder.Services.AddYandexObjectStorage(options =>
+{
+    options.BucketName = "flea-market-backet";
+    options.AccessKey = "YCAJEjfNlPTDm4tQyMZo9Zv2v";
+    options.SecretKey = "YCM3Ttllmxgjo7cOAHp02mA9Z-9bOPaiZY-LaEG9";
+});
 
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
@@ -83,6 +90,8 @@ app.UseDefaultFiles();
 
 if (!Directory.Exists(app.Configuration["FileDirectory"]))
     Directory.CreateDirectory(app.Configuration["FileDirectory"]);
+if (!Directory.Exists(app.Configuration["FileDirectoryMin"]))
+    Directory.CreateDirectory(app.Configuration["FileDirectoryMin"]);
 if (!Directory.Exists(app.Configuration["TempFileDirectory"]))
     Directory.CreateDirectory(app.Configuration["TempFileDirectory"]);
 app.UseStaticFiles(new StaticFileOptions
@@ -92,7 +101,7 @@ app.UseStaticFiles(new StaticFileOptions
 });
 app.UseStaticFiles(new StaticFileOptions
 {
-    FileProvider = new PhysicalFileProvider(app.Configuration["TempFileDirectory"]),
+    FileProvider = new PhysicalFileProvider(app.Configuration["FileDirectoryMin"]),
     RequestPath = "/imgMin"
 });
 

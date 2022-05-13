@@ -9,6 +9,7 @@ namespace Domain.IServices
     public interface IFfmpegService
     {
         Task<string> ConvertImage(string imagePath);
-        Task<string> GetState(string imagePath);
+        Task DeleteImages(string imagePath);
+        Task<decimal[]> GetState(string imagePath);
     }
 }

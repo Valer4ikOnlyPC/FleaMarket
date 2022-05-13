@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AspNetCore.Yandex.ObjectStorage" Version="0.1.8.4" />
     <PackageReference Include="FFMpegCore" Version="4.8.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="6.0.1" />
