@@ -70,9 +70,10 @@
                   <div id="photo" class="row row-cols-5">
                         @foreach(ProductPhoto img in ViewBag.Photos)
                         {
+                            string path = img.Link.Replace("img", "imgMin");
                             <div id="@img.PhotoId" class="col mb-2">
                                 <button type="button" onclick="delete_photo('@Model.ProductId', '@img.PhotoId')" class="bg-transparent text-secondary border-0">x</button>
-                                <img class="rounded shadow" style="width:100%; height:100px; object-fit: cover; z-index:2; position: relative;" src="@img.Link" />
+                                <img class="rounded shadow" style="width:100%; height:100px; object-fit: cover; z-index:2; position: relative;" src="@path" />
                             </div>
                         }
                   </div>
