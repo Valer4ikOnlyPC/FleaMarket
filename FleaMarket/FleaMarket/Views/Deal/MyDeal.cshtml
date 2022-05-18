@@ -20,7 +20,7 @@
             <div class="col"><p>Запрашиваемый</p></div>
             <div class="col"></div>
         </div>
-        <hr>
+        <hr class="backgroundColor2 borderColor2"/>
     @foreach(DealProductDto deal in ViewBag.DealMaster)
     {
         <div class="row row-cols-6">
@@ -68,7 +68,7 @@
                 <a class="link-secondary" asp-area="" asp-controller="Home" asp-action="GetUser" asp-route-userId="@deal.UserRecipient">@deal.UserRecipientName</a>
             </div>
         </div>
-        <hr>
+        <hr class="backgroundColor2 borderColor2"/>
     }
     </div>
   </div>
@@ -80,7 +80,7 @@
             <div class="col"><p>Запрашиваемый</p></div>
             <div class="col"></div>
         </div>
-        <hr>
+        <hr class="backgroundColor2 borderColor2"/>
     @foreach(DealProductDto deal in ViewBag.DealRecipient)
     {
         <div class="row row-cols-6">
@@ -119,7 +119,7 @@
                 <a class="link-secondary" asp-area="" asp-controller="Home" asp-action="GetUser" asp-route-userId="@deal.UserMaster">@deal.UserMasterName</a>
             </div>
         </div>
-        <hr>
+        <hr class="backgroundColor2 borderColor2"/>
     }
     </div>
   </div>
@@ -130,7 +130,7 @@
             <div class="col"></div>
             <div class="col"><p>Полученный</p></div>
         </div>
-        <hr>
+        <hr class="backgroundColor2 borderColor2"/>
     @foreach(DealProductDto deal in ViewBag.Deal)
     {
         if (deal.UserMaster == ViewBag.User.UserId)
@@ -190,7 +190,7 @@
                 <a class="link-secondary" onclick="deal_extension('@deal.DealId')">Показать подробности</a>
             </div>
         </div>
-        <hr>
+        <hr class="backgroundColor2 borderColor2"/>
     }
     </div>
   </div>
