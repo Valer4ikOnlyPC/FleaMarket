@@ -10,7 +10,7 @@
       <input type="hidden" name="CityId" value="@Model.CityId"/>
       <button class="btn btn-link link-secondary" type="submit" name="subscribe">@ViewBag.Category</button>
   </form>
-  <div id="myCarousel" class="carousel slide mb-3 shadow" style="background: gray; height: 500px; " data-bs-ride="carousel">
+  <div id="myCarousel" class="carousel slide mb-3 shadow borderColor3" style="background: gray; height: 500px; " data-bs-ride="carousel">
     <div class="carousel-indicators" style="z-index:3">
         <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="0" aria-label="0" class="active" aria-current="true"></button>
         @{
@@ -26,7 +26,7 @@
 
     <div class="carousel-inner">
         <div class="carousel-item active">
-            <div class="verticalhorizontal" style="background: rgba(0,0,0,0.5); width:100%; height: 500px;  display:flex; align-items: center; justify-content: center;">
+            <div class="verticalhorizontal" style="background: rgba(0,0,0,0.9); width:100%; height: 500px;  display:flex; align-items: center; justify-content: center;">
                 <div class="verticalhorizontal" style="background: transparent url(@ViewBag.FirstPhoto) no-repeat center center;background-size: 100%; filter: blur(10px); width: 100%; height: 100%; opacity: .7; z-index:1; position: absolute;"></div>
                 <img style=" max-width:100%; height:500px;z-index:2; position: relative;" src="@ViewBag.FirstPhoto" />
             </div>
@@ -35,7 +35,7 @@
             foreach (string link in @Model.Image)
             {
                  <div class="carousel-item">
-                    <div class="verticalhorizontal" style="background: rgba(0,0,0,0.5); width:100%; height: 500px;  display:flex; align-items: center; justify-content: center;">
+                    <div class="verticalhorizontal" style="background: rgba(0,0,0,0.9); width:100%; height: 500px;  display:flex; align-items: center; justify-content: center;">
                         <div class="verticalhorizontal" style="background: transparent url(@link) no-repeat center center;background-size: 100%; filter: blur(10px); width: 100%; height: 100%; opacity: .7; z-index:1; position: absolute;"></div>
                         <img style=" max-width:100%; height:500px;z-index:2; position: relative;" src="@link" />
                     </div>
@@ -54,19 +54,19 @@
     </button>
   </div>
 
-  <div class="row featurette border-top pt-3">
-      <div class="col-md-9 bg-light shadow bg-gradient rounded position-relative">
+  <div class="row featurette border-top pt-3 borderColor3">
+      <div class="col-md-9 bg-light shadow rounded position-relative backgroundColor2 borderColor2">
         <div role="alert">
             <h2 class="featurette-heading">@Model.Name</h2>
-            <hr>
-            <div class="mb-1">
+            <hr class="backgroundColor3">
+            <div class="mb-1 textColor2">
                 <p>Категория: @ViewBag.Category</p>
                 <p>Город: @ViewBag.City</p>
                 <p>Дата размещения: @Model.Date.ToShortDateString()</p>
             </div>
-            <hr class="bg-secondary w-25">
+            <hr class="bg-secondary w-25 backgroundColor3">
             <div class="mb-5">
-                <textarea class="textarea-read bg-light" id="exampleFormControlTextarea1" readonly>@Model.Description</textarea>
+                <textarea class="textarea-read bg-light backgroundColor2 textColor" id="exampleFormControlTextarea1" readonly>@Model.Description</textarea>
             </div>
         </div>
         @{
@@ -86,9 +86,9 @@
       </div>
 
       <div class="ps-4 col-md-3">
-        <div class="bg-light shadow bg-gradient rounded p-2" role="alert">
-          <a asp-area="" asp-controller="Home" asp-action="GetUser" asp-route-userId="@ViewBag.User.UserId" style="text-decoration: none; color: rgb(30,30,30);"><h4 class="featurette-heading">@ViewBag.User.Name</h4></a>
-          <hr>
+        <div class="bg-light shadow rounded p-2 backgroundColor2 borderColor2 textColor2" role="alert">
+          <a asp-area="" asp-controller="Home" asp-action="GetUser" asp-route-userId="@ViewBag.User.UserId" style="text-decoration: none; color: rgb(30,30,30);"><h4 class="featurette-heading textColor">@ViewBag.User.Name</h4></a>
+          <hr class="backgroundColor3">
           <p>Рейтинг: @Math.Round(ViewBag.User.Rating, 2)</p>
           <p>Кол-во обменов: @ViewBag.DealCount</p>
             @{

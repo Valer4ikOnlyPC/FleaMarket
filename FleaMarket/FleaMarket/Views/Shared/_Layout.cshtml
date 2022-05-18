@@ -5,16 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - FleaMarket</title>
     
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" asp-append-version="true"  />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/FleaMarket.styles.css" asp-append-version="true" />
-
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" asp-append-version="true"/>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
+    <link rel="stylesheet" href="~/FleaMarket.styles.css" asp-append-version="true"/>
+    @{
+        if (Context.Request.Cookies["usedTheme"] == "dark")
+        {
+            <link rel="stylesheet" href="~/css/dark-theme.css" asp-append-version="true"/>
+        }
+    }
 </head>
-<body class="scrollbarT scrollbar-secondary bordered-danger">
+<body class="scrollbarT scrollbar-secondary bordered-danger backgroundColor borderColor textColor">
     <header class="w-100" style="position: fixed; display: block; z-index: 1000;">
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-light border-bottom box-shadow mb-3 backgroundColor3 borderColor">
             <div class="container-fluid">
-                <a class="navbar-brand p-0 m-0 me-4" asp-area="" asp-controller="Home" asp-action="Index"><img class="p-0 m-0" style=" max-width:57px; max-height:40px;z-index:2; position: relative;" src="/images/logo-sm.jpg" /></a>
+                <a class="navbar-brand p-0 m-0 me-4" asp-area="" asp-controller="Home" asp-action="Index"><img class="p-0 m-0" style=" max-width:57px; max-height:40px;z-index:2; position: relative;" src="/images/logo-sm.png" /></a>
                 
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
@@ -26,13 +31,13 @@
                     {
                     <ul class="navbar-nav flex-grow-1 ">
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark position-relative" asp-area="" asp-controller="Deal" asp-action="MyDeal">Предложения и сделки<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="CountNewDeals" style="visibility:hidden;"><span class="visually-hidden">unread messages</span></span></a>
+                                    <a class="nav-link text-dark position-relative textColor" asp-area="" asp-controller="Deal" asp-action="MyDeal">Предложения и сделки<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="CountNewDeals" style="visibility:hidden;"><span class="visually-hidden">unread messages</span></span></a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="Product" asp-action="MyProducts" asp-route-number="@User.Identity.Name">Мои лоты</a>
+                                    <a class="nav-link text-dark textColor" asp-area="" asp-controller="Product" asp-action="MyProducts" asp-route-number="@User.Identity.Name">Мои лоты</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" onclick="Product_extension()">Добавить лот</a>
+                                    <a class="nav-link text-dark textColor" onclick="Product_extension()">Добавить лот</a>
                                 </li>
                     </ul>
                     <div class="flex-shrink-0 dropdown">
@@ -41,7 +46,7 @@
                                 <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"></path>
                             </svg>
                         </button>
-                        <ul id="favoriteToList" class="dropdown-menu dropdown-menu-lg-end shadow scrollbar scrollbar-danger bordered-danger thin" aria-labelledby="dropdownUser2" style=" min-width: 450px;">
+                        <ul id="favoriteToList" class="dropdown-menu dropdown-menu-lg-end shadow scrollbar scrollbar-danger bordered-danger thin backgroundColor borderColor textColor" aria-labelledby="dropdownUser2" style=" min-width: 450px;">
                         </ul>
                     </div>
                     <button onclick="chat_active()" class="btn btn-primary position-relative" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
@@ -49,12 +54,30 @@
                         <span id="MyChat" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="visibility:hidden">0</span>
                     </button>
                     <div class="flex-shrink-0 dropdown">
-                        <a href="#" class="d-block link-dark text-decoration-none nav-link text-dark" id="dropdownUser2" data-bs-toggle="dropdown" aria-expanded="false">@User.Identity.Name</a>
-                        <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser2" style="">
-                            <li><a class="nav-link text-dark" onclick="Product_extension()">Добавить лот</a></li>
-                            <li><a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="GetUserByName">Моя страница</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Logout">Выйти</a></li>
+                        <a href="#" class="d-block link-dark text-decoration-none nav-link text-dark textColor" id="dropdownUser2" data-bs-toggle="dropdown" aria-expanded="false">@User.Identity.Name</a>
+                        <ul class="dropdown-menu text-small shadow backgroundColor" aria-labelledby="dropdownUser2" style="">
+                            <li><a class="nav-link text-dark textColor" onclick="Product_extension()">Добавить лот</a></li>
+                            <li><a class="nav-link text-dark textColor" asp-area="" asp-controller="Home" asp-action="GetUserByName">Моя страница</a></li>
+                            <li><div class="form-check form-switch mx-2 py-2">
+                                @{
+                                    if (Context.Request.Cookies["usedTheme"] == "dark")
+                                    {
+                                        <form>
+                                            <label class="form-check-label textColor" for="themeCheck">Тёмная тема</label>
+                                            <input type="checkbox" role="link" onClick="window.location='/Home/ChangeTheme'" class="form-check-input" id="themeCheck" checked>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <form>
+                                            <label class="form-check-label textColor" for="themeCheck">Тёмная тема</label>
+                                            <input type="checkbox" role="link" onClick="window.location='/Home/ChangeTheme'" class="form-check-input" id="themeCheck">
+                                        </form>
+                                    }
+                                }
+                            </div></li>
+                            <li class="backgroundColor2"><hr class="dropdown-divider backgroundColor2"></li>
+                            <li><a class="nav-link text-dark textColor" asp-area="" asp-controller="Account" asp-action="Logout">Выйти</a></li>
                         </ul>
                     </div>
                     }
@@ -77,21 +100,21 @@
             </div>
         </nav>
     </header>
-    <div class="container" style="padding-top:70px">
+    <div class="container shadow-sm borderColor" style="padding-top:70px">
         <main role="main" class="pb-3">
             <div id="addProduct" class="modal modal-signin position-fixed d-block" role="dialog" style="z-index:9999; visibility:hidden; background: rgba(0,0,0,0); backdrop-filter: blur(10px);">
             </div>
-            <div class="offcanvas offcanvas-end border-0 shadow-lg" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1" id="offcanvasRight" style="width: 600px" aria-labelledby="offcanvasRightLabel">
+            <div class="offcanvas offcanvas-end border-0 shadow-lg backgroundColor3 borderColor3 textColor" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1" id="offcanvasRight" style="width: 600px" aria-labelledby="offcanvasRightLabel">
               <div class="offcanvas-header">
                 <h5 id="offcanvasRightLabel">Чаты:</h5>
-                <button type="button" class="btn-close text-reset" onclick="DeActive()" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                <button type="button" class="btn-close text-reset backgroundColor2 borderColor2" onclick="DeActive()" data-bs-dismiss="offcanvas" aria-label="Close"></button>
               </div>
               <div class="container offcanvas-body pt-0">
                   <div class="row h-100 w-100 p-0 m-0">
-                      <div id="SelectedChat" class="col-7 border-end p-0">
+                      <div id="SelectedChat" class="col-7 border-end p-0 borderColor2">
 
                       </div>
-                      <div id="AllChat" class="col-5 scrollbarС scrollbar-secondary bordered-danger thin p-0 m-0">
+                      <div id="AllChat" class="col-5 scrollbarС scrollbar-secondary bordered-danger thin p-0 m-0 borderColor2">
                       </div>
                   </div>
               </div>
@@ -100,7 +123,7 @@
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
+    <footer class="border-top footer text-muted backgroundColor borderColor textColor">
         <div class="container">
             &copy; 2022 - FleaMarket - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>

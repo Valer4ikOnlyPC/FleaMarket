@@ -17,6 +17,7 @@ namespace FleaMarket.Controllers
         private readonly ILogger<AccountController> _logger;
         private readonly ICityRepository _cityRepository;
         private readonly IUserService _userService;
+        private readonly string _cacheKey = "usedTheme";
 
         public AccountController(ILogger<AccountController> logger, ICityRepository cityRepository, IUserService userService)
         {
@@ -90,6 +91,7 @@ namespace FleaMarket.Controllers
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             _logger.LogInformation("User deauthorized");
+            Response.Cookies.Append(_cacheKey, "light");
             return RedirectToAction("Login", "Account");
         }
     }

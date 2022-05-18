@@ -2,9 +2,9 @@
     {
             @foreach(Category cat in @Model)
             {
-                <li class="dropend" >
-                    <a class="btn btn-sm dropdown" onclick="category_extension(@cat.CategoryId)" ondblclick="category_select(@cat.CategoryId)" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">@cat.Name</a>
-                    <ul id="@cat.CategoryId" class="dropdown-menu" aria-labelledby="dropdownMenuButton1" style="border-radius:10px;"></ul>
+                <li class="dropend chatElem2" >
+                    <a class="btn btn-sm dropdown textColor" onclick="category_extension(@cat.CategoryId)" ondblclick="category_select(@cat.CategoryId)" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">@cat.Name</a>
+                    <ul id="@cat.CategoryId" class="dropdown-menu backgroundColor" aria-labelledby="dropdownMenuButton1" style="border-radius:10px;"></ul>
                 </li>
             }
     }

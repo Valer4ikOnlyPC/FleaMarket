@@ -72,12 +72,15 @@
 
 .card {
     transition: transform .3s;
+    opacity: 0.94;
 }
 .card:hover {
     transform: scale(1.015);
+    opacity: 1.0;
 }
 .card-min {
     transition: transform .3s;
+    opacity: 0.94;
 }
 .card-min:hover {
     transform: scale(1.03);

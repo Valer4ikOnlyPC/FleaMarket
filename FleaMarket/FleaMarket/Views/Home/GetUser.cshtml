@@ -30,8 +30,8 @@
       </article>
       <nav>
         <div class="nav nav-tabs" id="nav-tab" role="tablist">
-            <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home" type="button" role="tab" aria-controls="nav-home" aria-selected="true">Активные лоты</button>
-            <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">Завершённые сделки</button>
+            <button class="nav-link textColor active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home" type="button" role="tab" aria-controls="nav-home" aria-selected="true">Активные лоты</button>
+            <button class="nav-link textColor" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">Завершённые сделки</button>
         </div>
       </nav>
       <div class="tab-content" id="nav-tabContent">
@@ -57,7 +57,7 @@
                         <div class="col"></div>
                         <div class="col"><p>Полученный</p></div>
                     </div>
-                    <hr>
+                    <hr class="backgroundColor2 borderColor2"/>
                 @foreach(DealProductDto deal in ViewBag.Deal)
                 {
                     if (deal.UserMaster == ViewBag.User.UserId)
@@ -112,7 +112,7 @@
                             </div>
                         </div>
                     }
-                    <hr>
+                    <hr class="backgroundColor2 borderColor2"/>
                 }
                </div>
           </div>

@@ -1,9 +1,9 @@
-﻿<div id="dialog" class="position-relative h-100 w-100">
+﻿<div id="dialog" class="position-relative h-100 w-100 backgroundColor3 borderColor3 textColor">
 @{
     IEnumerable<Message> _model = Model as IEnumerable<Message>;
     if (_model.Count() != 0)
     {
-        <div id="textElem" class="position-absolute w-100 scrollbarС scrollbar-secondary bordered-danger thin mb-5 pe-1" >
+        <div id="textElem" class="position-absolute w-100 scrollbarС scrollbar-secondary bordered-danger thin mb-5 pe-1 backgroundColor3 borderColor3" >
             @if ( ViewBag.NextPage)
             {
                 <div id="chatTop" style="visibility:hidden">@ViewBag.PageNumber</div>
@@ -17,16 +17,16 @@
             {
                 if (ViewBag.UserId == message.UserId)
                 {
-                    <div class="ms-4 border rounded-top-5 rounded-start-5 bg-light text-dark p-1 mb-2 position-relative">
-                        <p class="mb-4">@message.Text</p>
+                    <div class="ms-4 border rounded-top-5 rounded-start-5 bg-light text-dark p-1 mb-2 position-relative backgroundColor2 borderColor2">
+                        <p class="mb-4 textColor">@message.Text</p>
                         @if (message.IsRead == false)
                         {
-                            <span class="position-absolute top-100 start-100 translate-middle p-1 bg-info border border-light rounded-circle">
+                            <span class="position-absolute top-100 start-100 translate-middle p-1 bg-info border border-light rounded-circle borderColor2">
                                 <span class="visually-hidden">New alerts</span>
                             </span>
                         }
                         <div class="position-absolute bottom-0 end-0">
-                            <p class="opacity-75 m-0 p-1">@message.Date.ToShortTimeString()</p>
+                            <p class="opacity-75 m-0 p-1 textColor2">@message.Date.ToShortTimeString()</p>
                         </div>
                     </div>
                 }
@@ -35,7 +35,7 @@
                     <div class="me-4 rounded-top-5 rounded-end-5 bg-primary text-white p-1 mb-2 position-relative">
                         <p class="mb-4">@message.Text</p>
                         <div class="position-absolute bottom-0 end-0">
-                            <p class="opacity-75 m-0 p-1">@message.Date.ToShortTimeString()</p>
+                            <p class="opacity-75 m-0 p-1 textColor2">@message.Date.ToShortTimeString()</p>
                         </div>
                     </div>
                 }
@@ -52,17 +52,17 @@
     }
     if (ViewBag.Blocked == null)
     {
-        <form id="messageForm" class="position-absolute bottom-0 p-2 bg-white w-100" style="height: 150px" asp-anti-forgery="true" enctype="multipart/form-data" novalidate>
+        <form id="messageForm" class="position-absolute bottom-0 p-2 bg-white w-100 backgroundColor3 borderColor3 textColor" style="height: 150px" asp-anti-forgery="true" enctype="multipart/form-data" novalidate>
             <input type="hidden" id="_dialogId" name="dialogId" value="@ViewBag.DialogId"/>
-            <textarea type="text" id="validationDefault02" name="text" class="mb-2 form-control rounded scrollbarT scrollbar-secondary bordered-danger thin" placeholder="Сообщение..." style="overflow-x: hidden !important; overflow-y: hidden; overflow-wrap: break-word !important; height: 100px; width: 100%; overflow-y: scroll; resize: none;" required=""></textarea>
+            <textarea type="text" id="validationDefault02" name="text" class="mb-2 form-control rounded scrollbarT scrollbar-secondary bordered-danger thin backgroundColor2 borderColor2 textColor" placeholder="Сообщение..." style="overflow-x: hidden !important; overflow-y: hidden; overflow-wrap: break-word !important; height: 100px; width: 100%; overflow-y: scroll; resize: none;" required=""></textarea>
             <input class="w-100 btn btn btn-primary" onclick="add_message(event, '@ViewBag.DialogId')" id="uploadProduct" type="submit" value="Отправить">
         </form>
     }
     else
     {
-        <form id="messageForm" class="position-absolute bottom-0 p-2 bg-white w-100" style="height: 150px" asp-anti-forgery="true" enctype="multipart/form-data" novalidate>
+        <form id="messageForm" class="position-absolute bottom-0 p-2 bg-white w-100 backgroundColor3 borderColor3 textColor" style="height: 150px" asp-anti-forgery="true" enctype="multipart/form-data" novalidate>
             <input type="hidden" id="_dialogId" name="dialogId" value="@ViewBag.DialogId"/>
-            <textarea disabled type="text" id="validationDefault02" name="text" class="mb-2 form-control rounded scrollbarT scrollbar-secondary bordered-danger thin" placeholder="Сообщение..." style="overflow-x: hidden !important; overflow-y: hidden; overflow-wrap: break-word !important; height: 100px; width: 100%; overflow-y: scroll; resize: none;" required=""></textarea>
+            <textarea disabled type="text" id="validationDefault02" name="text" class="mb-2 form-control rounded scrollbarT scrollbar-secondary bordered-danger thin backgroundColor2 borderColor2 textColor" placeholder="Сообщение..." style="overflow-x: hidden !important; overflow-y: hidden; overflow-wrap: break-word !important; height: 100px; width: 100%; overflow-y: scroll; resize: none;" required=""></textarea>
             <input disabled class="w-100 btn btn btn-primary" onclick="add_message(event, '@ViewBag.DialogId')" id="uploadProduct" type="submit" value="Отправить">
         </form> 
     }

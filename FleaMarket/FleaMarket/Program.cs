@@ -52,6 +52,7 @@ builder.Services.AddTransient<IProductRepository, ProductRepository>();
 builder.Services.AddTransient<IProductService, ProductService>();
 builder.Services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
 builder.Services.AddSingleton<IFfmpegService, FfmpegService>();
+builder.Services.AddSingleton<IStorageService, StorageService>();
 builder.Services.AddMemoryCache();
 builder.Services.AddYandexObjectStorage(options =>
 {

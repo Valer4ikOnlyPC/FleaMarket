@@ -4,14 +4,14 @@
 {
     foreach (ProductPhotoDto product in Model)
     {
-        <div class="row row-cols-2 rounded shadow-sm m-3">
+        <div class="row row-cols-2 rounded shadow-sm m-3 backgroundColor2 borderColor2 textColor">
             <div class="col w-25 p-0 verticalhorizontal rounded"  style="max-width:30%; height: 100%;  display:flex; align-items: center; justify-content: center;">
                 <img class="shadow rounded" style="width:100%; height:120px; object-fit: cover; z-index:2; position: relative;" src="@product.FirstPhoto" />
             </div>
 
             <div class="col w-75 position-relative mt-2">
                 <h5 class="">@product.Name</h5>
-                <p class="lead" style="min-height:30px">@if (@product.Description.Length > 30)
+                <p class="lead textColor2" style="min-height:30px">@if (@product.Description.Length > 30)
                     {
                         @product.Description.Substring(0, 20).Insert(20, "...");;
                     }
@@ -39,7 +39,7 @@
 }
 else
 {
-      <p class="m-2">Пока что здесь ничего нет)</p>  
+      <p class="m-2 textColor2">Пока что здесь ничего нет)</p>  
 }
 </div>
 <script src="~/js/favorit.js" asp-append-version="true"></script>

@@ -7,6 +7,8 @@ using FleaMarket.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Caching.Memory;
 using Serilog;
 using System.Diagnostics;
 
@@ -23,8 +25,10 @@ namespace FleaMarket.Controllers
         private readonly ICategoryService _categoryService;
         private readonly IRatingService _ratingService;
         private readonly ICityService _cityService;
+        private readonly IMemoryCache _cache;
+        private readonly string _cacheKey = "usedTheme";
 
-        public HomeController(ICityRepository cityRepository, IRatingService ratingService, ILogger<HomeController> logger,
+        public HomeController(ICityRepository cityRepository, IRatingService ratingService, ILogger<HomeController> logger, IMemoryCache cache,
             IUserService userService, IProductService productService, IDealService dealService, ICategoryService categoryService, ICityService cityService)
         {
             _logger = logger;
@@ -35,12 +39,25 @@ namespace FleaMarket.Controllers
             _categoryService = categoryService;
             _ratingService = ratingService;
             _cityService = cityService;
+            _cache = cache;
         }
         [Authorize]
         public async Task<int> GetCountNewDeals()
         {
             var result = await _dealService.GetByRecipientCount(await _userService.GetByPhone(User.Identity.Name));
             return result;
+        }
+
+        [Authorize]
+        [HttpGet]
+        public ActionResult ChangeTheme()
+        {
+            if (!Request.Cookies.TryGetValue(_cacheKey, out string? theme))
+                theme = "light";
+            if (theme == "light") theme = "dark";
+            else theme = "light";
+            Response.Cookies.Append(_cacheKey, theme);
+            return RedirectToAction("Index");
         }
 
         [Authorize]

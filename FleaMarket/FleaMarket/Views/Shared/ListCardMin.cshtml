@@ -1,14 +1,14 @@
 ﻿@{
     string path = Model.FirstPhoto.Replace("img", "imgMin");
 
-<div class="row row-cols-2 rounded shadow-sm border m-2"  onmouseover="heart_visible('@Model.ProductId')" onmouseout="heart_anvisible('@Model.ProductId')">
-        <div class="col p-0 verticalhorizontal rounded"  style="width:100%; height: 100%;  display:flex; align-items: center; justify-content: center;">
-            <img class="shadow rounded" style="width:100%; height:162px; object-fit: cover; z-index:2; position: relative;" src="@path" />
+<div class="row row-cols-2 rounded shadow-sm border m-2 bordered-danger backgroundColor2 borderColor2 textColor"  onmouseover="heart_visible('@Model.ProductId')" onmouseout="heart_anvisible('@Model.ProductId')">
+        <div class="col p-0 verticalhorizontal rounded borderColor2"  style="width:100%; height: 100%;  display:flex; align-items: center; justify-content: center;">
+            <img class="shadow rounded borderColor2" style="width:100%; height:162px; object-fit: cover; z-index:2; position: relative;" src="@path" />
         </div>
 
         <div class="col position-relative mt-2">
-            <h5 class="">@Model.Name</h5>
-            <p class="lead" style="min-height:30px">@if (@Model.Description.Length > 30)
+            <h5 class="textColor">@Model.Name</h5>
+            <p class="lead textColor2" style="min-height:30px">@if (@Model.Description.Length > 30)
                 {
                     @Model.Description.Substring(0, 20).Insert(20, "...");;
                 }
@@ -26,7 +26,7 @@
                         </svg>
                     </button>
                     
-                    <a class="btn btn-sm btn-outline-secondary" asp-area="" asp-controller="Product" asp-action="ViewProduct" target="_blank" asp-route-productId="@Model.ProductId">Перейти</a>
+                    <a class="btn btn-sm btn-outline-secondary textColor" asp-area="" asp-controller="Product" asp-action="ViewProduct" target="_blank" asp-route-productId="@Model.ProductId">Перейти</a>
                 </div>
             </div>
         </div>

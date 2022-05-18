@@ -1,44 +1,44 @@
 ﻿ <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable" role="document" >
-    <div class="modal-content rounded-5 shadow">
+    <div class="modal-content rounded-5 shadow backgroundColor3 borderColor3 textColor">
       <div class="modal-header pb-2 border-bottom-0">
-        <h5 class="modal-title">Редактировать лот</h5>
-        <button type="button" onclick="Close_deal()" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <h5 class="modal-title textColor">Редактировать лот</h5>
+        <button type="button" onclick="Close_deal()" class="btn-close backgroundColor2 borderColor2" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body container scrollbarT scrollbar-secondary bordered-danger">
+      <div class="modal-body container scrollbarT scrollbar-secondary bordered-danger backgroundColor3 borderColor3 textColor">
           <div>
             <form asp-action="EditProduct" asp-controller="Product" asp-anti-forgery="true" enctype="multipart/form-data" id="form1"  class="p-4 needs-validation" novalidate>
                 <input type="hidden" name="ProductId" placeholder="ProductId" value="@Model.ProductId">
               <div class="form-floating mb-3">
-                <input type="text" name="Name" class="form-control" id="validationDefault01" placeholder="Name" required minlength="3" maxlength="30" value="@Model.Name">
-                <label for="validationDefault01">Название</label>
+                <input type="text" name="Name" autocomplete="off" class="form-control backgroundColor borderColor textColor" id="validationDefault01" placeholder="Name" required minlength="3" maxlength="30" value="@Model.Name">
+                <label class="textColor2" for="validationDefault01">Название</label>
               </div>
           
               <div class="form-floating mb-3">
                 <div class="wp-textarea-wrap">
-                  <textarea type="text"  id="validationDefault02" name="Description" class="form-control rounded scrollbarT scrollbar-secondary bordered-danger thin" placeholder="Описание..." style="overflow-x: hidden !important; overflow-y: hidden; overflow-wrap: break-word !important; height: 200px; width: 100%; overflow-y: scroll; resize: none;" required>@Model.Description</textarea>
+                  <textarea type="text"  id="validationDefault02" name="Description" class="form-control rounded scrollbarT scrollbar-secondary bordered-danger thin backgroundColor borderColor textColor" placeholder="Описание..." style="overflow-x: hidden !important; overflow-y: hidden; overflow-wrap: break-word !important; height: 200px; width: 100%; overflow-y: scroll; resize: none;" required>@Model.Description</textarea>
                 </div>
               </div>
 
               <div class="form-floating mb-3">
-                <select name = "CityId" class="form-control" id="validationDefault05" placeholder="CityId" required>
+                <select name = "CityId" class="form-control backgroundColor borderColor textColor" id="validationDefault05" placeholder="CityId" required>
                         @foreach (City c in @ViewBag.City)
                         {
                             if (c.CityId == Model.CityId)
                             {
-                                <option selected value=@c.CityId>@c.Name</option>
+                                <option selected class="textColor" value=@c.CityId>@c.Name</option>
                             }
                             else
                             {
-                                <option value=@c.CityId>@c.Name</option>
+                                <option class="textColor" value=@c.CityId>@c.Name</option>
                             }
                         }
                     </select>
-                <label for="validationDefault05">Город</label>
+                <label class="textColor2" for="validationDefault05">Город</label>
               </div>
 
             
               <div id="validationDefault06"  style="width:100%;" class="btn-group dropend mb-3 rounded">
-                  <select name = "CategoryId" class="form-control" id="CategoryId" placeholder="CategoryId"  required style="pointer-events: none; border-top-right-radius:0px; border-bottom-right-radius:0px;">
+                  <select name = "CategoryId" class="form-control backgroundColor borderColor3 textColor2" id="CategoryId" placeholder="CategoryId"  required style="pointer-events: none; border-top-right-radius:0px; border-bottom-right-radius:0px;">
                         @foreach (Category category in @ViewBag.Category)
                         {
                             if (category.CategoryId == Model.CategoryId)
@@ -51,22 +51,22 @@
                             }
                         }
                     </select>
-                  <a class="btn btn-sm dropdown bg-light" style="color: black; font-size: 16px; border-color: rgba(0,0,0,0.2); width:100%; border-top-right-radius:4px; border-bottom-right-radius:4px;" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">Категории</a>
-                  <ul id="test1" class="dropdown-menu" aria-labelledby="dropdownMenuButton1" style="list-style-type: none; border-radius: 10px;">
+                  <a class="btn btn-sm dropdown bg-light backgroundColor borderColor3 textColor" style="color: black; font-size: 16px; border-color: rgba(0,0,0,0.2); width:100%; border-top-right-radius:4px; border-bottom-right-radius:4px;" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">Категории</a>
+                  <ul id="test1" class="dropdown-menu backgroundColor borderColor" aria-labelledby="dropdownMenuButton1" style="list-style-type: none; border-radius: 10px;">
                       @foreach(Category cat in @ViewBag.Category)
                             {
                                 if(cat.CategoryParent==-1)
                                 {
-                                    <li class="dropend" style="list-style-type:none">
-                                        <a class="btn btn-sm dropdown" onclick="category_extension(@cat.CategoryId)" ondblclick="category_select(@cat.CategoryId)" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">@cat.Name</a>
-                                        <ul id="@cat.CategoryId" class="dropdown-menu" style="border-radius: 10px;" aria-labelledby="dropdownMenuButton1" ></ul>
+                                    <li class="dropend chatElem2" style="list-style-type:none">
+                                        <a class="btn btn-sm dropdown textColor" onclick="category_extension(@cat.CategoryId)" ondblclick="category_select(@cat.CategoryId)" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">@cat.Name</a>
+                                        <ul id="@cat.CategoryId" class="dropdown-menu backgroundColor borderColor" style="border-radius: 10px;" aria-labelledby="dropdownMenuButton1" ></ul>
                                     </li>
                                 }
                             }
                   </ul>
               </div>
 
-              <div class="mb-3 form-floating container rounded border" style="background: white">
+              <div class="mb-3 form-floating container rounded border backgroundColor borderColor textColor2" style="background: white">
                   <div id="photo" class="row row-cols-5">
                         @foreach(ProductPhoto img in ViewBag.Photos)
                         {
@@ -80,7 +80,7 @@
               </div>
 
               <div class="mb-3">
-                <input type="file" name="Image" onchange="edit_product()" class="form-control" id="selectedfile" accept="image/jpeg,image/png" placeholder="Image" multiple>
+                <input type="file" name="Image" onchange="edit_product()" class="form-control backgroundColor borderColor textColor2" id="selectedfile" accept="image/jpeg,image/png" placeholder="Image" multiple>
               </div>
              
               <input class="w-100 btn btn-lg btn-primary" id="uploadProduct" type="submit" value="Изменить"/>

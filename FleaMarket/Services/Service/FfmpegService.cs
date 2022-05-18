@@ -1,16 +1,13 @@
-﻿using AspNetCore.Yandex.ObjectStorage.Models;
-using AspNetCore.Yandex.ObjectStorage;
-using AspNetCore.Yandex;
-using Domain.IServices;
+﻿using Domain.IServices;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using AspNetCore.Yandex.ObjectStorage.Configuration;
 
 namespace Services.Service
 {
@@ -18,38 +15,34 @@ namespace Services.Service
     {
         private readonly IConfiguration _configuration;
         private readonly ILogger<FfmpegService> _logger;
-        private readonly YandexStorageService _yandexStorageService;
         private string _path;
-        private string _tempPath;
         private string _imagePath;
         private string _imagePathMin;
+        private const decimal Seconds = 36000000;
+        private const decimal Minutes = 60;
 
-        public FfmpegService(ILogger<FfmpegService> logger, IConfiguration configuration, YandexStorageService yandexStorageService)
+        public FfmpegService(ILogger<FfmpegService> logger, IConfiguration configuration)
         {
             var directory = Directory.GetCurrentDirectory();
-            directory = directory.Remove(directory.Length - 22);
+            var rootPath = Path.GetDirectoryName(Path.GetDirectoryName(directory));
             _configuration = configuration;
             _logger = logger;
-            _path = Path.Combine(directory, "Lib", "Ffmpeg");
-            _tempPath = _configuration["TempFileDirectory"];
+            _path = Path.Combine(rootPath, "Lib", "Ffmpeg");
             _imagePath = _configuration["FileDirectory"];
             _imagePathMin = _configuration["FileDirectoryMin"];
-            _yandexStorageService = yandexStorageService;
         }
         public async Task<string> ConvertImage(string imagePath)
         {
             var task1 = SaveImage(imagePath, " -vf scale=200:-1 ", _imagePathMin);
             var task2 = SaveImage(imagePath, " ", _imagePath);
-            Task.WaitAll(task1, task2);
+            await Task.WhenAll(task1, task2);
             return await task2;
         }
         public async Task DeleteImages(string imagePath)
         {
-            await Task.Run(() =>
-            {
-                File.Delete(imagePath);
-                File.Delete(imagePath.Replace("img", "imgMin"));
-            });
+            var task1 = Task.Run(() => File.Delete(imagePath));
+            var task2 = Task.Run(() => File.Delete(imagePath.Replace("img", "imgMin")));
+            await Task.WhenAll(task1, task2);
         }
         public async Task<decimal[]> GetState(string imagePath)
         {
@@ -68,8 +61,8 @@ namespace Services.Service
             await process.WaitForExitAsync();
             if (results.Length < 9) return new decimal[2];
             var result = string.Concat(results[7], ",", results[9]).Replace(" ", "").Split(',', ':');
-            var latitude = decimal.Parse(result[0]) + (decimal.Parse(result[2]) / 60) + (decimal.Parse(result[4]) / 36000000);
-            var longitude = decimal.Parse(result[6]) + (decimal.Parse(result[8]) / 60) + (decimal.Parse(result[10]) / 36000000);
+            var latitude = decimal.Parse(result[0]) + (decimal.Parse(result[2]) / Minutes) + (decimal.Parse(result[4]) / Seconds);
+            var longitude = decimal.Parse(result[6]) + (decimal.Parse(result[8]) / Minutes) + (decimal.Parse(result[10]) / Seconds);
             return new decimal[2] { latitude, longitude };
         }
         private async Task<string> SaveImage(string imagePath, string parametrs, string path)

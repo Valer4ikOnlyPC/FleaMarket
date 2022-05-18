@@ -2,27 +2,27 @@
     ViewData["Title"] = "Главная";
 }
 
-    <div class="row justify-content-center mb-3 pt-xxl-2">
+    <div class="row justify-content-center mb-3 pt-xxl-2 backgroundColor borderColor textColor">
           
           <form id="searchForm" asp-action="Index" asp-controller="Home" asp-anti-forgery="true" enctype="multipart/form-data" novalidate>
               <div class="d-flex flex-column flex-sm-row rounded pt-1 pb-1" style="background: #0d6efd">
                   <a class="btn btn-primary shadow-primary btn-lg  dropdown"  href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">Категории</a>
-                  <ul id="test1" class="dropdown-menu" aria-labelledby="dropdownMenuButton1" style="list-style-type: none; border-radius:10px;">
-                      <li class="dropend" style="list-style-type:none">
-                        <a class="btn btn-sm dropdown btn-lg" onclick="category_extension(-1)" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">Без категории</a>
+                  <ul id="test1" class="dropdown-menu backgroundColor" aria-labelledby="dropdownMenuButton1" style="list-style-type: none; border-radius:10px;">
+                      <li class="dropend chatElem2" style="list-style-type:none">
+                        <a class="btn btn-sm dropdown btn-lg textColor" onclick="category_extension(-1)" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">Без категории</a>
                       </li>
                       @foreach(Category cat in @ViewBag.Category)
                             {
                                 if(cat.CategoryParent==-1)
                                 {
-                                    <li class="dropend" style="list-style-type:none">
-                                        <a class="btn btn-sm dropdown btn-lg" onclick="category_extension(@cat.CategoryId)" ondblclick="category_select(@cat.CategoryId)" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">@cat.Name</a>
-                                        <ul id="@cat.CategoryId" class="dropdown-menu" aria-labelledby="dropdownMenuButton1" style="border-radius:10px;"></ul>
+                                    <li class="dropend chatElem2" style="list-style-type:none">
+                                        <a class="btn btn-sm dropdown btn-lg textColor" onclick="category_extension(@cat.CategoryId)" ondblclick="category_select(@cat.CategoryId)" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">@cat.Name</a>
+                                        <ul id="@cat.CategoryId" class="dropdown-menu backgroundColor" aria-labelledby="dropdownMenuButton1" style="border-radius:10px;"></ul>
                                     </li>
                                 }
                             }
                   </ul>
-                  <select name = "CategoryId" class="form-control form-control-lg" id="CategoryId" placeholder="CategoryId"  required style="pointer-events: none; width:30%; border-top-right-radius:0px; border-bottom-right-radius:0px" >
+                  <select name = "CategoryId" class="form-control form-control-lg backgroundColor borderColor2 textColor" id="CategoryId" placeholder="CategoryId"  required style="pointer-events: none; width:30%; border-top-right-radius:0px; border-bottom-right-radius:0px" >
                     <option selected value="-1">Без категории</option>
                     @foreach (Category category in @ViewBag.Category)
                     {
@@ -36,18 +36,18 @@
                         }
                     }
                  </select>
-                <input id="Search" class="form-control form-control-lg rounded-0" value="@ViewBag.SearchValue" type="text" name="Search" placeholder="Поиск" style="z-index:10;" required="">
-                <select name = "CityId" class="form-control form-control-lg" id="validationDefault05" style="border-top-left-radius:0px; border-bottom-left-radius:0px; width:30%;" placeholder="CityId" required>
-                    <option selected value="-1">Все города</option>
+                <input id="Search" class="form-control form-control-lg rounded-0 backgroundColor borderColor2 textColor" value="@ViewBag.SearchValue" type="text" name="Search" placeholder="Поиск" style="z-index:10;" required="">
+                <select name = "CityId" class="form-control form-control-lg backgroundColor borderColor2 textColor" id="validationDefault05" style="border-top-left-radius:0px; border-bottom-left-radius:0px; width:30%;" placeholder="CityId" required>
+                    <option class="textColor" selected value="-1">Все города</option>
                     @foreach (City c in @ViewBag.City)
                     {
                         if(c.CityId==ViewBag.CitySelected)
                         {
-                            <option selected value=@c.CityId>@c.Name</option>
+                            <option class="textColor" selected value=@c.CityId>@c.Name</option>
                         }
                         else
                         {
-                            <option value=@c.CityId>@c.Name</option>
+                            <option class="textColor" value=@c.CityId>@c.Name</option>
                         }
                     }
                 </select>
@@ -124,10 +124,10 @@
             <input type="hidden" name="CategoryId" value="@ViewBag.CategorySelected"/>
             <input type="hidden" name="Search" value="@ViewBag.SearchValue"/>
             <input type="hidden" name="CityId" value="@ViewBag.CitySelected"/>
-        <nav aria-label="Page navigation example">
+        <nav aria-label="Page navigation example backgroundColor2 borderColor2 textColor">
           <ul class="pagination">
             <li class="page-item disabled">
-              <a class="page-link" href="#" aria-label="Previous">
+              <a class="page-link backgroundColor2 borderColor2 textColor" href="#" aria-label="Previous">
                 <span aria-hidden="true">&laquo;</span>
               </a>
             </li>
@@ -136,15 +136,15 @@
             {
                 @if (!ViewBag.IsSearch)
                 {
-                    <li class="page-item"><a class="page-link" asp-area="" asp-controller="Home" asp-action="Index" asp-route-pageNumber="0">1</a></li>
+                    <li class="page-item"><a class="page-link backgroundColor2 borderColor2 textColor" asp-area="" asp-controller="Home" asp-action="Index" asp-route-pageNumber="0">1</a></li>
                 }
                 else
                 {
                     <li class="page-item">
-                        <input class="page-link" type="submit"  name="pageNumber" value="1"/>
+                        <input class="page-link backgroundColor2 borderColor2 textColor" type="submit"  name="pageNumber" value="1"/>
                     </li>
                 }
-                <li class="page-item disabled"><a class="page-link">...</a></li>
+                <li class="page-item disabled"><a class="page-link backgroundColor2 borderColor2 textColor">...</a></li>
             }
 
 
@@ -153,19 +153,16 @@
                 int number = i - 1;
                 if ((i <= (ViewBag.PageNumber + 1) & i >= (ViewBag.PageNumber - 2)) | (i > (ViewBag.PageNumber + 1) & i <= (ViewBag.PageNumber + 4)))
                 {
-
-
                     if (i == (ViewBag.PageNumber + 1))
                     {
                         if (!ViewBag.IsSearch)
                         {
-                            <li class="page-item active"><a class="page-link" asp-area="" asp-controller="Home" asp-action="Index" asp-route-pageNumber="@number">@i</a></li>
+                            <li class="page-item active"><a class="page-link textColor" asp-area="" asp-controller="Home" asp-action="Index" asp-route-pageNumber="@number">@i</a></li>
                         }
                         else
                         {
                             <li class="page-item active">
-
-                                <input class="page-link" type="submit" name="pageNumber" value="@i"/>
+                                <input class="page-link textColor" type="submit" name="pageNumber" value="@i"/>
                             </li>
                         }
                     }
@@ -173,13 +170,12 @@
                     {
                         if (!ViewBag.IsSearch)
                         {
-                            <li class="page-item"><a class="page-link" asp-area="" asp-controller="Home" asp-action="Index" asp-route-pageNumber="@number">@i</a></li>
+                            <li class="page-item"><a class="page-link backgroundColor2 borderColor2 textColor" asp-area="" asp-controller="Home" asp-action="Index" asp-route-pageNumber="@number">@i</a></li>
                         }
                         else
                         {
                             <li class="page-item">
-                            
-                                <input class="page-link" type="submit"  name="pageNumber" value="@i"/>
+                                <input class="page-link backgroundColor2 borderColor2 textColor" type="submit"  name="pageNumber" value="@i"/>
                             </li>
                         }
                     }
@@ -190,23 +186,22 @@
 
             @if ((ViewBag.PageNumber + 1) < ViewBag.PageCount -4)
             {
-                <li class="page-item disabled"><a class="page-link">...</a></li>
+                <li class="page-item disabled"><a class="page-link backgroundColor2 borderColor2 textColor">...</a></li>
                 @if (!ViewBag.IsSearch)
                 {
                     int number = ViewBag.PageCount - 1;
-                    <li class="page-item"><a class="page-link" asp-area="" asp-controller="Home" asp-action="Index" asp-route-pageNumber="@number">@ViewBag.PageCount</a></li>
+                    <li class="page-item"><a class="page-link backgroundColor2 borderColor2 textColor" asp-area="" asp-controller="Home" asp-action="Index" asp-route-pageNumber="@number">@ViewBag.PageCount</a></li>
                 }
                 else
                 {
                     <li class="page-item">
-                            
-                        <input class="page-link" type="submit"  name="pageNumber" value="@ViewBag.PageCount"/>
+                        <input class="page-link backgroundColor2 borderColor2 textColor" type="submit"  name="pageNumber" value="@ViewBag.PageCount"/>
                     </li>
                 }
             }
 
             <li class="page-item disabled">
-              <a class="page-link" href="#" aria-label="Next">
+              <a class="page-link backgroundColor2 borderColor2 textColor" href="#" aria-label="Next">
                 <span aria-hidden="true">&raquo;</span>
               </a>
             </li>
