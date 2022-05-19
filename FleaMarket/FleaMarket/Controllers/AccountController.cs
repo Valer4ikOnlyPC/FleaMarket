@@ -91,7 +91,7 @@ namespace FleaMarket.Controllers
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             _logger.LogInformation("User deauthorized");
-            Response.Cookies.Append(_cacheKey, "light");
+            Response.Cookies.Delete(_cacheKey);
             return RedirectToAction("Login", "Account");
         }
     }
