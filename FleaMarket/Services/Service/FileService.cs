@@ -68,12 +68,12 @@ namespace Services.Service
                     img.CopyTo(fileStream);
                     fileStream.Close();
 
-                    var location = await _ffmpegService.GetState(filePath);
+                    var location = await _ffmpegService.GetImageInfo(filePath);
                     var imgPath = await _ffmpegService.ConvertImage(filePath);
                     var imgLink = await _storageService.UploadToCloud(imgPath);
 
                     await _ffmpegService.DeleteImages(filePath);
-                    files.Add(new ProductPhoto { PhotoId = photoId, Link = imgLink, ProductId = productId, Latitude = location[0], Longitude = location[1] });
+                    files.Add(new ProductPhoto { PhotoId = photoId, Link = imgLink, ProductId = productId, Latitude = location.Latitude, Longitude = location.Longitude });
                     File.Delete(filePath);
                 }));
             }

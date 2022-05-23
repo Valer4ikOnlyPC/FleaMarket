@@ -26,7 +26,6 @@ namespace FleaMarket.Controllers
         private readonly IRatingService _ratingService;
         private readonly ICityService _cityService;
         private readonly IMemoryCache _cache;
-        private readonly string _cacheKey = "usedTheme";
 
         public HomeController(ICityRepository cityRepository, IRatingService ratingService, ILogger<HomeController> logger, IMemoryCache cache,
             IUserService userService, IProductService productService, IDealService dealService, ICategoryService categoryService, ICityService cityService)
@@ -52,11 +51,11 @@ namespace FleaMarket.Controllers
         [HttpGet]
         public ActionResult ChangeTheme()
         {
-            if (!Request.Cookies.TryGetValue(_cacheKey, out string? theme))
+            if (!Request.Cookies.TryGetValue(Constants.CacheKey, out string? theme))
                 theme = "light";
             if (theme == "light") theme = "dark";
             else theme = "light";
-            Response.Cookies.Append(_cacheKey, theme);
+            Response.Cookies.Append(Constants.CacheKey, theme);
             return RedirectToAction("Index");
         }
 

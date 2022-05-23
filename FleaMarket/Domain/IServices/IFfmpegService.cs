@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Domain.DTO;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,6 +11,6 @@ namespace Domain.IServices
     {
         Task<string> ConvertImage(string imagePath);
         Task DeleteImages(string imagePath);
-        Task<decimal[]> GetState(string imagePath);
+        Task<ImageInfoDto> GetImageInfo(string imagePath);
     }
 }

@@ -1,4 +1,5 @@
-﻿using Domain.IServices;
+﻿using Domain.DTO;
+using Domain.IServices;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
@@ -44,7 +45,7 @@ namespace Services.Service
             var task2 = Task.Run(() => File.Delete(imagePath.Replace("img", "imgMin")));
             await Task.WhenAll(task1, task2);
         }
-        public async Task<decimal[]> GetState(string imagePath)
+        public async Task<ImageInfoDto> GetImageInfo(string imagePath)
         {
             var info = new ProcessStartInfo()
             {
@@ -59,11 +60,11 @@ namespace Services.Service
             process.Start();
             var results = process.StandardOutput.ReadToEnd().Split('"');
             await process.WaitForExitAsync();
-            if (results.Length < 9) return new decimal[2];
+            if (results.Length < 9) return new ImageInfoDto();
             var result = string.Concat(results[7], ",", results[9]).Replace(" ", "").Split(',', ':');
             var latitude = decimal.Parse(result[0]) + (decimal.Parse(result[2]) / Minutes) + (decimal.Parse(result[4]) / Seconds);
             var longitude = decimal.Parse(result[6]) + (decimal.Parse(result[8]) / Minutes) + (decimal.Parse(result[10]) / Seconds);
-            return new decimal[2] { latitude, longitude };
+            return new ImageInfoDto() { Latitude = latitude, Longitude = longitude };
         }
         private async Task<string> SaveImage(string imagePath, string parametrs, string path)
         {
