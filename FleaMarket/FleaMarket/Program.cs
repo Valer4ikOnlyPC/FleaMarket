@@ -16,6 +16,7 @@ using Serilog;
 using Serilog.Events;
 using SerilogWeb.Classic.Enrichers;
 using AspNetCore.Yandex.ObjectStorage.Extensions;
+using Microsoft.AspNetCore.DataProtection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -67,6 +68,10 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
                 {
                     options.LoginPath = new Microsoft.AspNetCore.Http.PathString("/Account/Login");
                 });
+builder.Services.AddDataProtection()
+    .SetApplicationName("FleaMarket")
+    .PersistKeysToFileSystem(new DirectoryInfo("C:\\inetpub\\vhosts\\u1687197.plsk.regruhosting.ru\\temp-keys"))
+    .SetDefaultKeyLifetime(TimeSpan.FromDays(30));
 
 
 builder.Services.AddControllersWithViews();
@@ -74,7 +79,7 @@ builder.Services.AddSignalR();
 
 var app = builder.Build();
 
-if (!app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
 }
@@ -88,23 +93,6 @@ else
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseDefaultFiles();
-
-if (!Directory.Exists(app.Configuration["FileDirectory"]))
-    Directory.CreateDirectory(app.Configuration["FileDirectory"]);
-if (!Directory.Exists(app.Configuration["FileDirectoryMin"]))
-    Directory.CreateDirectory(app.Configuration["FileDirectoryMin"]);
-if (!Directory.Exists(app.Configuration["TempFileDirectory"]))
-    Directory.CreateDirectory(app.Configuration["TempFileDirectory"]);
-app.UseStaticFiles(new StaticFileOptions
-{
-    FileProvider = new PhysicalFileProvider(app.Configuration["FileDirectory"]),
-    RequestPath = "/img"
-});
-app.UseStaticFiles(new StaticFileOptions
-{
-    FileProvider = new PhysicalFileProvider(app.Configuration["FileDirectoryMin"]),
-    RequestPath = "/imgMin"
-});
 
 app.UseRouting();
 app.UseAuthentication();

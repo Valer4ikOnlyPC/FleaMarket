@@ -78,7 +78,7 @@
                     </svg>
                   </button>
                   <ul class="dropdown-menu backgroundColor3 borderColor3">
-                    <li><a class="dropdown-item chatElem textColor" asp-area="" asp-controller="Home" asp-action="GetUser" asp-route-userId="@dialogDto.User2">Перейти</a></li>
+                    <li><a class="dropdown-item chatElem textColor" asp-area="" asp-controller="Home" asp-action="GetUser" asp-route-userId="@dialogDto.User1">Перейти</a></li>
                     @if (dialogDto.BlockedBy == null)
                     {
                         <li><a class="dropdown-item chatElem textColor" onclick="blocked_chat('@dialogDto.DialogId')" href="#">Заблокировать</a></li>

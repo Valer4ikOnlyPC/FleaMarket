@@ -28,7 +28,7 @@ namespace Services.Service
             var rootPath = Path.GetDirectoryName(Path.GetDirectoryName(directory));
             _configuration = configuration;
             _logger = logger;
-            _path = Path.Combine(rootPath, "Lib", "Ffmpeg");
+            _path = "C:\\inetpub\\vhosts\\u1687197.plsk.regruhosting.ru\\Lib\\Ffmpeg";//Path.Combine(rootPath, "Lib", "Ffmpeg");
             _imagePath = _configuration["FileDirectory"];
             _imagePathMin = _configuration["FileDirectoryMin"];
         }
