@@ -36,6 +36,7 @@ function DeActive() {
     }
 }
 function chat_create(userId) {
+    $('#AllChat').append('<div class="h-100 position-relative pb-5"><div class="position-absolute pb-5 top-50 start-50 translate-middle text-center text-secondary"><div class="spinner-border text-primary" role="status"><span class="visually-hidden"> Loading...</span ></div></div></div>');
     $.get("/Dialog/CreateDialog", { userId: userId })
         .done(function (dialogId) {
             $.get("/Dialog/AllDialog", {})
@@ -46,6 +47,7 @@ function chat_create(userId) {
         });
 }
 function chat_active() {
+    $('#AllChat').append('<div class="h-100 position-relative pb-5"><div class="position-absolute pb-5 top-50 start-50 translate-middle text-center text-secondary"><div class="spinner-border text-primary" role="status"><span class="visually-hidden"> Loading...</span ></div></div></div>');
     $.get("/Dialog/AllDialog", {})
         .done(function (msg) {
             $('#AllChat').html(msg);

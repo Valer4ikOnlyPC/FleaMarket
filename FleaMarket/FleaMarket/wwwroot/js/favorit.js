@@ -72,6 +72,7 @@ function favorit_list_add(e, ProductId) {
         });
 }
 function favorite_extension() {
+    $('#favoriteToList').append('<div class="h-100 position-relative"><div class="position-absolute start-50 translate-middle text-center text-secondary my-3"><div class="spinner-border text-danger" role="status"><span class="visually-hidden"> Loading...</span ></div></div></div>');
     $.get("/Product/FavoriteToList", {})
         .done(function (msg) {
             $('#favoriteToList').html(msg);

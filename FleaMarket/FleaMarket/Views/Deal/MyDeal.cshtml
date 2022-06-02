@@ -23,8 +23,8 @@
         <hr class="backgroundColor2 borderColor2"/>
     @foreach(DealProductDto deal in ViewBag.DealMaster)
     {
-        <div class="row row-cols-6">
-            <div class="col-4 container">
+        <div class="row">
+            <div class="col-lg-4">
                 @if (deal.ProductMaster != null)
                 {
                     <a asp-area="" asp-controller="Product" asp-action="ViewProduct" asp-route-productId="@deal.ProductMaster.ProductId" class="p-0" style="text-decoration: none; color: rgb(30,30,30);">
@@ -32,12 +32,12 @@
                     </a>
                 }
             </div>
-            <div class="col-2 center-top text-center p-5">
+            <div class="col-lg-2 center-top text-center p-5">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-arrow-left-right" viewBox="0 0 16 16">
                     <path fill-rule="evenodd" d="M1 11.5a.5.5 0 0 0 .5.5h11.793l-3.147 3.146a.5.5 0 0 0 .708.708l4-4a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 11H1.5a.5.5 0 0 0-.5.5zm14-7a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H14.5a.5.5 0 0 1 .5.5z"></path>
                 </svg>
             </div>
-            <div class="col-4 container">
+            <div class="col-lg-4">
                 @if (deal.ProductRecipient != null)
                 {
                     <a asp-area="" asp-controller="Product" asp-action="ViewProduct" asp-route-productId="@deal.ProductRecipient.ProductId" class="p-0" style="text-decoration: none; color: rgb(30,30,30);">
@@ -45,7 +45,7 @@
                     </a>
                 }
             </div>
-            <div class="col-2 center-top text-center p-5">
+            <div class="col-lg-2 center-top text-center p-5">
                 <div>
                     @{
                         if (deal.IsActive.ToString() == "Сonsideration")
@@ -83,8 +83,8 @@
         <hr class="backgroundColor2 borderColor2"/>
     @foreach(DealProductDto deal in ViewBag.DealRecipient)
     {
-        <div class="row row-cols-6">
-            <div class="col-4 container">
+        <div class="row">
+            <div class="col-lg-4">
                 @if (deal.ProductMaster != null)
                 {
                     <a asp-area="" asp-controller="Product" asp-action="ViewProduct" asp-route-productId="@deal.ProductMaster.ProductId" class="p-0" style="text-decoration: none; color: rgb(30,30,30);">
@@ -92,12 +92,12 @@
                     </a>
                 }
             </div>
-            <div class="col-2 center-top text-center p-5">
+            <div class="col-lg-2 center-top text-center p-5">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-arrow-left-right" viewBox="0 0 16 16">
                     <path fill-rule="evenodd" d="M1 11.5a.5.5 0 0 0 .5.5h11.793l-3.147 3.146a.5.5 0 0 0 .708.708l4-4a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 11H1.5a.5.5 0 0 0-.5.5zm14-7a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H14.5a.5.5 0 0 1 .5.5z"></path>
                 </svg>
             </div>
-            <div class="col-4 container">
+            <div class="col-lg-4">
                 @if (deal.ProductRecipient != null)
                 {
                     <a asp-area="" asp-controller="Product" asp-action="ViewProduct" asp-route-productId="@deal.ProductRecipient.ProductId" class="p-0" style="text-decoration: none; color: rgb(30,30,30);">
@@ -105,7 +105,7 @@
                     </a>
                 }
             </div>
-            <div class="col-2 center-top text-center p-5">
+            <div class="col-lg-2 center-top text-center p-5">
                 <div>
                     <a class="btn btn-sm btn-outline-success w-100" asp-area="" asp-controller="Deal" asp-action="Accepted" asp-route-dealId="@deal.DealId">Принять</a>
                 </div>
@@ -135,8 +135,8 @@
     {
         if (deal.UserMaster == ViewBag.User.UserId)
         {
-            <div class="row row-cols-3">
-                <div class="col container">
+            <div class="row">
+                <div class="col-lg-4">
                     @if (deal.ProductMaster != null)
                     {
                         <a asp-area="" asp-controller="Product" asp-action="ViewProduct" asp-route-productId="@deal.ProductMaster.ProductId" class="p-0" style="text-decoration: none; color: rgb(30,30,30);">
@@ -144,12 +144,12 @@
                         </a>
                     }
                 </div>
-                <div class="col center-top text-center p-5">
+                <div class="col-lg-4 center-top text-center p-5">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-arrow-left-right" viewBox="0 0 16 16">
                         <path fill-rule="evenodd" d="M1 11.5a.5.5 0 0 0 .5.5h11.793l-3.147 3.146a.5.5 0 0 0 .708.708l4-4a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 11H1.5a.5.5 0 0 0-.5.5zm14-7a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H14.5a.5.5 0 0 1 .5.5z"></path>
                     </svg>
                 </div>
-                <div class="col container">
+                <div class="col-lg-4">
                     @if (deal.ProductRecipient != null)
                     {
                         <a asp-area="" asp-controller="Product" asp-action="ViewProduct" asp-route-productId="@deal.ProductRecipient.ProductId" class="p-0" style="text-decoration: none; color: rgb(30,30,30);">
@@ -161,8 +161,8 @@
         }
         else
         {
-            <div class="row row-cols-3">
-                <div class="col">
+            <div class="row">
+                <div class="col-lg-4">
                     @if (deal.ProductRecipient != null)
                     {
                         <a asp-area="" asp-controller="Product" asp-action="ViewProduct" asp-route-productId="@deal.ProductRecipient.ProductId" class="p-0" style="text-decoration: none; color: rgb(30,30,30);">
@@ -170,12 +170,12 @@
                         </a>
                     }
                 </div>
-                <div class="col center-top text-center p-5">
+                <div class="col-lg-4 center-top text-center p-5">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-arrow-left-right" viewBox="0 0 16 16">
                         <path fill-rule="evenodd" d="M1 11.5a.5.5 0 0 0 .5.5h11.793l-3.147 3.146a.5.5 0 0 0 .708.708l4-4a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 11H1.5a.5.5 0 0 0-.5.5zm14-7a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H14.5a.5.5 0 0 1 .5.5z"></path>
                     </svg>
                 </div>
-                <div class="col">
+                <div class="col-lg-4">
                     @if (deal.ProductMaster != null)
                     {
                         <a asp-area="" asp-controller="Product" asp-action="ViewProduct" asp-route-productId="@deal.ProductMaster.ProductId" class="p-0" style="text-decoration: none; color: rgb(30,30,30);">

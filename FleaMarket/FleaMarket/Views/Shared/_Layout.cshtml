@@ -2,9 +2,10 @@
 <html id="html" lang="en">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=0.625"/>
     <title>@ViewData["Title"] - FleaMarket</title>
     
+    <link rel="shortcut icon" href="/images/logo-sm.ico" type="image/x-icon">
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" asp-append-version="true"/>
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
     <link rel="stylesheet" href="~/FleaMarket.styles.css" asp-append-version="true"/>
@@ -16,45 +17,53 @@
     }
 </head>
 <body class="scrollbarT scrollbar-secondary bordered-danger backgroundColor borderColor textColor">
-    <header class="w-100" style="position: fixed; display: block; z-index: 1000;">
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-light border-bottom box-shadow mb-3 backgroundColor3 borderColor">
-            <div class="container-fluid">
-                <a class="navbar-brand p-0 m-0 me-4" asp-area="" asp-controller="Home" asp-action="Index"><img class="p-0 m-0" style=" max-width:57px; max-height:40px;z-index:2; position: relative;" src="/images/logo-sm.png" /></a>
-                
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between text-end">
-                @{
-                    if (User.Identity.Name != null)
-                    {
-                    <ul class="navbar-nav flex-grow-1 ">
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark position-relative textColor" asp-area="" asp-controller="Deal" asp-action="MyDeal">Предложения и сделки<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="CountNewDeals" style="visibility:hidden;"><span class="visually-hidden">unread messages</span></span></a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark textColor" asp-area="" asp-controller="Product" asp-action="MyProducts" asp-route-number="@User.Identity.Name">Мои лоты</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark textColor" onclick="Product_extension()">Добавить лот</a>
-                                </li>
-                    </ul>
-                    <div class="flex-shrink-0 dropdown">
-                        <button type="button" class="d-block  nav-link bg-transparent text-danger border-0" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false" onclick="favorite_extension()">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-heart" viewBox="0 0 16 16">
+    <header class="p-3 backgroundColor3 borderColor bg-white shadow-sm fixed-top">
+        <div class="container">
+          <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+            
+            <a class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none" asp-area="" asp-controller="Home" asp-action="Index">
+                <img class="p-0 m-0" style=" max-width:57px; max-height:40px;z-index:2; position: relative;" src="/images/logo-sm.png" />
+            </a>
+            <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+                <li><a class="nav-link px-2 text-secondary" asp-area="" asp-controller="Home" asp-action="Index">Главная</a></li>
+                <li><a class="nav-link px-2 text-dark position-relative textColor" asp-area="" asp-controller="Deal" asp-action="MyDeal">Предложения и сделки<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="CountNewDeals" style="visibility:hidden;"><span class="visually-hidden">unread messages</span></span></a></li>
+                <li><a class="nav-link px-2 text-dark textColor" asp-area="" asp-controller="Product" asp-action="MyProducts" asp-route-number="@User.Identity.Name">Мои лоты</a></li>
+                @if (User.Identity.Name != null)
+                {
+                    <li><a class="nav-link px-2 text-dark textColor" onclick="Product_extension()">Добавить лот</a></li>
+                }
+            </ul>
+
+            @{
+                if (User.Identity.Name == null)
+                {
+                    <div class="text-end">
+                        <a class="btn btn-outline-light text-dark me-2" asp-area="" asp-controller="Account" asp-action="Login">Войти</a>
+                        <a class="btn btn-warning" asp-area="" asp-controller="Account" asp-action="Register">Зарегистрироваться</a>
+                    </div>
+                }
+                else
+                {
+                    <div class="dropdown text-end">
+                        <button type="button" class="btn btn-sm pt-2 bg-transparent text-danger border-0" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false" onclick="favorite_extension()">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-heart" viewBox="0 0 16 16">
                                 <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"></path>
                             </svg>
                         </button>
-                        <ul id="favoriteToList" class="dropdown-menu dropdown-menu-lg-end shadow scrollbar scrollbar-danger bordered-danger thin backgroundColor borderColor textColor" aria-labelledby="dropdownUser2" style=" min-width: 450px;">
+                        <ul id="favoriteToList" class="dropdown-menu dropdown-menu-lg-end shadow scrollbar scrollbar-danger bordered-danger thin backgroundColor borderColor textColor" aria-labelledby="dropdownUser2" style=" min-width: 450px; min-height:50px">
                         </ul>
                     </div>
-                    <button onclick="chat_active()" class="btn btn-primary position-relative" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
-                        Мои чаты
-                        <span id="MyChat" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="visibility:hidden">0</span>
-                    </button>
-                    <div class="flex-shrink-0 dropdown">
-                        <a href="#" class="d-block link-dark text-decoration-none nav-link text-dark textColor" id="dropdownUser2" data-bs-toggle="dropdown" aria-expanded="false">@User.Identity.Name</a>
+
+                    <div class="text-end">
+                        <button onclick="chat_active()"  type="button" class="btn btn-sm bg-transparent text-primary border-0 position-relative" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-chat-fill" viewBox="0 0 16 16">
+                              <path d="M8 15c4.418 0 8-3.134 8-7s-3.582-7-8-7-8 3.134-8 7c0 1.76.743 3.37 1.97 4.6-.097 1.016-.417 2.13-.771 2.966-.079.186.074.394.273.362 2.256-.37 3.597-.938 4.18-1.234A9.06 9.06 0 0 0 8 15z"></path>
+                            </svg>
+                            <span id="MyChat" class="position-absolute top-10 start-90 translate-middle badge rounded-pill bg-danger" style="visibility:hidden">0</span>
+                        </button>
+                    </div>
+                    <div class="dropdown px-3">
+                        <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle textColor text-dark" id="dropdownUser2" data-bs-toggle="dropdown" aria-expanded="false">@User.Identity.Name</a>
                         <ul class="dropdown-menu text-small shadow backgroundColor" aria-labelledby="dropdownUser2" style="">
                             <li><a class="nav-link text-dark textColor" onclick="Product_extension()">Добавить лот</a></li>
                             <li><a class="nav-link text-dark textColor" asp-area="" asp-controller="Home" asp-action="GetUserByName">Моя страница</a></li>
@@ -80,24 +89,12 @@
                             <li><a class="nav-link text-dark textColor" asp-area="" asp-controller="Account" asp-action="Logout">Выйти</a></li>
                         </ul>
                     </div>
-                    }
-                    else
-                    {
-                    <ul class="navbar-nav flex-grow-1 ">
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Login">Вход</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Register">Регистрация</a>
-                                </li>
-                    </ul>
-                    }
                 }
-                </div>
-            </div>
-        </nav>
+            }
+          </div>
+        </div>
     </header>
-    <div class="container shadow-sm borderColor" style="padding-top:70px">
+    <div class="container shadow-sm header-padding borderColor" >
         <main role="main" class="pb-3">
             <div id="addProduct" class="modal modal-signin position-fixed d-block" role="dialog" style="z-index:9999; visibility:hidden; background: rgba(0,0,0,0); backdrop-filter: blur(10px);">
             </div>
